@@ -1,6 +1,6 @@
-#+title: Matthias' NixOS & Nix-Darwin System Configuration Flake
+#+title: Maxwell's NixOS Configuration Flake, forked from Matthias' NixOS & Nix-Darwin System Configuration Flake
 #+description: General information about my flake and how to set it up
-#+author: Matthias Benaets
+#+author: Matthias Benaets + Maxwell Mattila
 
 #+attr_org: :width 600
 [[file:rsc/Header.svg]]
@@ -19,18 +19,18 @@
 :END:
 
 * System Components
-|                 | *NixOS -Wayland* | *NixOS - Wayland/Xorg* | *NixOS - Xorg*   | *Darwin*  |
-|-----------------+------------------+------------------------+------------------+-----------|
-| *DM*            | TTY1 Login       | GDM                    | LightDM          | /         |
-| *WM/DE*         | Hyprland         | Gnome                  | Bspwm            | Yabai     |
-| *Compositor*    | Hyprland         | Mutter                 | Picom (jonaburg) | /         |
-| *Bar*           | Waybar           | Dock-to-Panel          | Polybar          | /         |
-| *Hotkeys*       | Hyprland         | /                      | Sxhkd            | Skhd      |
-| *Launcher*      | Wofi             | Gnome                  | Rofi             | /         |
-| *GTK Theme*     | Dracula          | Dracula / Adwaita      | Dracula          | /         |
-| *Notifications* | Dunst            | Gnome                  | Dunst            | /         |
-| *Terminal*      | Alacritty        | Alacritty              | Alacritty        | Alacritty |
-| *Used by host*  | Desktop          | Work                   | Laptop & VM      | Macbook   |
+|                 | *NixOS -Wayland* | *NixOS - Wayland/Xorg* | *NixOS - Xorg*   | 
+|-----------------+------------------+------------------------+------------------+-
+| *DM*            | TTY1 Login       | GDM                    | LightDM          | 
+| *WM/DE*         | Hyprland         | Gnome                  | Bspwm            | 
+| *Compositor*    | Hyprland         | Mutter                 | Picom (jonaburg) | 
+| *Bar*           | Waybar           | Dock-to-Panel          | Polybar          | 
+| *Hotkeys*       | Hyprland         | /                      | Sxhkd            | 
+| *Launcher*      | Wofi             | Gnome                  | Rofi             | 
+| *GTK Theme*     | Dracula          | Dracula / Adwaita      | Dracula          | 
+| *Notifications* | Dunst            | Gnome                  | Dunst            | 
+| *Terminal*      | Alacritty        | Alacritty              | Alacritty        | 
+| *Used by host*  | Desktop          | Work                   | Laptop & VM      | 
 
 There are some other desktop environments/window manager (See NixOS - Other). Just link to correct ~default/home.nix~ in ~./hosts/<host>/default and home.nix~.
 There is also a general Nix config with hostname ~pacman~ that can be used on pretty much any disto.
@@ -38,7 +38,7 @@ There is also a general Nix config with hostname ~pacman~ that can be used on pr
 Compontents relevant to all hosts:
 | *Shell*    | Zsh               |
 | *Terminal* | Alacritty         |
-| *Editors*  | Nvim + Doom Emacs |
+| *Editors*  | Nvim 		 |
 
 * NixOS Installation Guide
 This flake currently has *4* hosts
@@ -231,59 +231,10 @@ This will rebuild the configuration and automatically activate it.
    - it's pretty much the same as adding the path to XDG_DATA_DIRS
    - if you do not want to or if the locations are different, change this.
 
-* Nix-Darwin Installation Guide
-This flake currently has *1* host
-  1. macbook
-
-The Apple computer must have the nix package manager installed.
-In terminal run command: ~$ sh <(curl -L https://nixos.org/nix/install)~
-
-** Setup
-*In these commands*
-- Create a nix config directory
-- Allow experimental features to use flakes
-
-#+begin_src
-  $ mkdir ~/.config/nix
-  $ echo "experimental-features = nix-command flakes" >> ~/.config/nix/nix.conf
-#+end_src
-
-** Installation
-*** Initial
-*In these commands*
-- Get git
-- Clone repository
-- First build of the flake on Darwin
-  - This is done because the darwin command is not yet available
-
-#+begin_src
-  $ nix-env -iA nixpkgs.git
-  $ git clone https://github.com/matthiasbenaets/nixos-config ~/.setup
-  $ cd ~/.setup
-  $ nix build .#darwinConfigurations.<host>.system
-  $ ./result/sw/bin/darwin-rebuild switch --flake .#<host>
-#+end_src
-
-~/result~ is located depending on where you build the system.
-
-*** Rebuild
-Since darwin is now added to the PATH, you can build it from anywhere in the system. In this example it is rebuilt from inside the flake directory:
-- ~$ darwin-rebuild switch --flake .#<host>~
-This will rebuild the configuration and automatically activate it.
-
-** Finalization
-*Mostly optional or already correct by default*
-1. Change default shell for Terminal or iTerm.
-   - ~Terminal/iTerm > Preferences > General > Shells open with: Command > /bin/zsh~
-2. Disable Secure Keyboard Entry. Needed for Skhd.
-   - ~Terminal/iTerm > Secure Keyboard Entry~
-3. Install XCode to get complete development environment.
-   - ~$ xcode-select --install~
 
 * Guides
 - [[./nixos.org][NixOS general guide]]
 - [[./nix.org][Nix on other Linux distributions]]
-- [[./darwin.org][Nix on MacOS with Nix-Darwin]]
 - [[./contrib.org][Contribution to nixpkgs]]
 - [[./shell.org][Using nix shells]]
 
@@ -326,11 +277,6 @@ This will rebuild the configuration and automatically activate it.
     - [[https://nixos.wiki/wiki/Flakes][NixOS wiki]]
     - [[https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-flake.html][Manual]]
     - [[https://www.tweag.io/blog/2020-05-25-flakes/][Some]] [[https://christine.website/blog/nix-flakes-3-2022-04-07][Blogs]]
-  - Nix-Darwin
-    - [[file:darwin.org][My General Setup Guide]]
-    - [[https://github.com/LnL7/nix-darwin/][Official Repo]]
-    - [[https://daiderd.com/nix-darwin/manual/index.html][Manual]]
-    - [[https://github.com/LnL7/nix-darwin/wiki][Mini-Wiki]]
   - Videos
     - [[https://youtu.be/AGVXJ-TIv3Y][My Personal Mini-Course]]
     - [[https://www.youtube.com/watch?v=QKoQ1gKJY5A&list=PL-saUBvIJzOkjAw_vOac75v-x6EzNzZq][Wil T's Playlist]]

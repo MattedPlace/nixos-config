@@ -15,7 +15,7 @@
 
 let
   touchpad = with host;
-    if hostName == "laptop" || hostName == "work" then ''
+    if hostName == "laptop" then ''
         touchpad {
           natural_scroll=true
           middle_button_emulation=true
@@ -24,7 +24,7 @@ let
       }
       '' else "";
   gestures = with host;
-    if hostName == "laptop" || hostName == "work" then ''
+    if hostName == "laptop" then ''
       gestures {
         workspace_swipe=true
         workspace_swipe_fingers=3
@@ -33,13 +33,9 @@ let
     '' else "";
   workspaces = with host;
     if hostName == "desktop" then ''
-      monitor=${toString mainMonitor},1920x1080@60,1920x0,1
+      monitor=${toString mainMonitor},1920x1080@144,1920x0,1
       monitor=${toString secondMonitor},1920x1080@60,0x0,1
-    '' else if hostName == "work" then ''
-      monitor=${toString mainMonitor},1920x1080@60,0x0,1
-      monitor=${toString secondMonitor},1920x1200@60,1920x0,1
-      monitor=${toString thirdMonitor},1920x1200@60,3840x0,1
-    '' else ''
+    ''  else ''
       monitor=${toString mainMonitor},1920x1080@60,0x0,1
     '';
   monitors = with host;
@@ -50,24 +46,11 @@ let
       workspace=${toString mainMonitor},4
       workspace=${toString mainMonitor},5
       workspace=${toString secondMonitor},6
-    '' else if hostName == "work" then ''
-      workspace=${toString mainMonitor},1
-      workspace=${toString mainMonitor},2
-      workspace=${toString mainMonitor},3
-      workspace=${toString secondMonitor},4
-      workspace=${toString secondMonitor},5
-      workspace=${toString secondMonitor},6
-      workspace=${toString thirdMonitor},7
-    '' else "";
+    ''  else "";
   execute = with host;
     if hostName == "desktop" then ''
       #exec-once=${pkgs.mpvpaper}/bin/mpvpaper -sf -v -o "--loop --panscan=1" '*' $HOME/.config/wall.mp4  # Moving wallpaper (small performance hit)
       exec-once=${pkgs.swaybg}/bin/swaybg -m center -i $HOME/.config/wall
-    '' else if hostName == "work" then ''
-      exec-once=${pkgs.swaybg}/bin/swaybg -m center -i $HOME/.config/wall
-      exec-once=${pkgs.networkmanagerapplet}/bin/nm-applet --indicator
-      #exec-once=${pkgs.google-drive-ocamlfuse}/bin/google-drive-ocamlfuse /GDrive
-      exec-once=${pkgs.rclone}/bin/rclone mount --daemon gdrive: /GDrive
     '' else "";
 in
 let
@@ -236,7 +219,7 @@ in
     show-failed-attempts = true;
   };
 
-  services.swayidle = with host; if hostName == "laptop" || hostName == "work" then {
+  services.swayidle = {
     enable = true;
     events = [
       { event = "before-sleep"; command = "${pkgs.swaylock}/bin/swaylock -f"; }
@@ -246,7 +229,5 @@ in
       { timeout= 300; command = "${pkgs.swaylock}/bin/swaylock -f";}
     ];
     systemdTarget = "xdg-desktop-portal-hyprland.service";
-  } else {
-    enable = false;
   };
 }

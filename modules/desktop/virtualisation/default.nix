@@ -13,6 +13,7 @@
 
 [
   ./docker.nix
+  ./waydroid.nix
   ./qemu.nix
   ./x11vnc.nix
 ]

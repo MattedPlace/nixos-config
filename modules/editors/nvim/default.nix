@@ -25,7 +25,11 @@
 
           set number
 
+          set foldmethod=indent
+
           nmap <F6> :NERDTreeToggle<CR>
+
+          autocmd BufReadPost,FileREadPost * normal zR
         '';
         packages.myVimPackages = with pkgs.vimPlugins; {
           start = [

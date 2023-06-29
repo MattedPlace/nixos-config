@@ -2,51 +2,51 @@
 # KDE Plasma 5 configuration
 #
 
-{ config, lib, pkgs, ... }:
+{ host, config, lib, pkgs, ... }:
 
+let auto = with host; if hostName == "tablet" then true else false;
+in
 {
   programs = {
     zsh.enable = true;
     dconf.enable = true;
     kdeconnect = {                                # For GSConnect
       enable = true;
-      package = pkgs.gnomeExtensions.gsconnect;
+      package = pkgs.plasma5Packages.kdeconnect-kde;
     };
   };
 
   services = {
     xserver = {
       enable = true;
-
-      layout = "us";                              # Keyboard layout & €-sign
-      xkbOptions = "eurosign:e";
-      libinput.enable = true;
-      modules = [ pkgs.xf86_input_wacom ];        # Both needed for wacom tablet usage
-      wacom.enable = true;
+      layout = "us";                              # Keyboard layout 
 
       displayManager = {
         sddm.enable = true;          # Display Manager
-        defaultSession = "plasmawayland";
+        defaultSession = "plasma";
+        autoLogin = {
+          enable = auto;
+          user = "max";
+        };
+        sessionCommands = "touchegg &";
       };
       desktopManager.plasma5 = {
         enable = true;                            # Desktop Manager
-        excludePackages = with pkgs.libsForQt5; [
-          elisa
-          khelpcenter
-          konsole
-          oxygen
-        ];
       };
     };
+    touchegg.enable = true;
   };
-
-  #hardware.pulseaudio.enable = false;
 
   environment = {
     systemPackages = with pkgs.libsForQt5; [                 # Packages installed
       packagekit-qt
       bismuth
     ];
-
+    plasma5.excludePackages = with pkgs.libsForQt5; [
+      elisa
+      khelpcenter
+      konsole
+      oxygen
+    ];
   };
 }

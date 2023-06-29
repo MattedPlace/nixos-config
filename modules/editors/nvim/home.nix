@@ -45,7 +45,11 @@
 
         set number                                " Set numbers
 
+        set foldmethod=indent
+
         nmap <F6> :NERDTreeToggle<CR>             " F6 opens NERDTree
+
+        autocmd BufReadPost,FileREadPost * normal zR
       '';
     };
   };

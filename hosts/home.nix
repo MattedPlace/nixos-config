@@ -35,11 +35,15 @@
       plex-media-player # Media Player
       vlc               # Media Player
       stremio           # Media Streamer
+      haruna            # Media Player
+      yt-dlp            # youtube downloader
 
       # Apps
       appimage-run      # Runs AppImages on NixOS
       firefox           # Browser
-      google-chrome     # Browser
+      brave             # Browser
+      librewolf         # Browser 
+      microsoft-edge    # Browser
       remmina           # XRDP & VNC Client
 
       # File Management
@@ -51,6 +55,7 @@
       unzip             # Zip Files
       unrar             # Rar Files
       zip               # Zip
+      qbittorrent       # torrent downloader
 
       # General configuration
       #git              # Repositories

@@ -33,13 +33,13 @@ in
       XDG_SESSION_TYPE="wayland";
       XDG_SESSION_DESKTOP="Hyprland";
     };
-    sessionVariables = with host; if hostName == "work" then {
-      #GBM_BACKEND = "nvidia-drm";
-      #__GL_GSYNC_ALLOWED = "0";
-      #__GL_VRR_ALLOWED = "0";
-      #WLR_DRM_NO_ATOMIC = "1";
-      #__GLX_VENDOR_LIBRARY_NAME = "nvidia";
-      #_JAVA_AWT_WM_NONREPARENTING = "1";
+    sessionVariables = with host; if hostName == "desktop" then {
+      GBM_BACKEND = "nvidia-drm";
+      __GL_GSYNC_ALLOWED = "0";
+      __GL_VRR_ALLOWED = "0";
+      WLR_DRM_NO_ATOMIC = "1";
+      __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+      _JAVA_AWT_WM_NONREPARENTING = "1";
 
       QT_QPA_PLATFORM = "wayland";
       QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
@@ -75,9 +75,11 @@ in
   programs = {
     hyprland = {
       enable = true;
-      #nvidiaPatches = with host; if hostName == "work" then true else false;
+      nvidiaPatches = with host; if hostName == "desktop" then true else false;
     };
   };
+
+  hardware.nvidia.modesetting.enable = with host; if hostName == "desktop" then true else false;
 
   xdg.portal = {                                  # Required for flatpak with window managers and for file browsing
     enable = true;

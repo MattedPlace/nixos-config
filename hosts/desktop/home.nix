@@ -2,23 +2,14 @@
 #  Home-manager configuration for desktop
 #
 #  flake.nix
-#   ├─ ./hosts
-#   │   └─ ./desktop
-#   │       └─ ./home.nix
-#   └─ ./modules
-#       └─ ./desktop
-#           └─ ./hyprland
-#               └─ home.nix
+#   └── ./hosts
+#      └─ ./desktop
+#          └─ ./home.nix
 #
 
 { pkgs, ... }:
 
 {
-  imports =
-    [
-      ../../modules/desktop/hyprland/home.nix  # Window Manager
-    ];
-
   home = {                                # Specific packages for desktop
     packages = with pkgs; [
       # Applications
@@ -28,11 +19,18 @@
       hugo              # Static Website Builder
       mkvtoolnix        # Matroska Tools
       plex-media-player # Media Player
+      signal-desktop    # social media 
+      tdesktop          # social media
+      streamlink        # streaming 
+      streamlink-twitch-gui-bin
+      piper             # Mouse configuration
+      kdenlive          # Video Editor
+      libreoffice       # Office Packages
+      cura              # 3d printing slicer
+      openscad          # CAD modeler 
+      gdb               # debugger
+      ghidra            # reverse engineering 
 
-      # Dependencies
-      gmtp              # Used for mounting gopro
-      ispell            # Emacs spelling
-      
       # Imported in default or from modules
       #discord          # Comms           # See overlay default.nix
       #ffmpeg           # Video Support

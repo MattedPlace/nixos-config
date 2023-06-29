@@ -18,7 +18,7 @@
 { config, lib, pkgs, host, ... }:
 
 let
-  extra = ''
+  extraPre = ''
     WORKSPACES                              # Workspace tag names (need to be the same as the polybar config to work)
 
     bspc config border_width      3
@@ -43,16 +43,24 @@ let
     polybar main & #2>~/log &               # To lazy to figure out systemd service order
   '';
 
+  extra = with host; if hostName == "laptop" || hostName == "desktop" then "${extraPre}" + "polybar sec &" else "${extraPre}";
+
   extraConf = with host; builtins.replaceStrings [ "WORKSPACES" ]
   [
     (if hostName == "desktop" then ''
-      bspc monitor ${mainMonitor} -d 1 2 3 4 5
-      bspc monitor ${secondMonitor} -d 6 7 8 9 0
-      bspc wm -O ${mainMonitor} ${secondMonitor}
-      polybar sec &
+      bspc monitor ${mainMonitorX} -d 1 2 3 4 5
+      bspc monitor ${secondMonitorX} -d 6 7 8 9 0
+      bspc wm -O ${mainMonitorX} ${secondMonitorX}
     ''
-    else if hostName == "laptop" || hostName == "vm" then ''
-      bspc monitor -d 1 2 3 4 5
+    else if hostName == "laptop" then ''
+      bspc monitor ${mainMonitorX} -d 1 2 3 4 5
+      bspc monitor ${secondMonitorX} -d 6 7 8 9 0
+      bspc wm -O ${mainMonitorX} ${secondMonitorX}
+      touchegg &
+    ''
+    else if hostName == "tablet" then ''
+      bspc monitor ${mainMonitorX} -d 1 2 3 4 5
+      touchegg &
     ''
     else false)
   ]
@@ -65,16 +73,13 @@ in
     windowManager = {
       bspwm = {
         enable = true;
-        monitors = with host; if hostName == "desktop" then {
-          ${mainMonitor} = [ "1" "2" "3" "4" "5" ];
-          ${secondMonitor} = [ "6" "7" "8" "9" "0" ];
-        } else {};                              # Multiple Monitors
+        monitors = with host; if hostName == "desktop" || hostName == "laptop" then {
+          ${mainMonitorX} = [ "1" "2" "3" "4" "5" ];
+          ${secondMonitorX} = [ "6" "7" "8" "9" "0" ];
+        } else { 
+          ${mainMonitorX} = [ "1" "2" "3" "4" "5" ];
+        };
         rules = {                               # Specific rules for apps - use xprop
-          "Emacs" = {
-            desktop = "3";
-            follow = true;
-            state = "tiled";
-          };
           ".blueman-manager-wrapped" = {
             state = "floating";
             sticky = true;
@@ -94,7 +99,7 @@ in
           "Pcmanfm" = {
             state = "floating";
           };
-          "plexmediaplayer" = {
+          "haruna" = {
             desktop = "4";
             follow= true;
             state = "fullscreen";

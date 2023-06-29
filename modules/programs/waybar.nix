@@ -9,16 +9,16 @@
     waybar
   ];
 
-  # nixpkgs.overlays = [                                      # Waybar needs to be compiled with the experimental flag for wlr/workspaces to work (for now done with hyprland.nix)
-  #   (self: super: {
-  #     waybar = super.waybar.overrideAttrs (oldAttrs: {
-  #       mesonFlags = oldAttrs.mesonFlags ++ [ "-Dexperimental=true" ];
-  #       patchPhase = ''
-  #         substituteInPlace src/modules/wlr/workspace_manager.cpp --replace "zext_workspace_handle_v1_activate(workspace_handle_);" "const std::string command = \"hyprctl dispatch workspace \" + name_; system(command.c_str());"
-  #       '';
-  #     });
-  #   })
-  # ];
+  nixpkgs.overlays = [                                      # Waybar needs to be compiled with the experimental flag for wlr/workspaces to work
+    (self: super: {
+      waybar = super.waybar.overrideAttrs (oldAttrs: {
+        mesonFlags = oldAttrs.mesonFlags ++ [ "-Dexperimental=true" ];
+        patchPhase = ''
+          substituteInPlace src/modules/wlr/workspace_manager.cpp --replace "zext_workspace_handle_v1_activate(workspace_handle_);" "const std::string command = \"hyprctl dispatch workspace \" + name_; system(command.c_str());"
+        '';
+      });
+    })
+  ];
 
   home-manager.users.${user} = {                           # Home-manager waybar config
     programs.waybar = {
@@ -53,7 +53,6 @@
         #mode,
         #clock,
         #pulseaudio,
-        #custom-sink,
         #network,
         #mpd,
         #memory,
@@ -63,9 +62,6 @@
         #disk,
         #backlight,
         #battery,
-        #custom-mouse,
-        #custom-kb,
-        #custom-ds4,
         #tray {
           color: #999999;
           background-clip: padding-box;
@@ -125,7 +121,7 @@
 
           modules-right =
             if hostName == "desktop" then
-              [ "custom/ds4" "custom/mouse" "custom/kb" "custom/pad" "network" "cpu" "memory" "custom/pad" "pulseaudio" "custom/sink" "custom/pad" "clock" "tray" ]
+              [ "custom/pad" "network" "cpu" "memory" "custom/pad" "pulseaudio" "custom/pad" "clock" "tray" ]
             else
               [ "cpu" "memory" "custom/pad" "battery" "custom/pad" "backlight" "custom/pad" "pulseaudio" "custom/pad" "clock" "tray" ];
 
@@ -216,10 +212,10 @@
           };
           network = {
             format-wifi = "<span font='11'></span>";
-            format-ethernet = "<span font='11'>󰈀</span>";
+            format-ethernet = "<span font='11'></span>";
             #format-ethernet = "<span font='11'></span> {ifname}: {ipaddr}/{cidr}";
-            format-linked = "<span font='11'>󱘖</span> {ifname} (No IP)";
-            format-disconnected = "<span font='11'>󱘖</span> Not connected";
+            format-linked = "<span font='11'>睊</span> {ifname} (No IP)";
+            format-disconnected = "<span font='11'>睊</span> Not connected";
             #format-alt = "{ifname}: {ipaddr}/{cidr}";
             tooltip-format = "{essid} {ipaddr}/{cidr}";
             #on-click-right = "${pkgs.alacritty}/bin/alacritty -e nmtui";
@@ -246,47 +242,22 @@
             on-click-right = "${pkgs.pamixer}/bin/pamixer --default-source -t";
             on-click-middle = "${pkgs.pavucontrol}/bin/pavucontrol";
           };
-          "custom/sink" = {
-            format = "{}";
-            exec = "$HOME/.config/waybar/script/sink.sh";
-            interval = 2;
-            on-click = "$HOME/.config/waybar/script/switch.sh";
-            tooltip = false;
-          };
-          "custom/mouse" = {
-            format = "{}";
-            exec = "$HOME/.config/waybar/script/mouse.sh";
-            interval = 60;
-          };
-          "custom/kb" = {
-            format = "{}";
-            exec = "$HOME/.config/waybar/script/kb.sh";
-            interval = 60;
-          };
-          "custom/ds4" = {
-            format = "{}";
-            exec = "$HOME/.config/waybar/script/ds4.sh";
-            interval = 60;
-          };
           tray = {
             icon-size = 13;
           };
         };
-        Sec = if hostName == "desktop" || hostName == "work" then {
+        Sec = if hostName == "desktop" || hostName == "laptop" then {
           layer = "top";
           position = "top";
           height = 16;
-          output = if hostName == "desktop" then [
+          output = [
             "${secondMonitor}"
-          ] else [
-            "${secondMonitor}"
-            "${thirdMonitor}"
           ];
           modules-left = [ "custom/menu" "wlr/workspaces" ];
 
           modules-right =
             if hostName == "desktop" then
-              [ "custom/ds4" "custom/mouse" "custom/kb" "custom/pad" "pulseaudio" "custom/sink" "custom/pad" "clock"]
+              [ "pulseaudio" "custom/pad" "clock"]
             else
               [ "cpu" "memory" "custom/pad" "battery" "custom/pad" "backlight" "custom/pad" "pulseaudio" "custom/pad" "clock" ];
 
@@ -380,142 +351,7 @@
             on-click-right = "${pkgs.pamixer}/bin/pamixer --default-source -t";
             on-click-middle = "${pkgs.pavucontrol}/bin/pavucontrol";
           };
-          "custom/sink" = {
-            #format = "<span font='10'>蓼</span>";
-            format = "{}";
-            exec = "$HOME/.config/waybar/script/sink.sh";
-            interval = 2;
-            on-click = "$HOME/.config/waybar/script/switch.sh";
-            tooltip = false;
-          };
-          "custom/mouse" = {
-            format = "{}";
-            exec = "$HOME/.config/waybar/script/mouse.sh";
-            interval = 60;
-          };
-          "custom/kb" = {
-            format = "{}";
-            exec = "$HOME/.config/waybar/script/kb.sh";
-            interval = 60;
-          };
-          "custom/ds4" = {
-            format = "{}";
-            exec = "$HOME/.config/waybar/script/ds4.sh";
-            interval = 60;
-          };
         } else {};
-      };
-    };
-    home.file = {
-      ".config/waybar/script/sink.sh" = {              # Custom script: Toggle speaker/headset
-        text = ''
-          #!/bin/sh
-
-          HEAD=$(awk '/ Built-in Audio Analog Stereo/ { print $2 }' <(${pkgs.wireplumber}/bin/wpctl status | grep "*") | sed -n 2p)
-          SPEAK=$(awk '/ S10 Bluetooth Speaker/ { print $2 }' <(${pkgs.wireplumber}/bin/wpctl status | grep "*") | head -n 1)
-
-          if [[ $HEAD = "*" ]]; then
-            printf "<span font='13'></span>\n"
-          elif [[ $SPEAK = "*" ]]; then
-            printf "<span font='10'>󰓃</span>\n"
-          fi
-          exit 0
-        '';
-        executable = true;
-      };
-      ".config/waybar/script/switch.sh" = {              # Custom script: Toggle speaker/headset
-        text = ''
-          #!/bin/sh
-
-          ID1=$(awk '/ Built-in Audio Analog Stereo/ {sub(/.$/,"",$2); print $2 }' <(${pkgs.wireplumber}/bin/wpctl status) | head -n 1)
-          ID2=$(awk '/ S10 Bluetooth Speaker/ {sub(/.$/,"",$2); print $2 }' <(${pkgs.wireplumber}/bin/wpctl status) | sed -n 2p)
-
-          HEAD=$(awk '/ Built-in Audio Analog Stereo/ { print $2 }' <(${pkgs.wireplumber}/bin/wpctl status | grep "*") | sed -n 2p)
-          SPEAK=$(awk '/ S10 Bluetooth Speaker/ { print $2 }' <(${pkgs.wireplumber}/bin/wpctl status | grep "*") | head -n 1)
-
-          if [[ $HEAD = "*" ]]; then
-            ${pkgs.wireplumber}/bin/wpctl set-default $ID2
-          elif [[ $SPEAK = "*" ]]; then
-            ${pkgs.wireplumber}/bin/wpctl set-default $ID1
-          fi
-          exit 0
-        '';
-        executable = true;
-      };
-      ".config/waybar/script/mouse.sh" = {              # Custom script: Mouse battery indicator
-        text = ''
-          #!/bin/sh
-
-          for cap in /sys/class/power_supply/hidpp_battery_*/capacity; do
-            BATT=$(cat "$cap")
-          done
-          for stat in /sys/class/power_supply/hidpp_battery_*/status; do
-            STAT=$(cat "$stat")
-          done
-
-          if [[ $"STAT" = "Charging" ]] then
-            printf "<span font='13'> 󰍽</span><span font='10'></span> $BATT%%\n"
-          elif [[ "$STAT" = "Full" ]] then
-            printf "<span font='13'> 󰍽</span><span font='10'></span> Full\n"
-          elif [[ "$STAT" = "Discharging" ]] then
-            printf "<span font='13'> 󰍽</span> $BATT%%\n"
-          else
-            printf "\n"
-          fi
-
-          exit 0
-        '';
-        executable = true;
-      };
-      ".config/waybar/script/kb.sh" = {              # Custom script: Keyboard battery indicator
-        text = ''
-          #!/bin/sh
-
-          for cap in /sys/class/power_supply/hid-dc:2c:26:36:79:9b-battery/capacity; do
-            BATT=$(cat "$cap")
-          done
-          for stat in /sys/class/power_supply/hid-dc:2c:26:36:79:9b-battery/status; do
-            STAT=$(cat "$stat")
-          done
-
-          if [[ "$STAT" == "Charging" ]] then
-            printf "<span font='13'> 󰌌</span><span font='10'></span> $BATT%%\n"
-          elif [[ "$STAT" == "Full" ]] then
-            printf "<span font='13'> 󰌌</span><span font='10'></span> Full\n"
-          elif [[ "$STAT" = "Discharging" ]] then
-            printf "<span font='13'> 󰌌</span> $BATT%%\n"
-          else
-            printf "\n"
-          fi
-
-          exit 0
-        '';
-        executable = true;
-      };
-      ".config/waybar/script/ds4.sh" = {              # Custom script: Dualshock battery indicator
-        text = ''
-          #!/bin/sh
-
-          for cap in /sys/class/power_supply/*e8:47:3a:05:c0:2b/capacity; do
-            BATT=$(cat "$cap")
-          done
-          for stat in /sys/class/power_supply/*e8:47:3a:05:c0:2b/status; do
-            STAT=$(cat "$stat")
-          done
-
-          if [[ "$STAT" == "Charging" ]] then
-            printf "<span font='13'> 󰊴</span><span font='10'></span> $BATT%%\n"
-          elif [[ "$STAT" == "Full" ]] then
-            printf "<span font='13'> 󰊴</span><span font='10'></span> Full\n"
-          elif [[ "$STAT" = "Discharging" ]] then
-            printf "<span font='13'> 󰊴</span> $BATT%%\n"
-          else
-            printf "\n"
-          fi
-
-          exit 0
-        '';
-        executable = true;
       };
     };
   };

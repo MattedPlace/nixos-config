@@ -15,21 +15,31 @@
 
 let
   monitor = with host;
-    if hostName == "desktop" then
-      "${pkgs.xorg.xrandr}/bin/xrandr --output ${secondMonitor} --mode 1920x1080 --pos 0x0 --rotate normal --output ${mainMonitor} --primary --mode 1920x1080 --pos 1920x0 --rotate normal"
-    else if hostName == "laptop" || hostName == "vm" then
-      "${pkgs.xorg.xrandr}/bin/xrandr --mode 1920x1080 --pos 0x0 --rotate normal"
+    if hostName == "laptop" then
+      "${pkgs.xorg.xrandr}/bin/xrandr --output ${secondMonitorX} --mode 1366x768 --pos 1920x0 --rotate normal --output ${mainMonitorX} --primary --mode 1920x1080 --pos 0x0 --rotate normal"
+    else if hostName == "desktop" then
+      "${pkgs.xorg.xrandr}/bin/xrandr --output ${secondMonitorX} --mode 1920x1080 --pos 0x0 --rotate normal --output ${mainMonitorX} --primary --mode 1920x1080 --rate 144 --pos 1920x0 --rotate normal"
+    else if hostName == "tablet" then
+      "${pkgs.xorg.xrandr}/bin/xrandr --output ${mainMonitorX} --primary --mode 1366x768 --pos 0x0 --rotate normal"
+    else false;
+  auto = with host;
+    if hostName == "desktop" || hostName == "laptop" then
+      false
+    else true;
+  touchpad = with host;
+    if hostName == "laptop" || hostName == "tablet" then
+      true
     else false;
 in
 {
   programs.dconf.enable = true;
 
   services = {
+    touchegg.enable = touchpad;
     xserver = {
       enable = true;
 
       layout = "us";                              # Keyboard layout & €-sign
-      xkbOptions = "eurosign:e";
       libinput = {
         enable = true;
         touchpad = {
@@ -41,8 +51,6 @@ in
           disableWhileTyping = true;
         };
       };
-      modules = [ pkgs.xf86_input_wacom ];        # Both needed for wacom tablet usage
-      wacom.enable = true;
 
       displayManager = {                          # Display Manager
         lightdm = {
@@ -62,6 +70,11 @@ in
             };
           };
         };
+      autoLogin = {
+          enable = auto;
+          user = "max";
+        };
+
         defaultSession = "none+bspwm";            # none+bspwm -> no real display manager
       };
       windowManager= {
@@ -77,32 +90,12 @@ in
 
       displayManager.sessionCommands = monitor;
 
-      #Desktop w/ AMD GPU
-      #displayManager.sessionCommands = ''
-        #!/bin/sh
-        
-        #SCREEN=$(${pkgs.xorg.xrandr}/bin/xrandr | grep " connected " | wc -l)
-        #if [[ $SCREEN -eq 1 ]]; then
-        #  ${pkgs.xorg.xrandr}/bin/xrandr --output HDMI-A-1 --primary --mode 1920x1080 --rotate normal
-        #elif [[ $SCREEN -eq 2 ]]; then
-        #  ${pkgs.xorg.xrandr}/bin/xrandr --output HDMI-A-1 --primary --mode 1920x1080 --rotate normal --output DisplayPort-1 --mode 1920x1080 --rotate normal --left-of HDMI-A-1
-        #elif [[ $SCREEN -eq 3 ]]; then
-        #  ${pkgs.xorg.xrandr}/bin/xrandr --output HDMI-A-1 --primary --mode 1920x1080 --rotate normal --output DisplayPort-1 --mode 1920x1080 --rotate normal --left-of HDMI-A-1 --output HDMI-A-0 --mode 1280x1024 --rotate normal --right-of HDMI-A-1
-        #fi
-      #'';                                        # Settings for correct display configuration; This can also be done with setupCommands when X server start for smoother transition (if setup is static)
-                                                  # Another option to research in future is arandr
       serverFlagsSection = ''
-        Option "BlankTime" "0"
+        Option "BlankTime" "5"
         Option "StandbyTime" "0"
-        Option "SuspendTime" "0"
+        Option "SuspendTime" "15"
         Option "OffTime" "0"
-      '';                                         # Used so computer does not goes to sleep
-
-      resolutions = [
-        { x = 1920; y = 1080; }
-        { x = 1600; y = 900; }
-        { x = 3840; y = 2160; }
-      ];
+      '';                                         # sleep settings, in minutes
     };
   };
 

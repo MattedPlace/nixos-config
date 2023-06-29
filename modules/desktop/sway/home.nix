@@ -127,9 +127,6 @@
         "Alt+Left" = "workspace prev_on_output";        # Navigate to previous or next workspace on output if it exists
         "Alt+Right" = "workspace next_on_output";
 
-        "Alt+1" = "workspace number 1";                 # Open workspace x
-        "Alt+2" = "workspace number 2";
-        "Alt+3" = "workspace number 3";
         #"Alt+4" = "workspace number 4";
         #"Alt+5" = "workspace number 5";
 

@@ -11,7 +11,7 @@
 #            └─ ./home.nix 
 #
 
-{ lib, inputs, nixpkgs, nixpkgs-unstable, home-manager, nur, user, location, dslr, doom-emacs, hyprland, plasma-manager, ... }:
+{ lib, inputs, nixpkgs, nixpkgs-unstable, home-manager, nur, user, location, hyprland, plasma-manager, ... }:
 
 let
   system = "x86_64-linux";                                  # System architecture
@@ -26,22 +26,19 @@ let
     config.allowUnfree = true;                              # Allow proprietary software
   };
 
-  fix = import dslr {
-    inherit system;
-    config.allowUnfree = true;                              # Allow proprietary software
-  };
-
   lib = nixpkgs.lib;
 in
 {
   desktop = lib.nixosSystem {                               # Desktop profile
     inherit system;
     specialArgs = {
-      inherit inputs unstable system user location fix hyprland;
+      inherit inputs unstable system user location hyprland;
       host = {
         hostName = "desktop";
-        mainMonitor = "HDMI-A-2";
-        secondMonitor = "DP-3";
+        mainMonitor = "DVI-D-1";
+        secondMonitor = "HDMI-A-2";
+        mainMonitorX = "DVI-D-0"; #x11 server uses different names than wayland
+        secondMonitorX = "HDMI-1";
       };
     };                                                      # Pass flake variable
     modules = [                                             # Modules that are used.
@@ -54,17 +51,20 @@ in
         home-manager.useGlobalPkgs = true;
         home-manager.useUserPackages = true;
         home-manager.extraSpecialArgs = {
-          inherit unstable user fix doom-emacs;
+          inherit unstable user;
           host = {
-            hostName = "desktop";     #For Xorg iGPU  | Videocard     | Hyprland iGPU
-            mainMonitor = "HDMI-A-2"; #HDMIA3         | HDMI-A-1      | HDMI-A-3
-            secondMonitor = "DP-3";   #DP1            | DisplayPort-1 | DP-1
+            hostName = "desktop"; 
+            mainMonitor = "DVI-D-1";
+            secondMonitor = "HDMI-A-2";
+            mainMonitorX = "DVI-D-0";   #x11 server uses different names than wayland
+            secondMonitorX = "HDMI-1";
           };
         };                                                  # Pass flake variable
         home-manager.users.${user} = {
           imports = [
             ./home.nix
             ./desktop/home.nix
+            inputs.plasma-manager.homeManagerModules.plasma-manager
           ];
         };
       }
@@ -74,10 +74,13 @@ in
   laptop = lib.nixosSystem {                                # Laptop profile
     inherit system;
     specialArgs = {
-      inherit unstable inputs user location;
+      inherit unstable inputs user location hyprland;
       host = {
         hostName = "laptop";
         mainMonitor = "eDP-1";
+        mainMonitorX = "eDP-1";
+        secondMonitor = "HDMI-A-1";
+        secondMonitorX = "HDMI-1";
       };
     };
     modules = [
@@ -93,45 +96,55 @@ in
           host = {
             hostName = "laptop";
             mainMonitor = "eDP-1";
+            mainMonitorX = "eDP-1";
+            secondMonitor = "HDMI-A-1";
+            secondMonitorX = "HDMI-1";
           };
         };
         home-manager.users.${user} = {
-          imports = [(import ./home.nix)] ++ [(import ./laptop/home.nix)];
+          imports = [
+            ./home.nix
+            ./laptop/home.nix
+            inputs.plasma-manager.homeManagerModules.plasma-manager
+          ];
+
         };
       }
     ];
   };
 
-  work = lib.nixosSystem {                                  # Work profile
+  tablet = lib.nixosSystem {                                # Laptop profile
     inherit system;
     specialArgs = {
-      inherit unstable inputs user location hyprland;
+      inherit unstable inputs user location;
       host = {
-        hostName = "work";
+        hostName = "tablet";
+        mainMonitorX = "eDP1";
         mainMonitor = "eDP-1";
-        secondMonitor = "HDMI-A-2";
-        thirdMonitor = "DP-1";
       };
     };
     modules = [
-      hyprland.nixosModules.default
-      ./work
+      ./tablet
       ./configuration.nix
+      hyprland.nixosModules.default
 
       home-manager.nixosModules.home-manager {
         home-manager.useGlobalPkgs = true;
         home-manager.useUserPackages = true;
         home-manager.extraSpecialArgs = {
-          inherit unstable user;
+          inherit user;
           host = {
-            hostName = "work";
+            hostName = "tablet";
+            mainMonitorX = "eDP1";
             mainMonitor = "eDP-1";
-            secondMonitor = "HDMI-A-2";
-            thirdMonitor = "DP-1";
           };
         };
         home-manager.users.${user} = {
-          imports = [(import ./home.nix)] ++ [(import ./work/home.nix)];
+          imports = [
+            ./home.nix
+            ./tablet/home.nix
+            inputs.plasma-manager.homeManagerModules.plasma-manager
+          ];
         };
       }
     ];

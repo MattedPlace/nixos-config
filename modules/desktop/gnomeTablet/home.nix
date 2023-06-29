@@ -4,30 +4,31 @@
 # Dconf settings can be found by running "$ dconf watch /"
 #
 
-{ config, lib, pkgs, ... }:
-
+{ config, lib, pkgs, host, ... }:
+# Gnome Home-Manager Configuration
+#
+# Dconf settings can be found by running "$ dconf watch /"
+#
 {
   dconf.settings = {
     "org/gnome/shell" = {
       favorite-apps = [
         "org.gnome.Settings.desktop"
         "Alacritty.desktop"
+        "brave-browser.desktop"
         "org.gnome.Nautilus.desktop"
-        "com.obsproject.Studio.desktop"
         "plexmediaplayer.desktop"
-        "smartcode-stremio.desktop"
-        "discord.desktop"
-        "steam.desktop"
-        "org.remmina.Remmina.desktop"
-        "virt-manager.desktop"
         "brave-browser.desktop"
         "firefox.desktop"
         "microsoft-edge.desktop"
-        # "blueman-manager.desktop"
-        # "pavucontrol.desktop"
+        "blueman-manager.desktop"
+        "pavucontrol.desktop"
       ];
       disable-user-extensions = false;
       enabled-extensions = [
+        "forge@jmmaranan.com"
+        "x11gestures@joseexposito.github.io"
+        "improved-osk-gnome-ext@nick-shmyrev.github.com"
         "trayIconsReloaded@selfmade.pl"
         "blur-my-shell@aunetx"
         "drive-menu@gnome-shell-extensions.gcampax.github.com"
@@ -57,9 +58,6 @@
     # };
     "org/gnome/desktop/privacy" = {
       report-technical-problems = "false";
-    };
-    "org/gnome/desktop/calendar" = {
-      show-weekdate = true;
     };
     "org/gnome/desktop/wm/preferences" = {
       action-right-click-titlebar = "toggle-maximize";
@@ -215,6 +213,9 @@
 
   home.packages = with pkgs; [
     gnomeExtensions.tray-icons-reloaded
+    gnomeExtensions.x11-gestures
+    gnomeExtensions.improved-osk
+    touchegg
     gnomeExtensions.blur-my-shell
     gnomeExtensions.removable-drive-menu
     gnomeExtensions.dash-to-panel

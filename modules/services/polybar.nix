@@ -21,7 +21,7 @@ with host; {
         package = mypolybar;
         config = {
           "bar/main" = {                          # Bar name = Top
-            monitor = "${mainMonitor}";
+            monitor = "${mainMonitorX}";
             width = "100%";
             height = 15;
             background = "#00000000";
@@ -40,7 +40,7 @@ with host; {
             font-3 = "FontAwesome6Brands:style=Regular:size=8";
             font-4 = "FiraCodeNerdFont:size=10";
             modules-left = "logo bspwm";
-            modules-right = "backlight pad memory cpu pad sink volume pad battery date"; #wired-network wireless-network bluetooth";
+            modules-right = "backlight pad memory cpu pad volume pad battery date"; #wired-network wireless-network bluetooth";
 
             tray-position = "right";
             tray-detached = "false";
@@ -48,8 +48,8 @@ with host; {
             #override-redirect = "true";
             wm-restack = "bspwm";
           };
-          "bar/sec" = {
-            monitor = "${secondMonitor}";
+          "bar/sec" = if hostName == "laptop" || hostName == "desktop" then { 
+            monitor = "${secondMonitorX}";
             width = "100%";
             height = 15;
             background = "#00000000";
@@ -67,11 +67,12 @@ with host; {
             font-3 = "FontAwesome6Brands:style=Regular:size=8";
             font-4 = "FiraCodeNerdFont:size=10";
             modules-left = "logo bspwm";
-            modules-right = "sink volume pad date";
+            modules-right = "volume pad date";
 
             #override-redirect = "true";
             wm-restack = "bspwm";
-          };
+          }
+          else {};
           "module/memory" = {                     # RAM
             type = "internal/memory";
             format = "<label>"; #<bar-used>";
@@ -120,26 +121,25 @@ with host; {
             bar-empty-font = 3;
             bar-empty-foreground = "#44";
           };
-          #"module/wireless-network" = {           # Show either wired or wireless
-            #type = "internal/network";
-            #interface = "wlo1";
-            #interval = "3.0";
-            #ping-interval = 10;
-            #
-            #format-connected = "<ramp-signal>";
-            #format-connected = "<ramp-signal> <label-connected>";
-            #label-connected = "%essid%";
-            #label-disconnected = "";
-            #label-disconnected-foreground = "#66";
-            #
-            #ramp-signal-0 = "";
-            #
-            #animation-packetloss-0 = "";
-            #animation-packetloss-0-foreground = "#ffa64c";
-            #animation-packetloss-1 = "";
-            #animation-packetloss-1-foreground = "#00000000";
-            #animation-packetloss-framerate = 500;
-            #};
+          /*"module/wireless-network" = {           # Show either wired or wireless
+            type = "internal/network";
+            interface = "wlo1";
+            interval = "3.0";
+            ping-interval = 10;
+            
+            format-connected = "<ramp-signal> <label-connected>";
+            label-connected = "%essid%";
+            label-disconnected = "";
+            label-disconnected-foreground = "#66";
+            
+            ramp-signal-0 = "";
+            
+            animation-packetloss-0 = "";
+            animation-packetloss-0-foreground = "#ffa64c";
+            animation-packetloss-1 = "";
+            animation-packetloss-1-foreground = "#00000000";
+            animation-packetloss-framerate = 500;
+            }; */
             #"module/wired-network" = {              # Ditto module above
             #type = "internal/network";
             #interface = "enp0s25";
@@ -272,21 +272,6 @@ with host; {
             type = "custom/text";
             content = "    ";
           };
-          "module/mic" = {
-            type = "custom/script";
-            interval = 1;
-            tail = "true";
-            exec = "~/.config/polybar/script/mic.sh status";
-            #click-left = "pactl list sources | grep -qi 'Mute: yes' && pactl set-source-mute 1 false || pactl set-source-mute 1 true ";
-            click-left = "~/.config/polybar/script/mic.sh toggle";
-          };
-          "module/sink" = {
-            type = "custom/script";
-            interval = 1;
-            tail = "true";
-            exec = "~/.config/polybar/script/sink.sh status";
-            click-left = "~/.config/polybar/script/sink.sh toggle";
-          };
           "module/logo" = {
             type = "custom/menu";
             expand-right = true;
@@ -314,28 +299,12 @@ with host; {
 
             menu-2-0 = "";
             menu-2-0-exec = "alacritty &";
-            #menu-2-1 = "";
-            #menu-2-1-exec = "google-chrome-stable &";
             menu-2-1 = "";
-            menu-2-1-exec = "firefox &";
+            menu-2-1-exec = "brave &";
             menu-2-2 = "";
-            menu-2-2-exec = "emacs &";
-            #menu-2-3 = "";
-            #menu-2-3-exec = "libreoffice &";
+            menu-2-2-exec = "nvim &";
             menu-2-3 = "";
-            menu-2-3-exec = "plexmediaplayer &";
-            #menu-2-5 = "";
-            #menu-2-5-exec = "darktable &";
-            menu-2-4 = "";
-            menu-2-4-exec = "flatpak run com.obsproject.Studio &";
-            #menu-2-7 = "";
-            #menu-2-7-exec = "gimp &";
-            #menu-2-8 = "";
-            #menu-2-8-exec = "inkscape &";
-            #menu-2-9 = "";
-            #menu-2-9-exec = "kdenlive &";
-            menu-2-5 = "";
-            menu-2-5-exec = "lutris &";
+            menu-2-3-exec = "haruna &";
             menu-2-6 = "";
             menu-2-6-exec = "steam &";
           };
@@ -346,59 +315,6 @@ with host; {
           };
         };
       };
-    };
-    home.file.".config/polybar/script/mic.sh" = {               # Custom script: Mic mute
-      text = ''
-      #!/bin/sh
-
-      case $1 in
-          "status")
-          #MUTED=$(pacmd list-sources | awk '/\*/,EOF {print}' | awk '/muted/ {print $2; exit}')
-          #if [[ $MUTED = "no" ]]; then
-          MUTED=$(awk -F"[][]" '/Left:/ { print $4 }' <(amixer sget Capture))
-          if [[ $MUTED = "on" ]]; then
-              echo ''
-          else
-              echo ''
-          fi
-          ;;
-          "toggle")
-          #ID=$(pacmd list-sources | grep "*\ index:" | cut -d' ' -f5)
-          #pactl set-source-mute $ID toggle
-          ${pkgs.alsa-utils}/bin/amixer set Capture toggle
-          ;;
-      esac
-      '';
-      executable = true;
-    };
-    home.file.".config/polybar/script/sink.sh" = {              # Custom script: Toggle speaker/headset (used in old config with desktop)
-      text = ''
-      #!/bin/sh
-
-      ID1=$(awk '/ Built-in Audio Analog Stereo/ {sub(/.$/,"",$2); print $2 }' <(${pkgs.wireplumber}/bin/wpctl status) | head -n 1)
-      ID2=$(awk '/ S10 Bluetooth Speaker/ {sub(/.$/,"",$2); print $2 }' <(${pkgs.wireplumber}/bin/wpctl status) | sed -n 2p)
-
-      HEAD=$(awk '/ Built-in Audio Analog Stereo/ { print $2 }' <(${pkgs.wireplumber}/bin/wpctl status | grep "*") | sed -n 2p)
-      SPEAK=$(awk '/ S10 Bluetooth Speaker/ { print $2 }' <(${pkgs.wireplumber}/bin/wpctl status | grep "*") | head -n 1)
-
-      case $1 in
-          "status")
-          if [[ $HEAD = "*" ]]; then
-              echo ''
-          elif [[ $SPEAK = "*" ]]; then
-              echo '蓼'
-          fi
-          ;;
-          "toggle")
-          if [[ $HEAD = "*" ]]; then
-              ${pkgs.wireplumber}/bin/wpctl set-default $ID2
-          elif [[ $SPEAK = "*" ]]; then
-              ${pkgs.wireplumber}/bin/wpctl set-default $ID1
-          fi
-          ;;
-      esac
-      '';
-      executable = true;
     };
   };
 }

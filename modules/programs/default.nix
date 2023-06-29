@@ -11,9 +11,11 @@
 #
 
 [
+  ./chromium.nix
   ./alacritty.nix
   ./rofi.nix
   ./wofi.nix
+  ./ranger.nix
   #./waybar.nix
   #./games.nix
 ]
