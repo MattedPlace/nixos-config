@@ -17,10 +17,7 @@ let                                             # No longer required because of 
   });
 in
 {
-  #hardware.new-lg4ff.enable = true;            # Force Feedback Packaged myself :)
-
   environment.systemPackages = [
-    #config.nur.repos.c0deaddict.oversteer      # Steering Wheel Configuration
     unstable.heroic                             # Game launchers
     unstable.lutris
     unstable.prismlauncher
@@ -38,6 +35,20 @@ in
                                                 # Steam: Right-click game - Properties - Launch options: gamemoderun %command%
                                                 # Lutris: General Preferences - Enable Feral GameMode
                                                 #                             - Global options - Add Environment Variables: LD_PRELOAD=/nix/store/*-gamemode-*-lib/lib/libgamemodeauto.so
+  };
+
+  services = {
+    ratbagd.enable = true;
+    kanata = {
+      enable = true;
+      keyboards.g4 = {
+        config = ''
+          (defsrc end)
+          (deflayer default lalt)
+        '';
+        devices = [ "/dev/input/by-id/usb-Logitech_G502_HERO_Gaming_Mouse_067039603137-if01-event-kbd" ];
+      };
+    };
   };
 
   nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [

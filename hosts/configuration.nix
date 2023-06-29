@@ -18,10 +18,13 @@
     (import ../modules/editors) ++          # Native doom emacs instead of nix-community flake
     (import ../modules/shell);
 
-  users.users.${user} = {                   # System User
-    isNormalUser = true;
-    extraGroups = [ "wheel" "video" "audio" "camera" "networkmanager" "lp" "scanner" "kvm" "libvirtd" "plex" ];
-    shell = pkgs.zsh;                       # Default shell
+  users = {
+    groups = { uinput = {}; };          # needed for katana
+    users.${user} = {                   # System User
+      isNormalUser = true;
+      extraGroups = [ "wheel" "video" "audio" "camera" "networkmanager" "lp" "scanner" "kvm" "libvirtd" "plex" "uninput" ];
+      shell = pkgs.zsh;                       # Default shell
+    };
   };
   security.sudo.wheelNeedsPassword = false; # User does not need to give password when using sudo.
 
@@ -138,6 +141,12 @@
     '';
   };
   nixpkgs.config.allowUnfree = true;        # Allow proprietary software.
+
+  networking.firewall = {
+    enable = true;
+    allowedTCPPorts = [ 27015 ];
+    allowedUDPPorts = [ 27015 ];            # Steam port
+  };
 
   system = {                                # NixOS settings
     autoUpgrade = {                         # Allow auto update (not useful in flakes)
