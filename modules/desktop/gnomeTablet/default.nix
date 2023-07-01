@@ -14,7 +14,7 @@ in
       kdeconnect = {                                # For GSConnect
         enable = true;
         package = pkgs.gnomeExtensions.gsconnect;
-      }
+      };
     };
 
     services = {

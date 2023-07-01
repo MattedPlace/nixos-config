@@ -27,7 +27,7 @@ in
 {
   imports =                                               # For now, if applying to other system, swap files
     [(import ./hardware-configuration.nix)] ++            # Current system hardware config @ /etc/nixos/hardware-configuration.nix
-    (import ../../modules/desktop/gnomeTablet/default.nix);      # desktop enviroment
+    [(import ../../modules/desktop/gnomeTablet/default.nix)];      # desktop enviroment
 
   boot = {                                  # Boot options
     kernelPackages = pkgs.linuxPackages_latest;
@@ -44,9 +44,11 @@ in
     };
   };
 
-  hardware.sane = {                         # Used for scanning with Xsane
-    enable = true;
-    extraBackends = [ pkgs.sane-airscan ];
+  hardware = {                         # Used for scanning with Xsane
+    sane = {
+      enable = true;
+      extraBackends = [ pkgs.sane-airscan ];
+    };
     cpu.intel.updateMicrocode = false;
     nvidia = {
       prime = {
@@ -81,7 +83,7 @@ in
     };
     systemPackages = with pkgs; [
       simple-scan
-      nvidia-offlad
+      nvidia-offload
     ];
   }; 
 
@@ -160,5 +162,4 @@ in
       ];
     };
   };
-}
 }

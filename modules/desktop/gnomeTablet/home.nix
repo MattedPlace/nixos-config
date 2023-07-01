@@ -17,7 +17,6 @@
         "Alacritty.desktop"
         "brave-browser.desktop"
         "org.gnome.Nautilus.desktop"
-        "plexmediaplayer.desktop"
         "brave-browser.desktop"
         "firefox.desktop"
         "microsoft-edge.desktop"
