@@ -13,9 +13,6 @@
         "org.gnome.Settings.desktop"
         "Alacritty.desktop"
         "org.gnome.Nautilus.desktop"
-        "com.obsproject.Studio.desktop"
-        "plexmediaplayer.desktop"
-        "smartcode-stremio.desktop"
         "discord.desktop"
         "steam.desktop"
         "org.remmina.Remmina.desktop"
@@ -23,6 +20,8 @@
         "brave-browser.desktop"
         "firefox.desktop"
         "microsoft-edge.desktop"
+        "org.telegram.desktop.desktop"
+        "signal-desktop.desktop"
         # "blueman-manager.desktop"
         # "pavucontrol.desktop"
       ];

@@ -23,12 +23,12 @@
   imports =                                               # For now, if applying to other system, swap files
     [(import ./hardware-configuration.nix)] ++            # Current system hardware config @ /etc/nixos/hardware-configuration.nix
     [(import ../../modules/programs/games.nix)] ++        # Gaming
-    [(import ../../modules/desktop/gnome/default.nix)] ++ 
+    [(import ../../modules/desktop/gnome/default.nix)] ++ # Default desktop enviroment 
     (import ../../modules/desktop/virtualisation);       # Virtual Machines & VNC
 
   boot = {                                      # Boot options
     kernelPackages = pkgs.linuxPackages_latest;
-    loader = {                                  # For legacy boot:
+    loader = {                                  
       systemd-boot = {
         enable = true;
         configurationLimit = 5;
@@ -37,7 +37,7 @@
         canTouchEfiVariables = true;
         efiSysMountPoint = "/boot/efi";
       };    
-      timeout = 5;                              # Grub auto select time
+      timeout = 5;                              # Auto select time
     };
   };
 
@@ -92,7 +92,7 @@
   };
 
   specialisation = {
-    hyprland.configuration = {
+   /* hyprland.configuration = {
       imports = [(import ../../modules/desktop/hyprland/default.nix)];
       home-manager.users.${user}.imports = [
         ../../modules/desktop/hyprland/home.nix #window manager
@@ -103,15 +103,7 @@
       home-manager.users.${user}.imports = [
         ../../modules/desktop/sway/home.nix #window manager
       ];
-    };
-    /* river is very slow to start and cannot get monitors right
-    river.configuration = {
-      imports = [(import ../../modules/desktop/river/default.nix)];
-      home-manager.users.${user}.imports = [
-        ../../modules/desktop/river/home.nix #window manager
-      ];
-    };
-    */
+    };*/
     bspwm.configuration = {
       imports = [(import ../../modules/desktop/bspwm/default.nix)];
       home-manager.users.${user}.imports = [

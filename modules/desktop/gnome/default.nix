@@ -37,6 +37,7 @@
         gnome.dconf-editor
         gnome.gnome-tweaks
         gnome.adwaita-icon-theme
+        xclip                          
       ];
       gnome.excludePackages = (with pkgs; [         # Gnome ignored packages
         gnome-tour
