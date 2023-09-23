@@ -5,12 +5,12 @@
 { config, lib, pkgs, home-manager, vars, ... }:
 
 let
-  inherit (config.home-manager.users.${vars.user}.lib.formats.rasi) mkLiteral;
+  map (user: inherit (config.home-manager.users.${user}.lib.formats.rasi) mkLiteral;) vars.userList
   colors = import ../theming/colors.nix;
 in
 {
   config = lib.mkIf (config.x11wm.enable) {
-    home-manager.users.${vars.user} = {
+    home-manager.users = builtins.listToAttrs (map (user: { name = user; value = {
         home = {
           packages = with pkgs; [
             rofi-power-menu
@@ -115,6 +115,6 @@ in
             };
           };
         };
-      };
+    }; }) vars.userList);
   };
 }

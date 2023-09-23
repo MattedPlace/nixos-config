@@ -5,7 +5,7 @@
 { config, lib, pkgs, vars, ... }:
 
 {
-  home-manager.users.${vars.user} = {
+  home-manager.users = builtins.listToAttrs (map (user: { name = user; value = {
     services = {
       udiskie = {
         enable = true;
@@ -13,5 +13,5 @@
         tray = "auto";
       };
     };
-  };
+  }; }) vars.userList);
 }

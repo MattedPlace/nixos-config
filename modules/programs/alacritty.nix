@@ -5,7 +5,7 @@
 { pkgs, vars, ... }:
 
 {
-  home-manager.users.${vars.user} = {
+  home-manager.users = builtins.listToAttrs (map (user: { name = user; value = { 
     programs = {
       alacritty = {
         enable = true;
@@ -22,5 +22,5 @@
         };
       };
     };
-  };
+  }; }) vars.userList);
 }

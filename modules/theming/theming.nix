@@ -5,7 +5,7 @@
 { pkgs, vars, ... }:
 
 {
-  home-manager.users.${vars.user} = {
+  home-manager.users = builtins.listToAttrs (map (user: { name = user; value = {
     home = {
       file.".config/wall".source = ./wall;
       file.".config/wall.mp4".source = ./wall.mp4;
@@ -39,5 +39,5 @@
         name = "FiraCode Nerd Font Mono Medium";
       };
     };
-  };
+  }; }) vars.userList);
 }

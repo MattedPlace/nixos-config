@@ -8,7 +8,7 @@ let
   colors = import ../theming/colors.nix;                  # Import Colors
 in
 {
-  home-manager.users.${vars.user} = {
+  home-manager.users = builtins.listToAttrs (map (user: { name = user; value = {  
     home.packages = [ pkgs.libnotify ];                   # Dependency
     services.dunst = {
       enable = true;
@@ -68,5 +68,5 @@ in
       };
     };
     xdg.dataFile."dbus-1/services/org.knopwob.dunst.service".source = "${pkgs.dunst}/share/dbus-1/services/org.knopwob.dunst.service";
-  };
+  }; }) vars.userList);
 }

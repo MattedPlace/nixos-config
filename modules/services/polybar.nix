@@ -13,7 +13,7 @@ let
 in
 {
   config = lib.mkIf (config.x11wm.enable) {
-    home-manager.users.${vars.user} = {
+    home-manager.users = builtins.listToAttrs (map (user: { name = user; value = {      
       services = {
         polybar = {
           enable = true;
@@ -352,6 +352,6 @@ in
         '';
         executable = true;
       };
-    };
+    }; }) vars.userList);
   };
 }

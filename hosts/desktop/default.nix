@@ -74,7 +74,7 @@
     };
   };
 
-  bspwm.enable = true;
+  gnome.enable = true;
 
   networking = {
     hostName = "MaxwellDesktop";

@@ -128,7 +128,7 @@ in
       xterm             # Terminal
     ];
 
-    home-manager.users.${vars.user} = {
+    home-manager.users = builtins.listToAttrs (map (user: { name = user; value = {
       xsession = {
         enable = true;
         numlock.enable = true;
@@ -177,6 +177,6 @@ in
           };
         };
       };
-    };
+    }; }) vars.userList);
   };
 }

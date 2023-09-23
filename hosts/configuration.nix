@@ -23,11 +23,12 @@
               import ../modules/theming );
   users = {
     groups = { uinput = {}; };          # needed for katana
-    users.${vars.user} = {                   # System User
+    users = builtins.listToAttrs (map (user: { name = user; value = {
       isNormalUser = true;
       extraGroups = [ "wheel" "video" "audio" "camera" "networkmanager" "lp" "scanner" "kvm" "libvirtd" "plex" "uninput" ];
-    };
+    }; }) vars.userList);                   # System User
   };
+
 
   time.timeZone = "America/Chicago";        # Time zone and internationalisation
 
@@ -161,13 +162,10 @@
     stateVersion = "22.05";
   };
 
-  home-manager.users.${vars.user} = {       # Home-Manager Settings
+  home-manager.users = builtins.listToAttrs (map (user: { name = user; value = {
     home = {
       stateVersion = "22.05";
     };
-
-    programs = {
-      home-manager.enable = true;
-    };
-  };
+    programs.home-manager.enable = true;
+  }; }) vars.userList);
 }

@@ -6,7 +6,7 @@
 
 {
   config = lib.mkIf (config.x11wm.enable) {
-    home-manager.users.${vars.user} = {
+    home-manager.users = builtins.listToAttrs (map (user: { name = user; value = {
       services = {
         sxhkd = {
           enable = true;
@@ -51,6 +51,6 @@
           };
         };
       };
-    };
+    }; }) vars.userList);
   };
 }

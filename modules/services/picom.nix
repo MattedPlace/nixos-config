@@ -6,7 +6,7 @@
 
 { 
   config = lib.mkIf (config.bspwm.enable) {
-    home-manager.users.${vars.user} = {
+    home-manager.users = builtins.listToAttrs (map (user: { name = user; value = {     
       services.picom = {
         enable = true;
         package = pkgs.picom.overrideAttrs(o: {
@@ -76,6 +76,6 @@
           glx-no-rebind-pixmap = true;
         };
       };
-    };
+    }; }) vars.userList);
   };
 }

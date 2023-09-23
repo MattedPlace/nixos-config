@@ -1,7 +1,7 @@
 { config, lib, pkgs, vars, ... }:
 
 {
-  home-manager.users.${vars.user} = {
+  home-manager.users = builtins.listToAttrs (map (user: { name = user; value = {         
     programs = {
       chromium = {
         enable = true;
@@ -25,5 +25,5 @@
         ];
       };
     };
-  };
+  }; }) vars.userList);
 }
