@@ -16,8 +16,8 @@
   ./rofi.nix
   ./wofi.nix
   ./ranger.nix
-  #./waybar.nix
-  #./games.nix
+  ./waybar.nix
+  ./eww.nix
+  #./flatpak.nix
+  ./games.nix
 ]
-# Waybar.nix is pulled from modules/desktop/..
-# Games.nix is pulled from desktop/default.nix

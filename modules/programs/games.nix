@@ -20,8 +20,11 @@ in
   environment.systemPackages = [
     unstable.heroic                             # Game launchers
     unstable.lutris
+    unstable.bottles
     unstable.prismlauncher
     pkgs.retroarchFull
+    pkgs.wineWowPackages.stable
+    pkgs.winetricks
     unstable.steam
     pcsx2
   ];

@@ -17,14 +17,11 @@
 #           └─ default.nix
 #
 
-{ pkgs, lib, user, config, ... }:
+{ pkgs, lib, vars, ... }:
 
 {
-  imports =                                               # For now, if applying to other system, swap files
-    [(import ./hardware-configuration.nix)] ++            # Current system hardware config @ /etc/nixos/hardware-configuration.nix
-    [(import ../../modules/programs/games.nix)] ++        # Gaming
-    [(import ../../modules/desktop/gnome/default.nix)] ++ # Default desktop enviroment 
-    (import ../../modules/desktop/virtualisation);       # Virtual Machines & VNC
+  imports = [ ./hardware-configuration.nix ] ++
+            ( import ../../modules/desktops/virtualisation );
 
   boot = {                                      # Boot options
     kernelPackages = pkgs.linuxPackages_latest;
@@ -45,6 +42,8 @@
     systemPackages = with pkgs; [               # This is because some options need to be configured.   
       discord
       x11vnc
+      plex-media-player # Media Player
+      simple-scan       # Scanning
     ];
   };
 
@@ -69,12 +68,18 @@
       driSupport32Bit = true;
     };
     cpu.amd.updateMicrocode = true;
+    sane = {                                    # Scanning
+      enable = true;
+      extraBackends = [ pkgs.sane-airscan ];
+    };
   };
+
+  bspwm.enable = true;
 
   networking = {
-    hostName = "maxDesktop";
+    hostName = "MaxwellDesktop";
   };
-
+/*
   services = {
     blueman.enable = true;                      # Bluetooth
     xserver.videoDrivers = [ "nvidia" ];
@@ -90,31 +95,5 @@
       openFirewall = true;
     };
   };
-
-  specialisation = {
-   /* hyprland.configuration = {
-      imports = [(import ../../modules/desktop/hyprland/default.nix)];
-      home-manager.users.${user}.imports = [
-        ../../modules/desktop/hyprland/home.nix #window manager
-      ];
-    };
-    sway.configuration = {
-      imports = [(import ../../modules/desktop/sway/default.nix)];
-      home-manager.users.${user}.imports = [
-        ../../modules/desktop/sway/home.nix #window manager
-      ];
-    };*/
-    bspwm.configuration = {
-      imports = [(import ../../modules/desktop/bspwm/default.nix)];
-      home-manager.users.${user}.imports = [
-        ../../modules/desktop/bspwm/home.nix #window manager
-      ];
-    };
-    kde.configuration = {
-      imports = [(import ../../modules/desktop/kde/default.nix)];
-      home-manager.users.${user}.imports = [
-        ../../modules/desktop/kde/home.nix #window manager
-      ];
-    };
-  };
+  */
 }

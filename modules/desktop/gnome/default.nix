@@ -42,7 +42,6 @@
       gnome.excludePackages = (with pkgs; [         # Gnome ignored packages
         gnome-tour
       ]) ++ (with pkgs.gnome; [
-        baobab
         cheese
         eog
         gnome-calculator

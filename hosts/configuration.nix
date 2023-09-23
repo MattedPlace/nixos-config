@@ -11,22 +11,23 @@
 #           └─ default.nix
 #
 
-{ config, lib, pkgs, inputs, user, ... }:
+{ config, lib, pkgs, inputs, vars, ... }:
 
 {
-  imports =
-    (import ../modules/editors) ++          # Native doom emacs instead of nix-community flake
-    (import ../modules/shell);
-
+  imports = ( import ../modules/desktops ++
+              import ../modules/editors ++
+              import ../modules/programs ++
+              import ../modules/hardware ++
+              import ../modules/services ++
+              import ../modules/shell ++
+              import ../modules/theming );
   users = {
     groups = { uinput = {}; };          # needed for katana
-    users.${user} = {                   # System User
+    users.${vars.user} = {                   # System User
       isNormalUser = true;
       extraGroups = [ "wheel" "video" "audio" "camera" "networkmanager" "lp" "scanner" "kvm" "libvirtd" "plex" "uninput" ];
-      shell = pkgs.zsh;                       # Default shell
     };
   };
-  security.sudo.wheelNeedsPassword = false; # User does not need to give password when using sudo.
 
   time.timeZone = "America/Chicago";        # Time zone and internationalisation
 
@@ -39,8 +40,12 @@
     keyMap = "us";                          # or us/azerty/etc
   };
 
-  security.rtkit.enable = true;
-  security.polkit.enable = true;
+  security = {
+    rtkit.enable = true;
+    polkit.enable = true;
+    sudo.wheelNeedsPassword = false;
+  };
+
 
   fonts.fonts = with pkgs; [                # Fonts
     carlito                                 # NixOS
@@ -50,41 +55,70 @@
     font-awesome                            # Icons
     corefonts                               # MS
     (nerdfonts.override {                   # Nerdfont Icons override
-      fonts = [
-        "FiraCode"
+    fonts = [
+      "FiraCode"
       ];
     })
   ];
 
   environment = {
-    variables = {
-      TERMINAL = "alacritty";
-      EDITOR = "nvim";
-      VISUAL = "nvim";
+    variables = {                           # Environment Variables
+      TERMINAL = "${vars.terminal}";
+      EDITOR = "${vars.editor}";
+      VISUAL = "${vars.editor}";
     };
+
     systemPackages = with pkgs; [           # Default packages installed system-wide
-      #vim
-      #git
-      killall
-      nano
-      pciutils
-      usbutils
-      wget
+     # Terminal
+      btop              # Resource Manager
+      coreutils         # GNU Utilities
+      git               # Version Control
+      killall           # Process Killer
+      nano              # Text Editor
+      pciutils          # Manage PCI
+      ranger            # File Manager
+      tldr              # Helper
+      usbutils          # Manage USB
+      wget              # Retriever
+
+      # Video/Audio
+      alsa-utils        # Audio Control
+      feh               # Image Viewer
+      mpv               # Media Player
+      pavucontrol       # Audio Control
+      pipewire          # Audio Server/Control
+      pulseaudio        # Audio Server/Control
+      vlc               # Media Player
+      stremio           # Media Streamer
+
+      # Apps
+      appimage-run      # Runs AppImages on NixOS
+      firefox           # Browser
+      google-chrome     # Browser
+      microsoft-edge    # Browser
+      brave             # Browser
+      librewolf         # Browser
+      remmina           # XRDP & VNC Client
+
+      # File Management
+      gnome.file-roller
+      okular            # PDF Viewer
+      pcmanfm           # File Browser
+      p7zip             # Zip Encryption
+      rsync             # Syncer - $ rsync -r dir1/ dir2/
+      unzip             # Zip Files
+      unrar             # Rar Files
+      zip               # Zip
     ];
+  };
+
+  programs = {
+    dconf.enable = true;
   };
 
   services = {
     printing = {                                # Printing and drivers for TS5300
       enable = true;
-    };
-    avahi = {                                   # Needed to find wireless printer
-      enable = true;
-      nssmdns = true;
-      publish = {                               # Needed for detecting the scanner
-        enable = true;
-        addresses = true;
-        userServices = true;
-      };
     };
     pipewire = {                            # Sound
       enable = true;
@@ -95,32 +129,13 @@
       pulse.enable = true;
       jack.enable = true;
     };
-    openssh = {                             # SSH: secure shell (remote connection to shell of server)
-      enable = true;                        # local: $ ssh <user>@<ip>
-                                            # public:
-                                            #   - port forward 22 TCP to server
-                                            #   - in case you want to use the domain name insted of the ip:
-                                            #       - for me, via cloudflare, create an A record with name "ssh" to the correct ip without proxy
-                                            #   - connect via ssh <user>@<ip or ssh.domain>
-                                            # generating a key:
-                                            #   - $ ssh-keygen   |  ssh-copy-id <ip/domain>  |  ssh-add
-                                            #   - if ssh-add does not work: $ eval `ssh-agent -s`
-      allowSFTP = true;                     # SFTP: secure file transfer protocol (send file to server)
-                                            # connect: $ sftp <user>@<ip/domain>
-                                            #   or with file browser: sftp://<ip address>
-                                            # commands:
-                                            #   - lpwd & pwd = print (local) parent working directory
-                                            #   - put/get <filename> = send or receive file
+    openssh = {                             
+      enable = true;                       
+      allowSFTP = true;           
       extraConfig = ''
         HostKeyAlgorithms +ssh-rsa
       '';                                   # Temporary extra config so ssh will work in guacamole
     };
-    flatpak.enable = true;                  # download flatpak file from website - sudo flatpak install <path> - reboot if not showing up
-                                            # sudo flatpak uninstall --delete-data <app-id> (> flatpak list --app) - flatpak uninstall --unused
-                                            # List:
-                                            # com.obsproject.Studio
-                                            # com.parsecgaming.parsec
-                                            # com.usebottles.bottles
   };
 
   nix = {                                   # Nix Package Manager settings
@@ -142,17 +157,17 @@
   };
   nixpkgs.config.allowUnfree = true;        # Allow proprietary software.
 
-  networking.firewall = {
-    enable = true;
-    allowedTCPPorts = [ 27015 ];
-    allowedUDPPorts = [ 27015 ];            # Steam port
+  system = {                                # NixOS settings
+    stateVersion = "22.05";
   };
 
-  system = {                                # NixOS settings
-    autoUpgrade = {                         # Allow auto update (not useful in flakes)
-      enable = true;
-      channel = "https://nixos.org/channels/nixos-unstable";
+  home-manager.users.${vars.user} = {       # Home-Manager Settings
+    home = {
+      stateVersion = "22.05";
     };
-    stateVersion = "22.05";
+
+    programs = {
+      home-manager.enable = true;
+    };
   };
 }
