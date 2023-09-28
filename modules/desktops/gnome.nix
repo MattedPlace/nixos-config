@@ -100,7 +100,7 @@ with lib;
             "org.telegram.desktop.desktop"
             "signal-desktop.desktop"
             # "blueman-manager.desktop"
-            # "pavucontrol.desktop"
+            "pavucontrol.desktop"
           ];
           disable-user-extensions = false;
           enabled-extensions = [
