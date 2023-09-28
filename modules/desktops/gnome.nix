@@ -93,7 +93,6 @@ with lib;
             "org.gnome.Nautilus.desktop"
             "discord.desktop"
             "steam.desktop"
-            "org.remmina.Remmina.desktop"
             "virt-manager.desktop"
             "brave-browser.desktop"
             "firefox.desktop"
