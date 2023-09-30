@@ -11,7 +11,7 @@
     options kvm ignore_nsrs=1
   '';                                         # For OSX-KVM
 
-  users.groups.libvirtd.members = [ "root" "${vars.user}" ];
+  users.groups.libvirtd.members = [ "root" "${builtins.elemAt vars.userList 0}" ];
 
   virtualisation = {
     libvirtd = {

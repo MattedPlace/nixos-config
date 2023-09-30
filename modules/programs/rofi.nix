@@ -5,7 +5,7 @@
 { config, lib, pkgs, home-manager, vars, ... }:
 
 let
-  map (user: inherit (config.home-manager.users.${user}.lib.formats.rasi) mkLiteral;) vars.userList
+  inherit (config.home-manager.users.${builtins.elemAt vars.userList 0}.lib.formats.rasi) mkLiteral;
   colors = import ../theming/colors.nix;
 in
 {

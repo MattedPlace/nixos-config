@@ -31,10 +31,7 @@ with lib;
         enable = true;
 
         layout = "us";
-        xkbOptions = "eurosign:e";
         libinput.enable = true;
-        modules = [ pkgs.xf86_input_wacom ];
-        wacom.enable = true;
 
         displayManager = {
           sddm.enable = true;                       # Display Manager
