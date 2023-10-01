@@ -25,9 +25,7 @@ let
   '';
 in
 {
-  imports =                                               # For now, if applying to other system, swap files
-    [(import ./hardware-configuration.nix)] ++            # Current system hardware config @ /etc/nixos/hardware-configuration.nix
-    [(import ../../modules/desktop/gnomeTablet/default.nix)];      # desktop enviroment
+  imports = [ ./hardware-configuration.nix ];
 
   boot = {                                  # Boot options
     kernelPackages = pkgs.linuxPackages_latest;
@@ -95,71 +93,10 @@ in
   services = {
     xserver.videoDrivers = [ "nvidia" ];
     #logind.lidSwitch = "ignore";           # Laptop does not go to sleep when lid is closed
-    blueman.enable = true;
-    printing = {                            # Printing and drivers for TS5300
-      enable = true;
-    };
-    avahi = {                               # Needed to find wireless printer
-      enable = true;
-      nssmdns = true;
-      publish = {                           # Needed for detecting the scanner
-        enable = true;
-        addresses = true;
-        userServices = true;
-      };
-    };
-    samba = {
-      enable = true;
-      shares = {
-        share = {
-          "path" = "/home/${user}";
-          "guest ok" = "no";
-          "read only" = "no";
-        };
-      };
-      openFirewall = true;
-    };
   };
 
   networking = {
-    hostName = "maxLaptop";
+    hostName = "MaxwellLaptop";
     networkmanager.enable = true;
-  };
-
-  specialisation = {
-    hyprland.configuration = {
-      imports = [(import ../../modules/desktop/hyprland/default.nix)];
-      home-manager.users.${user}.imports = [
-        ../../modules/desktop/hyprland/home.nix #window manager
-      ];
-    };
-
-    river.configuration = {
-      imports = [(import ../../modules/desktop/river/default.nix)];
-      home-manager.users.${user}.imports = [
-        ../../modules/desktop/river/home.nix #window manager
-      ];
-    };
-
-    sway.configuration = {
-      imports = [(import ../../modules/desktop/sway/default.nix)];
-      home-manager.users.${user}.imports = [
-        ../../modules/desktop/sway/home.nix #window manager
-      ];
-    };
-
-    bspwm.configuration = {
-      imports = [(import ../../modules/desktop/bspwm/default.nix)];
-      home-manager.users.${user}.imports = [
-        ../../modules/desktop/bspwm/home.nix #window manager
-      ];
-    };
-
-    kde.configuration = {
-      imports = [(import ../../modules/desktop/kde/default.nix)];
-      home-manager.users.${user}.imports = [
-        ../../modules/desktop/kde/home.nix #window manager
-      ];
-    };
   };
 }
