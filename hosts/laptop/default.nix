@@ -42,6 +42,9 @@ in
     };
   };
 
+  gnome.enable = true;
+  laptop.enable = true;
+
   hardware = {                         # Used for scanning with Xsane
     sane = {
       enable = true;
@@ -92,6 +95,9 @@ in
 
   services = {
     xserver.videoDrivers = [ "nvidia" ];
+    printing = {
+      enable = true;
+    }
     #logind.lidSwitch = "ignore";           # Laptop does not go to sleep when lid is closed
   };
 

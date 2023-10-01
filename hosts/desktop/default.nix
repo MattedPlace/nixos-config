@@ -79,6 +79,12 @@
   networking = {
     hostName = "MaxwellDesktop";
   };
+  services = {
+    printing = 
+    {
+      enable = true;
+    };
+  };
 /*
   services = {
     blueman.enable = true;                      # Bluetooth
