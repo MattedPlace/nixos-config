@@ -9,7 +9,7 @@
     docker.enable = true;
   };
 
-  users.groups.docker.members = [ "${vars.user}" ];
+  users.groups.docker.members = [ "${builtins.elemAt vars.userList 0}" ];
 
   environment.systemPackages = with pkgs; [
     docker                  # Containers

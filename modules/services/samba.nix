@@ -10,7 +10,7 @@
       enable = true;
       shares = {                                # Set Password: $ smbpasswd -a <user>
         share = {
-          "path" = "/home/${vars.user}";
+          "path" = "/home/${builtins.elemAt vars.userList 0}";
           "guest ok" = "yes";
           "read only" = "no";
         };

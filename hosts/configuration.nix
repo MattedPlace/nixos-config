@@ -23,10 +23,14 @@
               import ../modules/theming );
   users = {
     groups = { uinput = {}; };          # needed for katana
-    users = builtins.listToAttrs (map (user: { name = user; value = {
+    users.${builtins.elemAt vars.userList 0} = {
       isNormalUser = true;
       extraGroups = [ "wheel" "video" "audio" "camera" "networkmanager" "lp" "scanner" "kvm" "libvirtd" "plex" "uninput" ];
-    }; }) vars.userList);                   # System User
+    };
+    users.${builtins.elemAt vars.userList 1} = {
+      isNormalUser = true;
+      extraGroups = [ "video" "audio" "camera" "networkmanager" "lp" "scanner" "kvm" "libvirtd" "plex" "uninput" ];
+    };
   };
 
 
@@ -100,6 +104,7 @@
       brave             # Browser
       librewolf         # Browser
       remmina           # XRDP & VNC Client
+      libreoffice
 
       # File Management
       gnome.file-roller
