@@ -78,12 +78,7 @@
 
   networking = {
     hostName = "MaxwellDesktop";
-  };
-  services = {
-    printing = 
-    {
-      enable = true;
-    };
+    networkmanager.enable = true;
   };
 /*
   services = {

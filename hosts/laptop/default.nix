@@ -95,9 +95,6 @@ in
 
   services = {
     xserver.videoDrivers = [ "nvidia" ];
-    printing = {
-      enable = true;
-    }
     #logind.lidSwitch = "ignore";           # Laptop does not go to sleep when lid is closed
   };
 

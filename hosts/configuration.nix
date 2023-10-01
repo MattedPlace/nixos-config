@@ -115,6 +115,12 @@
       unzip             # Zip Files
       unrar             # Rar Files
       zip               # Zip
+
+      #social media
+      signal-desktop
+      telegram-desktop
+
+      deluge
     ];
   };
 
