@@ -1,34 +1,33 @@
 #
 #  These are the different profiles that can be used when building NixOS.
 #
-#  flake.nix 
-#   └─ ./hosts  
+#  flake.nix
+#   └─ ./hosts
 #       ├─ default.nix *
 #       ├─ configuration.nix
-#       ├─ home.nix
-#       └─ ./desktop OR ./laptop OR ./work OR ./vm
-#            ├─ ./default.nix
-#            └─ ./home.nix 
+#       └─ ./<host>.nix
+#           └─ default.nix
 #
-{ lib, inputs, nixpkgs, nixpkgs-unstable, home-manager, nur, hyprland, plasma-manager, vars, ... }:
+
+{ lib, inputs, nixpkgs, nixpkgs-unstable, nixos-hardware, home-manager, nur, nixvim, hyprland, plasma-manager, vars, ... }:
 
 let
-  system = "x86_64-linux";                                  # System architecture
+  system = "x86_64-linux";                                  # System Architecture
 
   pkgs = import nixpkgs {
     inherit system;
-    config.allowUnfree = true;                              # Allow proprietary software
+    config.allowUnfree = true;                              # Allow Proprietary Software
   };
 
   unstable = import nixpkgs-unstable {
     inherit system;
-    config.allowUnfree = true;                              # Allow proprietary software
+    config.allowUnfree = true;
   };
 
   lib = nixpkgs.lib;
 in
 {
-  desktop = lib.nixosSystem {                               # Desktop profile
+   desktop = lib.nixosSystem {                               # Desktop profile
     inherit system;
     specialArgs = {
       inherit inputs unstable system vars hyprland;
@@ -40,6 +39,7 @@ in
     };                                                      # Pass flake variable
     modules = [                                             # Modules that are used.
       nur.nixosModules.nur
+      nixvim.nixosModules.nixvim
       ./desktop
       ./configuration.nix
 
@@ -84,6 +84,7 @@ in
       };
     };
     modules = [
+      nixvim.nixosModules.nixvim
       ./vm
       ./configuration.nix
 
@@ -93,4 +94,5 @@ in
       }
     ];
   };
+
 }

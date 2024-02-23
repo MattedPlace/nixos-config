@@ -48,14 +48,15 @@ with host;
     home-manager.users.${vars.user} = {
       wayland.windowManager.sway = {
         enable = true;
-        systemdIntegration = true;
+        systemd.enable = true;
         config = rec {
           modifier = "Mod4";
           terminal = "${pkgs.${vars.terminal}}/bin/${vars.terminal}";
-          menu = "${pkgs.wofi}/bin/wofi -show drun";
+          menu = "${pkgs.wofi}/bin/wofi --show drun";
 
           startup = [
             {command = "${pkgs.autotiling}/bin/autotiling"; always = true;}
+            {command = "exec ${pkgs.blueman}/bin/blueman-applet"; always = true;}
           ];
 
           bars = [];                        # Using Waybar
@@ -65,10 +66,10 @@ with host;
             size = 10.0;
           };
 
-          gaps = {
-            inner = 5;
-            outer = 5;
-          };
+          # gaps = {
+          #   inner = 5;
+          #   outer = 5;
+          # };
 
           input = {                         # Input modules: $ man sway-input
             "type:touchpad" = {
@@ -84,7 +85,7 @@ with host;
             };
           };
 
-          output = if hostName == "desktop" then {
+          output = if hostName == "h310m" then {
             "*".bg = "~/.config/wall fill";#
             "*".scale = "1";#
             "${secondMonitor}" = {
@@ -95,7 +96,7 @@ with host;
               mode = "1920x1080";
               pos = "1920 0";
             };
-          } else if hostName == "laptop" then {
+          } else if hostName == "probook" then {
             "*".bg = "~/.config/wall fill";
             "*".scale = "1";
             "${mainMonitor}" = {
@@ -104,14 +105,16 @@ with host;
             };
           } else {};
 
-          workspaceOutputAssign = if hostName == "desktop" then [
+          workspaceOutputAssign = if hostName == "beelink" || hostName == "h310m" then [
             {output = mainMonitor; workspace = "1";}
             {output = mainMonitor; workspace = "2";}
             {output = mainMonitor; workspace = "3";}
-            {output = secondMonitor; workspace = "4";}
+            {output = mainMonitor; workspace = "4";}
             {output = secondMonitor; workspace = "5";}
             {output = secondMonitor; workspace = "6";}
-          ] else if hostName == "laptop" then [
+            {output = secondMonitor; workspace = "7";}
+            {output = secondMonitor; workspace = "8";}
+          ] else if hostName == "probook" then [
             {output = mainMonitor; workspace = "1";}
             {output = mainMonitor; workspace = "2";}
             {output = mainMonitor; workspace = "3";}

@@ -1,47 +1,74 @@
 #
 #  Flatpak
-#  Very janky way of declaring all packages used
+#  Janky way of declaring all packages
 #  Might cause issues on new system installs
 #  Only use when you know what you're doing
 #
 
-{ pkgs, ...}:
+{ config, lib, pkgs,...}:
 
+with lib;
 {
-  /*
-  xdg.portal = {
-    enable = true;
-    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+  options = {
+    flatpak = {
+      enable = mkOption {
+        type = types.bool;
+        default = false;
+      };
+      extraPackages = mkOption {
+        type = types.listOf types.str;
+        default = [];
+      };
+    };
   };
-  */
-  services.flatpak.enable = true;
 
-  system.activationScripts = {
-    flatpak.text =
-      ''
-        flatpaks=(
-          "com.github.tchx84.Flatseal"
-          "com.obsproject.Studio"
-          "com.ultimaker.cura"
-        )
+  config = mkIf (config.flatpak.enable)
+  {
+    xdg.portal.enable = true;
+    xdg.portal.extraPortals = mkIf (config.wlwm.enable || config.x11wm.enable) [
+      pkgs.xdg-desktop-portal-gtk
+    ];
 
-        ${pkgs.flatpak}/bin/flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+    services.flatpak.enable = true;
 
-        for package in ''${flatpaks[*]}; do
-          check=$(${pkgs.flatpak}/bin/flatpak list --app | ${pkgs.gnugrep}/bin/grep $package)
-          if [[ -z "$check" ]] then
-            ${pkgs.flatpak}/bin/flatpak install -y flathub $package
-          fi
-        done
+    system.activationScripts =
+      let
+        extraPackages = concatStringsSep " " config.flatpak.extraPackages;
+      in mkIf (config.flatpak.extraPackages != [])
+      {
+      flatpak.text =
+        ''
+          flatpaks=(
+            ${extraPackages}
+          )
 
-        installed=($(${pkgs.flatpak}/bin/flatpak list --app | ${pkgs.gawk}/bin/awk -F$'\t*' '{$1=$3=$4=$5=""; print $0}'))
+          ${pkgs.flatpak}/bin/flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
-        for remove in ''${installed[*]}; do
-          if [[ ! " ''${flatpaks[*]} " =~ " ''${remove} " ]]; then
-            ${pkgs.flatpak}/bin/flatpak uninstall -y $remove
-            ${pkgs.flatpak}/bin/flatpak uninstall -y --unused
-          fi
-        done
-      '';
+          # for package in ''${flatpaks[*]}; do
+
+          for package in ''${flatpaks[@]}; do
+            if ! ${pkgs.flatpak}/bin/flatpak list --app | grep -q "$package"; then
+              ${pkgs.flatpak}/bin/flatpak install -y flathub $package
+            fi
+          done
+
+          installed=($(${pkgs.flatpak}/bin/flatpak list --app --columns=application | tail -n +1))
+
+          for remove in ''${installed[@]}; do
+            found=false
+            for package in ''${flatpaks[@]}; do
+              if [[ "$remove" == "$package"* ]]; then
+                found=true
+                break
+              fi
+            done
+
+            if [[ "$found" == false ]]; then
+              ${pkgs.flatpak}/bin/flatpak uninstall -y "$remove"
+              ${pkgs.flatpak}/bin/flatpak uninstall -y --unused
+            fi
+          done
+        '';
+      };
   };
 }

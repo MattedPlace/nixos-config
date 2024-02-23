@@ -25,8 +25,7 @@ let
   '';
 in
 {
-  imports =                                               # For now, if applying to other system, swap files
-    [ ./hardware-configuration.nix ];
+  imports = [ ./hardware-configuration.nix ];
 
   boot = {                                  # Boot options
     kernelPackages = pkgs.linuxPackages_latest;
@@ -42,6 +41,9 @@ in
       timeout = 5;                          # Grub auto select time
     };
   };
+
+  gnome.enable = true;
+  laptop.enable = true;
 
   hardware = {                         # Used for scanning with Xsane
     sane = {
@@ -76,9 +78,6 @@ in
     };
   };
 
-  laptop.enable = true;
-  gnome.enable = true;
-
   environment = {
     variables = {
       LIBVA_DRIVER_NAME = "i915";
@@ -97,9 +96,6 @@ in
   services = {
     xserver.videoDrivers = [ "nvidia" ];
     #logind.lidSwitch = "ignore";           # Laptop does not go to sleep when lid is closed
-    printing = {                            # Printing and drivers for TS5300
-      enable = true;
-    };
   };
 
   networking = {

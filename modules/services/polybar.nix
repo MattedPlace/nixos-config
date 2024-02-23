@@ -21,11 +21,12 @@ in
             #killall -q polybar &
             #while pgrep -u $UID -x polybar >/dev/null; do sleep 1; done
             #polybar main &
+            #polybar sec &
           '';                                       # Run Polybar on Startup
           package = polybar;
           config = {
             "bar/main" = {                          # Bar "main"
-              monitor = mainMonitorX;
+              monitor = mainMonitor;
               width = "100%";
               height = 15;
               background = "#00000000";
@@ -48,7 +49,7 @@ in
 
               wm-restack = "bspwm";
             };
-            /*"bar/sec" = {                         # Bar "sec"
+            "bar/sec" = {                         # Bar "sec"
               monitor = "${secondMonitor}";
               width = "100%";
               height = 15;
@@ -69,7 +70,7 @@ in
               modules-right = "sink volume pad date";
 
               wm-restack = "bspwm";
-            };*/
+            };
             "module/memory" = {                     # RAM
               type = "internal/memory";
               format = "<label>";
@@ -277,7 +278,7 @@ in
               menu-1-4-exec = "sleep 0.5; systemctl reboot";
 
               menu-2-0 = "";
-              menu-2-0-exec = "alacritty &";
+              menu-2-0-exec = "${vars.terminal} &";
               menu-2-1 = "";
               menu-2-1-exec = "firefox &";
               menu-2-2 = "";

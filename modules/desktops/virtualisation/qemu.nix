@@ -2,7 +2,7 @@
 #  Qemu/KVM With Virt-Manager
 #
 
-{ config, pkgs, vars, ... }:
+{ pkgs, vars, ... }:
 
 {
   boot.extraModprobeConfig = ''
@@ -11,7 +11,10 @@
     options kvm ignore_nsrs=1
   '';                                         # For OSX-KVM
 
-  users.groups.libvirtd.members = [ "root" "${vars.user}" ];
+  users.groups = {
+    libvirtd.members = [ "root" "${vars.user}" ];
+    kvm.members = [ "root" "${vars.user}" ];
+  };
 
   virtualisation = {
     libvirtd = {
@@ -62,7 +65,7 @@
   #    PCI_QUIRKS y
   #    KALLSYMS y
   #    KALLSYMS_ALL y
-  #    ''; 
+  #    '';
   #    }
   #  ];
   #};
@@ -203,7 +206,7 @@
 #    '';
 # 5. Run the shell: $ nix-shell
 # 6. As mentioned in the README, run ./fetch-macOS.py
-# 6.1 Can be a specific version 
+# 6.1 Can be a specific version
 # 7. Create base image for the macOs installer
 # 8. $ qemu-img convert BaseSystem.dmg -O raw BaseSystem.img
 # 9. Create disk for macOS

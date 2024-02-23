@@ -24,8 +24,8 @@
             ( import ../../modules/desktops/virtualisation );
 
   boot = {                                      # Boot options
-    kernelPackages = pkgs.linuxPackages_latest;
-    loader = {                                  
+    supportedFilesystems = [ "ntfs" ];
+    loader = {
       systemd-boot = {
         enable = true;
         configurationLimit = 5;
@@ -33,17 +33,24 @@
       efi = {
         canTouchEfiVariables = true;
         efiSysMountPoint = "/boot/efi";
-      };    
+      };
       timeout = 5;                              # Auto select time
     };
   };
 
   environment = {                               # Packages installed system wide
-    systemPackages = with pkgs; [               # This is because some options need to be configured.   
+    systemPackages = with pkgs; [               # This is because some options need to be configured.
       discord
       x11vnc
       plex-media-player # Media Player
       simple-scan       # Scanning
+      haskellPackages.cabal-install
+    ];
+  };
+
+  flatpak = {                                   # Flatpak Packages (see module options)
+    extraPackages = [
+      "com.ultimaker.cura"
     ];
   };
 
@@ -57,7 +64,7 @@
       );
     })
   ];
-  
+
   hardware = {
     opengl = {
       enable = true;
@@ -74,10 +81,11 @@
     };
   };
 
-  bspwm.enable = true;
+  gnome.enable = true;
 
   networking = {
     hostName = "MaxwellDesktop";
+    networkmanager.enable = true;
   };
 /*
   services = {

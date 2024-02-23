@@ -2,13 +2,13 @@
 #  Power Management
 #
 
-{ config, lib, pkgs, vars, ... }:
+{ config, lib, pkgs, host, vars, ... }:
 
 {
   config = lib.mkIf ( config.laptop.enable ) {
     services = {
-      tlp.enable = true;                          # Power Efficiency
-      auto-cpufreq.enable = true;
+      tlp.enable = false;                         # Disable due to suspend not working when docked and connected to AC
+      auto-cpufreq.enable = true;                 # Power Efficiency
     };
 
     home-manager.users.${vars.user} = {

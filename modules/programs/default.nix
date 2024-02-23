@@ -3,21 +3,21 @@
 #
 #  flake.nix
 #   ├─ ./hosts
-#   │   └─ home.nix
+#   │   └─ configuration.nix
 #   └─ ./modules
-#       └─ ./apps
-#           └─ default.nix *
-#               └─ ...
+#       └─ ./programs
+#           ├─ default.nix *
+#           └─ ...
 #
 
 [
-  ./chromium.nix
   ./alacritty.nix
-  ./rofi.nix
-  ./wofi.nix
-  ./ranger.nix
-  ./waybar.nix
   ./eww.nix
-  #./flatpak.nix
-  ./games.nix
+  ./flatpak.nix
+  ./kitty.nix
+  ./obs.nix
+  ./rofi.nix
+  ./waybar.nix
+  ./wofi.nix
+  #./games.nix
 ]

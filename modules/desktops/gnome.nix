@@ -17,7 +17,6 @@ with lib;
   };
 
   config = mkIf (config.gnome.enable) {
-    x11wm.enable = true;
     programs = {
       zsh.enable = true;
       kdeconnect = {                                    # GSConnect
@@ -26,14 +25,14 @@ with lib;
       };
     };
 
-    hardware.pulseaudio.enable = false;
-
     services = {
       xserver = {
-        videoDrivers = [ "nvidia" ];
         enable = true;
+        videoDrivers = [ "nvidia" ];
+
         layout = "us";
         libinput.enable = true;
+
         displayManager.gdm.enable = true;               # Display Manager
         desktopManager.gnome.enable = true;             # Desktop Environment
       };
@@ -47,16 +46,11 @@ with lib;
         gnome.adwaita-icon-theme
         gnome.dconf-editor
         gnome.gnome-tweaks
-        xclip
-        xorg.xev          # Event Viewer
-        xorg.xkill        # Process Killer
-        xorg.xrandr       # Monitor Settings
-        xterm             # Terminal
       ];
       gnome.excludePackages = (with pkgs; [             # Ignored Packages
         gnome-tour
       ]) ++ (with pkgs.gnome; [
-          cheese
+        cheese
         eog
         gnome-calculator
         gnome-calendar
@@ -88,23 +82,18 @@ with lib;
       dconf.settings = {
         "org/gnome/shell" = {
           favorite-apps = [
-            "org.gnome.Settings.desktop"
+            "org.gnome.settings.desktop"
             "Alacritty.desktop"
             "org.gnome.Nautilus.desktop"
             "discord.desktop"
             "steam.desktop"
-            "virt-manager.desktop"
             "brave-browser.desktop"
-            "firefox.desktop"
-            "microsoft-edge.desktop"
-            "org.telegram.desktop.desktop"
             "signal-desktop.desktop"
-            # "blueman-manager.desktop"
             "pavucontrol.desktop"
           ];
           disable-user-extensions = false;
           enabled-extensions = [
-            "trayIconsReloaded@selfmade.pl"
+            "trayiconsreloaded@selfmade.pl"
             "blur-my-shell@aunetx"
             "drive-menu@gnome-shell-extensions.gcampax.github.com"
             "dash-to-panel@jderose9.github.com"
@@ -117,8 +106,8 @@ with lib;
             "gsconnect@andyholmes.github.io"
             "pip-on-top@rafostar.github.com"
             "forge@jmmaranan.com"
-            # "dash-to-dock@micxgx.gmail.com"             # Dash to panel alternative
-            # "fullscreen-avoider@noobsai.github.com"     # Incompatible with dash-to-panel
+            # "dash-to-dock@micxgx.gmail.com"           # Alternative Dash-to-Panel
+            # "fullscreen-avoider@noobsai.github.com"   # Dash-to-Panel Incompatable
           ];
         };
 
@@ -126,9 +115,9 @@ with lib;
           color-scheme = "prefer-dark";
           enable-hot-corners = false;
           clock-show-weekday = true;
-          #gtk-theme = "Adwaita-dark";
+          # gtk-theme = "adwaita-dark";
         };
-        # "org/gnome/desktop/session" = {                 # Doesn't seem to work
+        # "org/gnome/desktop/session" = {               # Not Working
         #   idle-delay = "uint32 900";
         # };
         "org/gnome/desktop/privacy" = {
@@ -141,38 +130,38 @@ with lib;
           action-right-click-titlebar = "toggle-maximize";
           action-middle-click-titlebar = "minimize";
           resize-with-right-button = true;
-          mouse-button-modifier = "<Super>";
+          mouse-button-modifier = "<super>";
           button-layout = ":minimize,close";
         };
         "org/gnome/desktop/wm/keybindings" = {
-          # maximize = ["<Super>Up"];                     # For floating
-          # unmaximize = ["<Super>Down"];
-          maximize = ["@as []"];                          # For tilers
+          # maximize = ["<super>up"];                   # Floating
+          # unmaximize = ["<super>down"];
+          maximize = ["@as []"];                        # Tiling
           unmaximize = ["@as []"];
-          switch-to-workspace-left = ["<Alt>Left"];
-          switch-to-workspace-right = ["<Alt>Right"];
-          move-to-workspace-left = ["<Shift><Alt>Left"];
-          move-to-workspace-right = ["<Shift><Alt>Right"];
-          move-to-workspace-1 = ["<Shift><Alt>1"];
-          move-to-workspace-2 = ["<Shift><Alt>2"];
-          move-to-workspace-3 = ["<Shift><Alt>3"];
-          move-to-workspace-4 = ["<Shift><Alt>4"];
-          move-to-workspace-5 = ["<Shift><Alt>5"];
-          move-to-monitor-left = ["<Super><Alt>Left"];
-          move-to-monitor-right = ["<Super><Alt>Right"];
-          close = ["<Super>q" "<Alt>F4"];
-          toggle-fullscreen = ["<Super>f"];
+          switch-to-workspace-left = ["<alt>left"];
+          switch-to-workspace-right = ["<alt>right"];
+          move-to-workspace-left = ["<shift><alt>left"];
+          move-to-workspace-right = ["<shift><alt>right"];
+          move-to-workspace-1 = ["<shift><alt>1"];
+          move-to-workspace-2 = ["<shift><alt>2"];
+          move-to-workspace-3 = ["<shift><alt>3"];
+          move-to-workspace-4 = ["<shift><alt>4"];
+          move-to-workspace-5 = ["<shift><alt>5"];
+          move-to-monitor-left = ["<super><alt>left"];
+          move-to-monitor-right = ["<super><alt>right"];
+          close = ["<super>q" "<alt>f4"];
+          toggle-fullscreen = ["<super>f"];
         };
 
         "org/gnome/mutter" = {
           workspaces-only-on-primary = false;
           center-new-windows = true;
-          edge-tiling = false;                            # Disabled when tiling
+          edge-tiling = false;                          # Tiling
         };
         "org/gnome/mutter/keybindings" = {
-          #toggle-tiled-left = ["<Super>Left"];           # For floating
-          #toggle-tiled-right = ["<Super>Right"];
-          toggle-tiled-left = ["@as []"];                 # For tilers
+          #toggle-tiled-left = ["<super>left"];         # Floating
+          #toggle-tiled-right = ["<super>right"];
+          toggle-tiled-left = ["@as []"];               # Tiling
           toggle-tiled-right = ["@as []"];
         };
 
@@ -187,32 +176,32 @@ with lib;
           ];
         };
         "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
-          binding = "<Super>Return";
+          binding = "<super>return";
           command = "alacritty";
           name = "open-terminal";
         };
         "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1" = {
-          binding = "<Super>t";
+          binding = "<super>t";
           command = "nvim";
           name = "open-editor";
         };
         "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2" = {
-          binding = "<Super>e";
+          binding = "<super>e";
           command = "nautilus";
           name = "open-file-browser";
         };
 
-        "org/gnome/shell/extension/dash-to-panel" = {     # Possibly need to set this manually
-          panel-position = ''{"0":"TOP","1":"Top"}'';
+        "org/gnome/shell/extension/dash-to-panel" = {   # Set Manually
+          panel-position = ''{"0":"top","1":"top"}'';
           panel-sizes = ''{"0":24,"1":24}'';
           panel-element-positions-monitors-sync = true;
           appicon-margin = 0;
           appicon-padding = 4;
-          dot-position = "TOP";
-          dot-style-focused = "SOLID";
-          dot-style-unfocused = "DOTS";
+          dot-position = "top";
+          dot-style-focused = "solid";
+          dot-style-unfocused = "dots";
           animate-appicon-hover = true;
-          animate-appicon-hover-animation-travel = "{'SIMPLE': 0.14999999999999999, 'RIPPLE': 0.40000000000000002, 'PLANK': 0.0}";
+          animate-appicon-hover-animation-travel = "{'simple': 0.14999999999999999, 'ripple': 0.40000000000000002, 'plank': 0.0}";
           isolate-monitors = true;
         };
         "org/gnome/shell/extensions/just-perfection" = {
@@ -235,7 +224,7 @@ with lib;
           customize = true;
           sigma = 0;
         };
-        "org/gnome/shell/extensions/blur-my-shell/overview" = { # Temporary = D2D Bug
+        "org/gnome/shell/extensions/blur-my-shell/overview" = {
           customize = true;
           sigma = 0;
         };
@@ -253,33 +242,28 @@ with lib;
         };
         "org/gnome/shell/extensions/forge" = {
           window-gap-size = 8;
-          window-gap-hidden-on-single = true;
           dnd-center-layout = "stacked";
         };
-        "org/gnome/shell/extensions/forge/keybindings" = {      # Set active colors manually
+        "org/gnome/shell/extensions/forge/keybindings" = { # Set Manually
           focus-border-toggle = true;
           float-always-on-top-enabled = true;
-          window-focus-up = ["<Super>Up"];
-          window-focus-down = ["<Super>Down"];
-          window-focus-left = ["<Super>Left"];
-          window-focus-right = ["<Super>Right"];
-          # window-swap-up = ["<Shift><Super>Up"];
-          # window-swap-down = ["<Shift><Super>Down"];
-          # window-swap-left = ["<Shift><Super>Left"];
-          # window-swap-right = ["<Shift><Super>Right"];
-          window-move-up = ["<Shift><Super>Up"];
-          window-move-down = ["<Shift><Super>Down"];
-          window-move-left = ["<Shift><Super>Left"];
-          window-move-right = ["<Shift><Super>Right"];
+          window-focus-up = ["<super>up"];
+          window-focus-down = ["<super>down"];
+          window-focus-left = ["<super>left"];
+          window-focus-right = ["<super>right"];
+          window-move-up = ["<shift><super>up"];
+          window-move-down = ["<shift><super>down"];
+          window-move-left = ["<shift><super>left"];
+          window-move-right = ["<shift><super>right"];
           window-swap-last-active = ["@as []"];
-          window-toggle-float = ["<Shift><Super>f"];
+          window-toggle-float = ["<shift><super>f"];
         };
-        # "org/gnome/shell/extensions/dash-to-dock" = {   # If dock if preferred
+        # "org/gnome/shell/extensions/dash-to-dock" = { # If Dock Preferred
         #   multi-monitor = true;
         #   dock-fixed = true;
         #   dash-max-icon-size = 16;
         #   custom-theme-shrink = true;
-        #   transparency-mode = "FIXED";
+        #   transparency-mode = "fixed";
         #   background-opacity = 0.0;
         #   show-apps-at-top = true;
         #   show-trash = true;
@@ -289,23 +273,23 @@ with lib;
         # };
       };
 
-      home.packages = with pkgs; [
-        gnomeExtensions.tray-icons-reloaded
-        gnomeExtensions.blur-my-shell
-        gnomeExtensions.removable-drive-menu
-        gnomeExtensions.dash-to-panel
-        gnomeExtensions.battery-indicator-upower
-        gnomeExtensions.just-perfection
-        gnomeExtensions.caffeine
-        gnomeExtensions.clipboard-indicator
-        gnomeExtensions.workspace-indicator-2
-        gnomeExtensions.bluetooth-quick-connect
-        gnomeExtensions.gsconnect                         # kdeconnect enabled in default.nix
-        gnomeExtensions.pip-on-top
-        gnomeExtensions.pop-shell
-        gnomeExtensions.forge
-        # gnomeExtensions.fullscreen-avoider
-        # gnomeExtensions.dash-to-dock
+      home.packages = with pkgs.gnomeExtensions; [
+        tray-icons-reloaded
+        blur-my-shell
+        removable-drive-menu
+        dash-to-panel
+        battery-indicator-upower
+        just-perfection
+        caffeine
+        clipboard-indicator
+        workspace-indicator-2
+        bluetooth-quick-connect
+        gsconnect
+        pip-on-top
+        pop-shell
+        forge
+        # fullscreen-avoider
+        # dash-to-dock
       ];
     };
   };

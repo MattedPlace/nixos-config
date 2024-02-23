@@ -9,7 +9,11 @@ with lib;
 with host;
 let
   monitor =
-    "${pkgs.xorg.xrandr}/bin/xrandr --mode 1920x1080 --pos 0x0 --rotate normal";
+    if hostName == "beelink" then
+      "${pkgs.xorg.xrandr}/bin/xrandr --output ${secondMonitor} --mode 1920x1080 --pos 0x0 --rotate normal --output ${mainMonitor} --primary --mode 1920x1080 --pos 1920x0 --rotate normal"
+    else if hostName == "vm" || hostName == "probook" then
+      "${pkgs.xorg.xrandr}/bin/xrandr --mode 1920x1080 --pos 0x0 --rotate normal"
+    else false;
 
   extra = ''
     killall -q polybar &                            # Kill polybar
@@ -38,10 +42,16 @@ let
 
   extraConf = builtins.replaceStrings [ "WORKSPACES" ]
   [
-    (''
+    (if hostName == "beelink" then ''
+      bspc monitor ${mainMonitor} -d 1 2 3 4 5
+      bspc monitor ${secondMonitor} -d 6 7 8 9 0
+      bspc wm -O ${mainMonitor} ${secondMonitor}
+      polybar sec &
+    ''
+    else if hostName == "vm" || hostName == "probook" then ''
       bspc monitor -d 1 2 3 4 5
     ''
-    )
+    else false)
   ]
   "${extra}";
 in
@@ -64,6 +74,7 @@ in
         enable = true;
 
         layout = "us";
+        xkbOptions = "eurosign:e";
         libinput = {
           enable = true;
           touchpad = {
@@ -74,8 +85,10 @@ in
             disableWhileTyping = true;
           };
         };
+        modules = [ pkgs.xf86_input_wacom ];
+        wacom.enable = true;
 
-        displayManager = {                          # Display Manage
+        displayManager = {                          # Display Manager
           lightdm = {
             enable = true;
             background = pkgs.nixos-artwork.wallpapers.nineish-dark-gray.gnomeFilePath;
@@ -135,8 +148,16 @@ in
         windowManager = {
           bspwm = {
             enable = true;
-            monitors = {};
+            monitors = if hostName == "beelink" then {
+              ${mainMonitor} = [ "1" "2" "3" "4" "5" ];
+              ${secondMonitor} = [ "6" "7" "8" "9" "0" ];
+            } else {};
             rules = {                               # Window Rules (xprop)
+              "Emacs" = {
+                desktop = "3";
+                follow = true;
+                state = "tiled";
+              };
               ".blueman-manager-wrapped" = {
                 state = "floating";
                 sticky = true;
