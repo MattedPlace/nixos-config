@@ -19,5 +19,7 @@
   ./rofi.nix
   ./waybar.nix
   ./wofi.nix
+  ./chromium.nix
+  ./ranger.nix
   #./games.nix
 ]
