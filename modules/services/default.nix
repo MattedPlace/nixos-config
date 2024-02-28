@@ -20,5 +20,7 @@
   ./swaync.nix
   ./sxhkd.nix
   ./udiskie.nix
+  ./touchegg.nix
+  ./gvfs.nix
 ]
 

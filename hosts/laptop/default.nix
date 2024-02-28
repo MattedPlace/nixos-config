@@ -28,7 +28,6 @@ in
   imports = [ ./hardware-configuration.nix ];
 
   boot = {                                  # Boot options
-    kernelPackages = pkgs.linuxPackages_latest;
     loader = {                              # EFI Boot
       efi = {
         canTouchEfiVariables = true;
@@ -42,7 +41,7 @@ in
     };
   };
 
-  gnome.enable = true;
+  bspwm.enable = true;
   laptop.enable = true;
 
   hardware = {                         # Used for scanning with Xsane
@@ -56,7 +55,7 @@ in
         offload.enable = true;
       # Bus ID of the Intel GPU. You can find it using lspci, either under 3D or VGA
         intelBusId = "PCI:0:2:0";
-  
+
     # Bus ID of the NVIDIA GPU. You can find it using lspci, either under 3D or VGA
         nvidiaBusId = "PCI:1:0:0";
       };
@@ -86,7 +85,7 @@ in
       simple-scan
       nvidia-offload
     ];
-  }; 
+  };
 
   programs = {                              # No xbacklight, this is the alterantive
     dconf.enable = true;

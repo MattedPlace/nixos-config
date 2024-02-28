@@ -63,6 +63,8 @@ in
       };
     };
     modules = [
+      nur.nixosModules.nur
+      nixvim.nixosModules.nixvim
       ./laptop
       ./configuration.nix
 

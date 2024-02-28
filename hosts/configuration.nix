@@ -31,6 +31,7 @@ in
   imports = ( import ../modules/desktops ++
               import ../modules/editors ++
               import ../modules/programs ++
+              import ../modules/hardware ++
               import ../modules/services ++
               import ../modules/shell ++
               import ../modules/theming );
@@ -121,15 +122,16 @@ in
       pulseaudio        # Audio Server/Control
       qpwgraph          # Pipewire Graph Manager
       vlc               # Media Player
+      ffmpeg            # Media convertor
+      yt-dlp            # Youtube download
 
       # Apps
       appimage-run      # Runs AppImages on NixOS
       firefox           # Browser
-      google-chrome     # Browser
       microsoft-edge    # Browser
       brave             # Browser
       remmina           # XRDP & VNC Client
-      libreoffice       # office
+      networkmanagerapplet
 
       # File Management
       gnome.file-roller # Archive Manager

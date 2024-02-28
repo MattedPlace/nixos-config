@@ -11,7 +11,7 @@ let
   monitor =
     if hostName == "beelink" then
       "${pkgs.xorg.xrandr}/bin/xrandr --output ${secondMonitor} --mode 1920x1080 --pos 0x0 --rotate normal --output ${mainMonitor} --primary --mode 1920x1080 --pos 1920x0 --rotate normal"
-    else if hostName == "vm" || hostName == "probook" then
+    else if hostName == "vm" || hostName == "laptop" then
       "${pkgs.xorg.xrandr}/bin/xrandr --mode 1920x1080 --pos 0x0 --rotate normal"
     else false;
 
@@ -38,6 +38,10 @@ let
     feh --bg-tile $HOME/.config/wall                # Wallpaper
 
     polybar main & #2>~/log &
+
+    blueman-applet &
+
+    nm-applet &
   '';
 
   extraConf = builtins.replaceStrings [ "WORKSPACES" ]
@@ -48,7 +52,7 @@ let
       bspc wm -O ${mainMonitor} ${secondMonitor}
       polybar sec &
     ''
-    else if hostName == "vm" || hostName == "probook" then ''
+    else if hostName == "vm" || hostName == "laptop" then ''
       bspc monitor -d 1 2 3 4 5
     ''
     else false)
@@ -74,7 +78,6 @@ in
         enable = true;
 
         layout = "us";
-        xkbOptions = "eurosign:e";
         libinput = {
           enable = true;
           touchpad = {
@@ -85,8 +88,6 @@ in
             disableWhileTyping = true;
           };
         };
-        modules = [ pkgs.xf86_input_wacom ];
-        wacom.enable = true;
 
         displayManager = {                          # Display Manager
           lightdm = {
@@ -153,11 +154,6 @@ in
               ${secondMonitor} = [ "6" "7" "8" "9" "0" ];
             } else {};
             rules = {                               # Window Rules (xprop)
-              "Emacs" = {
-                desktop = "3";
-                follow = true;
-                state = "tiled";
-              };
               ".blueman-manager-wrapped" = {
                 state = "floating";
                 sticky = true;

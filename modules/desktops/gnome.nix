@@ -3,7 +3,7 @@
 #  Enable with "gnome.enable = true;"
 #
 
-{ config, lib, pkgs, vars, ... }:
+{ config, lib, pkgs, vars, host, ... }:
 
 with lib;
 {
@@ -92,7 +92,7 @@ with lib;
             "pavucontrol.desktop"
           ];
           disable-user-extensions = false;
-          enabled-extensions = [
+          enabled-extensions = with host; if hostName == "desktop" then [
             "trayiconsreloaded@selfmade.pl"
             "blur-my-shell@aunetx"
             "drive-menu@gnome-shell-extensions.gcampax.github.com"
@@ -108,6 +108,25 @@ with lib;
             "forge@jmmaranan.com"
             # "dash-to-dock@micxgx.gmail.com"           # Alternative Dash-to-Panel
             # "fullscreen-avoider@noobsai.github.com"   # Dash-to-Panel Incompatable
+          ]
+          else [
+            "trayiconsreloaded@selfmade.pl"
+            "blur-my-shell@aunetx"
+            "drive-menu@gnome-shell-extensions.gcampax.github.com"
+            "dash-to-panel@jderose9.github.com"
+            "just-perfection-desktop@just-perfection"
+            "caffeine@patapon.info"
+            "clipboard-indicator@tudmotu.com"
+            "horizontal-workspace-indicator@tty2.io"
+            "bluetooth-quick-connect@bjarosze.gmail.com"
+            "battery-indicator@jgotti.org"
+            "gsconnect@andyholmes.github.io"
+            "pip-on-top@rafostar.github.com"
+            "forge@jmmaranan.com"
+            "x11gestures@joseexposito.github.io"
+            # "dash-to-dock@micxgx.gmail.com"           # Alternative Dash-to-Panel
+            # "fullscreen-avoider@noobsai.github.com"   # Dash-to-Panel Incompatable
+
           ];
         };
 
@@ -273,21 +292,40 @@ with lib;
         # };
       };
 
-      home.packages = with pkgs.gnomeExtensions; [
-        tray-icons-reloaded
-        blur-my-shell
-        removable-drive-menu
-        dash-to-panel
-        battery-indicator-upower
-        just-perfection
-        caffeine
-        clipboard-indicator
-        workspace-indicator-2
-        bluetooth-quick-connect
-        gsconnect
-        pip-on-top
-        pop-shell
-        forge
+      home.packages = with host; if hostName == "desktop" then [
+        pkgs.gnomeExtensions.tray-icons-reloaded
+        pkgs.gnomeExtensions.blur-my-shell
+        pkgs.gnomeExtensions.removable-drive-menu
+        pkgs.gnomeExtensions.dash-to-panel
+        pkgs.gnomeExtensions.battery-indicator-upower
+        pkgs.gnomeExtensions.just-perfection
+        pkgs.gnomeExtensions.caffeine
+        pkgs.gnomeExtensions.clipboard-indicator
+        pkgs.gnomeExtensions.workspace-indicator-2
+        pkgs.gnomeExtensions.bluetooth-quick-connect
+        pkgs.gnomeExtensions.gsconnect
+        pkgs.gnomeExtensions.pip-on-top
+        pkgs.gnomeExtensions.pop-shell
+        pkgs.gnomeExtensions.forge
+        # fullscreen-avoider
+        # dash-to-dock
+      ]
+      else [
+        pkgs.gnomeExtensions.tray-icons-reloaded
+        pkgs.gnomeExtensions.blur-my-shell
+        pkgs.gnomeExtensions.removable-drive-menu
+        pkgs.gnomeExtensions.dash-to-panel
+        pkgs.gnomeExtensions.battery-indicator-upower
+        pkgs.gnomeExtensions.just-perfection
+        pkgs.gnomeExtensions.caffeine
+        pkgs.gnomeExtensions.clipboard-indicator
+        pkgs.gnomeExtensions.workspace-indicator-2
+        pkgs.gnomeExtensions.bluetooth-quick-connect
+        pkgs.gnomeExtensions.gsconnect
+        pkgs.gnomeExtensions.pip-on-top
+        pkgs.gnomeExtensions.pop-shell
+        pkgs.gnomeExtensions.forge
+        pkgs.gnomeExtensions.x11-gestures
         # fullscreen-avoider
         # dash-to-dock
       ];
