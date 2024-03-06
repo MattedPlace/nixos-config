@@ -21,18 +21,18 @@ in
             #killall -q polybar &
             #while pgrep -u $UID -x polybar >/dev/null; do sleep 1; done
             #polybar main &
-            #polybar sec &
+            #polybar sec I&
           '';                                       # Run Polybar on Startup
           package = polybar;
           config = {
             "bar/main" = {                          # Bar "main"
               monitor = mainMonitor;
               width = "100%";
-              height = 15;
+              height = 20;
               background = "#00000000";
               foreground = "#ccffffff";
 
-              offset-y = 2;
+              offset-y = 7;
               padding-right = 2;
               module-margin-left = 1;
 
@@ -42,10 +42,8 @@ in
               font-3 = "FontAwesome6Brands:style=Regular:size=8";
               font-4 = "FiraCodeNerdFont:size=10";
               modules-left = "logo bspwm";
+              modules-center = "tray";
               modules-right = "backlight pad memory cpu pad volume pad date";
-
-              tray-position = "right";
-              tray-detached = "false";
 
               wm-restack = "bspwm";
             };
@@ -156,7 +154,7 @@ in
             };
             "module/date" = {                       # Time/Date  Day-Month-Year Hour:Minute
             type = "internal/date";
-              date = "  %%{F#999}%d-%m-%Y%%{F-} %%{F#fff}%H:%M%%{F-}";
+              date = "  %%{F#999}%m-%d-%Y%%{F-} %%{F#fff}%l:%M%%{F-}";
             };
             "module/bspwm" = {                      # Workspaces
               type = "internal/bspwm";
@@ -236,7 +234,7 @@ in
             # CUSTOM
             "module/pad" = {                        # Padding
               type = "custom/text";
-              content = "    ";
+              content = " ";
             };
             "module/logo" = {                       # Menu
               type = "custom/menu";
@@ -254,29 +252,23 @@ in
 
               menu-1-0 = "";
               menu-1-0-exec = "sleep 0.5; bspc quit";
-              menu-1-1 = "";
-              menu-1-1-exec = "sleep 0.5; xset dpms force standby";
-              menu-1-2 = "";
-              menu-1-2-exec = "sleep 0.5; systemctl suspend";
-              menu-1-3 = "";
-              menu-1-3-exec = "sleep 0.5; systemctl poweroff";
-              menu-1-4 = "";
-              menu-1-4-exec = "sleep 0.5; systemctl reboot";
+              menu-1-1 = "";
+              menu-1-1-exec = "sleep 0.5; systemctl suspend";
+              menu-1-2 = "";
+              menu-1-2-exec = "sleep 0.5; systemctl poweroff";
+              menu-1-3 = "";
+              menu-1-3-exec = "sleep 0.5; systemctl reboot";
 
               menu-2-0 = "";
               menu-2-0-exec = "${vars.terminal} &";
               menu-2-1 = "";
-              menu-2-1-exec = "firefox &";
+              menu-2-1-exec = "brave &";
               menu-2-2 = "";
               menu-2-2-exec = "nvim &";
               menu-2-3 = "";
-              menu-2-3-exec = "plexmediaplayer &";
-              menu-2-4 = "";
-              menu-2-4-exec = "flatpak run com.obsproject.Studio &";
-              menu-2-5 = "";
-              menu-2-5-exec = "lutris &";
-              menu-2-6 = "";
-              menu-2-6-exec = "steam &";
+              menu-2-3-exec = "vlc &";
+              menu-2-4 = "";
+              menu-2-4-exec = "steam &";
             };
             "module/bluetooth" = {                  # Bluetooth
               type = "custom/text";
@@ -290,8 +282,9 @@ in
               ping-interval = 10;
 
               format-connected = "<ramp-signal> <label-connected>";
-              label-connected = "%essid%";
-              label-disconnected = "";
+              label-connected =  "%{A1:nm-applet:}%essid%%{A}";
+              label-disconnected =  "%{A1:nm-applet:}Disconnected%{A}";
+
               label-disconnected-foreground = "#66";
 
               ramp-signal-0 = "";
@@ -301,7 +294,12 @@ in
               animation-packetloss-1 = "";
               animation-packetloss-1-foreground = "#00000000";
               animation-packetloss-framerate = 500;
-              click-left = "${pkgs.networkmanagerapplet}/bin/nm-applet";
+            };
+            "module/tray" = {
+              type = "internal/tray";
+
+              tray-spacing = "16px";
+              tray-size = "80%";
             };
           };
         };

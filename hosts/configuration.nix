@@ -236,10 +236,10 @@ in
           "application/x-bzip2" = "org.gnome.FileRoller.desktop";
           "application/x-gzip" = "org.gnome.FileRoller.desktop";
           # "application/x-bittorrent" = "";
-          "x-scheme-handler/http" = ["firefox.desktop" "google-chrome.desktop"];
-          "x-scheme-handler/https" = ["firefox.desktop" "google-chrome.desktop"];
-          "x-scheme-handler/about" = ["firefox.desktop" "google-chrome.desktop"];
-          "x-scheme-handler/unknown" = ["firefox.desktop" "google-chrome.desktop"];
+          "x-scheme-handler/http" = ["brave-browser.desktop" "google-chrome.desktop"];
+          "x-scheme-handler/https" = ["brave-browser.desktop" "google-chrome.desktop"];
+          "x-scheme-handler/about" = ["brave-browser.desktop" "google-chrome.desktop"];
+          "x-scheme-handler/unknown" = ["brave-browser.desktop" "google-chrome.desktop"];
           "x-scheme-handler/mailto" = ["gmail.desktop"];
           "audio/mp3" = "mpv.desktop";
           "audio/x-matroska" = "mpv.desktop";
