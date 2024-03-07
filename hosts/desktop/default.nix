@@ -20,7 +20,10 @@
 { pkgs, lib, vars, ... }:
 
 {
-  imports = [ ./hardware-configuration.nix ] ++
+  imports = [
+              ./hardware-configuration.nix
+              ../../modules/programs/games.nix
+            ] ++
             ( import ../../modules/desktops/virtualisation );
 
   boot = {                                      # Boot options
