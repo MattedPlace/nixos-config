@@ -78,11 +78,13 @@ in
   };
 
   environment = {
+
     variables = {
       LIBVA_DRIVER_NAME = "i915";
     };
     systemPackages = with pkgs; [
       simple-scan
+      brightnessctl
       nvidia-offload
     ];
   };
