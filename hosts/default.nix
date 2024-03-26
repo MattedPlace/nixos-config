@@ -9,7 +9,7 @@
 #           └─ default.nix
 #
 
-{ lib, inputs, nixpkgs, nixpkgs-unstable, nixos-hardware, home-manager, nur, nixvim, hyprland, plasma-manager, vars, ... }:
+{ lib, inputs, nixpkgs, nixpkgs-unstable, home-manager, nur, nixvim, hyprland, vars, ... }:
 
 let
   system = "x86_64-linux";                                  # System Architecture
@@ -23,6 +23,15 @@ let
     inherit system;
     config.allowUnfree = true;
   };
+
+  hmConfig = {
+    home-manager.useGlobalPkgs = true;
+    home-manager.useUserPackages = true;
+    home-manager.users.${vars.user}.imports = [
+      nixvim.homeManagerModules.nixvim
+    ];
+  };
+
 
   lib = nixpkgs.lib;
 in
@@ -42,11 +51,7 @@ in
       nixvim.nixosModules.nixvim
       ./desktop
       ./configuration.nix
-
-      home-manager.nixosModules.home-manager {              # Home-Manager module that is used.
-        home-manager.useGlobalPkgs = true;
-        home-manager.useUserPackages = true;
-      }
+      home-manager.nixosModules.home-manager hmConfig
     ];
   };
 
@@ -68,10 +73,7 @@ in
       ./laptop
       ./configuration.nix
 
-      home-manager.nixosModules.home-manager {
-        home-manager.useGlobalPkgs = true;
-        home-manager.useUserPackages = true;
-      }
+      home-manager.nixosModules.home-manager hmConfig
     ];
   };
 
@@ -90,10 +92,7 @@ in
       ./vm
       ./configuration.nix
 
-      home-manager.nixosModules.home-manager {
-        home-manager.useGlobalPkgs = true;
-        home-manager.useUserPackages = true;
-      }
+      home-manager.nixosModules.home-manager hmConfig
     ];
   };
 

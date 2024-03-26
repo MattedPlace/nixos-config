@@ -22,19 +22,15 @@ with lib;
       zsh.enable = true;
       kdeconnect = {                                # For GSConnect
         enable = true;
-        package = pkgs.gnomeExtensions.gsconnect;
+        package = pkgs.plasma5Packages.kdeconnect-kde;
       };
     };
-
     services = {
       xserver = {
         enable = true;
 
         layout = "us";
-        xkbOptions = "eurosign:e";
         libinput.enable = true;
-        modules = [ pkgs.xf86_input_wacom ];
-        wacom.enable = true;
 
         displayManager = {
           sddm.enable = true;                       # Display Manager
@@ -60,6 +56,7 @@ with lib;
     };
 
     home-manager.users.${vars.user} = {
+      home.file."/home/Maxwell/.gtkrc-2.0".force = true;
       imports = [
         inputs.plasma-manager.homeManagerModules.plasma-manager
       ];
@@ -67,22 +64,21 @@ with lib;
         enable = true;
         shortcuts = {
           "ActivityManager"."switch-to-activity-21b7f9f5-1878-45ad-b389-58ffa12039d0" = [ ];
-          "KDE Keyboard Layout Switcher"."Switch to Next Keyboard Layout" = "Meta+Alt+K";
           "kaccess"."Toggle Screen Reader On and Off" = "Meta+Alt+S";
           "kcm_touchpad"."Disable Touchpad" = "Touchpad Off";
           "kcm_touchpad"."Enable Touchpad" = "Touchpad On";
-          "kcm_touchpad"."Toggle Touchpad" = ["Touchpad Toggle" "Meta+Ctrl+Zenkaku Hankaku"];
+          "kcm_touchpad"."Toggle Touchpad" = [ "Touchpad Toggle" "Meta+Ctrl+Zenkaku Hankaku" ];
           "kded5"."Show System Activity" = "Ctrl+Esc";
-          "kded5"."display" = ["Display" "Meta+P"];
+          "kded5"."display" = [ "Display" "Meta+P" ];
           "khotkeys"."{d03619b6-9b3c-48cc-9d9c-a2aadb485550}" = [ ];
           "kmix"."decrease_microphone_volume" = "Microphone Volume Down";
           "kmix"."decrease_volume" = "Volume Down";
           "kmix"."increase_microphone_volume" = "Microphone Volume Up";
           "kmix"."increase_volume" = "Volume Up";
-          "kmix"."mic_mute" = ["Microphone Mute" "Meta+Volume Mute"];
+          "kmix"."mic_mute" = [ "Microphone Mute" "Meta+Volume Mute" ];
           "kmix"."mute" = "Volume Mute";
           "ksmserver"."Halt Without Confirmation" = [ ];
-          "ksmserver"."Lock Session" = ["Meta+L" "Screensaver"];
+          "ksmserver"."Lock Session" = [ "Meta+L" "Screensaver" ];
           "ksmserver"."Log Out" = "Ctrl+Alt+Del";
           "ksmserver"."Log Out Without Confirmation" = [ ];
           "ksmserver"."Reboot Without Confirmation" = [ ];
@@ -90,7 +86,7 @@ with lib;
           "kwin"."Decrease Opacity" = [ ];
           "kwin"."Edit Tiles" = "Meta+T";
           "kwin"."Expose" = "Ctrl+F9";
-          "kwin"."ExposeAll" = ["Ctrl+F10" "Launch (C)"];
+          "kwin"."ExposeAll" = [ "Ctrl+F10" "Launch (C)" ];
           "kwin"."ExposeClass" = "Ctrl+F7";
           "kwin"."ExposeClassCurrentDesktop" = [ ];
           "kwin"."Increase Opacity" = [ ];
@@ -239,7 +235,7 @@ with lib;
           "kwin"."Window to Screen 6" = [ ];
           "kwin"."Window to Screen 7" = [ ];
           "kwin"."view_actual_size" = "Meta+0";
-          "kwin"."view_zoom_in" = ["Meta++" "Meta+="];
+          "kwin"."view_zoom_in" = [ "Meta++" "Meta+=" ];
           "kwin"."view_zoom_out" = "Meta+-";
           "mediacontrol"."mediavolumedown" = [ ];
           "mediacontrol"."mediavolumeup" = [ ];
@@ -251,7 +247,7 @@ with lib;
           "mediacontrol"."stopmedia" = "Media Stop";
           "org.kde.dolphin.desktop"."_launch" = "Meta+E";
           "org.kde.krunner.desktop"."RunClipboard" = "Alt+Shift+F2";
-          "org.kde.krunner.desktop"."_launch" = ["Alt+Space" "Alt+F2" "Search"];
+          "org.kde.krunner.desktop"."_launch" = [ "Alt+Space" "Alt+F2" "Search" ];
           "org.kde.plasma.emojier.desktop"."_launch" = "Meta+.";
           "org.kde.spectacle.desktop"."ActiveWindowScreenShot" = "Meta+Print";
           "org.kde.spectacle.desktop"."CurrentMonitorScreenShot" = [ ];
@@ -330,7 +326,6 @@ with lib;
           "kdeglobals"."WM"."inactiveBlend" = "161,169,177";
           "kdeglobals"."WM"."inactiveForeground" = "161,169,177";
           "kglobalshortcutsrc"."ActivityManager"."_k_friendly_name" = "Activity Manager";
-          "kglobalshortcutsrc"."KDE Keyboard Layout Switcher"."_k_friendly_name" = "Keyboard Layout Switcher";
           "kglobalshortcutsrc"."kaccess"."_k_friendly_name" = "Accessibility";
           "kglobalshortcutsrc"."kcm_touchpad"."_k_friendly_name" = "Touchpad";
           "kglobalshortcutsrc"."kded5"."_k_friendly_name" = "KDE Daemon";

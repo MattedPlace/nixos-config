@@ -28,7 +28,6 @@ with lib;
     services = {
       xserver = {
         enable = true;
-        videoDrivers = [ "nvidia" ];
 
         layout = "us";
         libinput.enable = true;
@@ -196,7 +195,7 @@ with lib;
         };
         "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
           binding = "<super>return";
-          command = "alacritty";
+          command = "kitty";
           name = "open-terminal";
         };
         "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1" = {

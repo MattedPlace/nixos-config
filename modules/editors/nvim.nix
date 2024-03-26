@@ -12,6 +12,8 @@ in
   # };
   environment.systemPackages = with pkgs; [
     nodejs
+    python3
+    zig
     go
   ];
   programs.nixvim = {

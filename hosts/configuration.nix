@@ -124,11 +124,13 @@ in
       vlc               # Media Player
       ffmpeg            # Media convertor
       yt-dlp            # Youtube download
+      audacity          # audio editor
 
       # Apps
       appimage-run      # Runs AppImages on NixOS
       firefox           # Browser
       microsoft-edge    # Browser
+      google-chrome     # Browser
       brave             # Browser
       remmina           # XRDP & VNC Client
       networkmanagerapplet
@@ -146,6 +148,7 @@ in
       #social media
       signal-desktop
       telegram-desktop
+
 
       # Other Packages Found @
       # - ./<host>/default.nix
@@ -222,6 +225,7 @@ in
     };
     xdg = {
       mime.enable = true;
+      configFile."mimeapps.list".force = true;
       mimeApps = {
         enable = true;
         defaultApplications = {

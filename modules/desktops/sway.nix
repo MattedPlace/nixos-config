@@ -46,6 +46,7 @@ with host;
     };
 
     home-manager.users.${vars.user} = {
+      home.file."/home/Maxwell/.gtkrc-2.0".force = true;
       wayland.windowManager.sway = {
         enable = true;
         systemd.enable = true;
@@ -85,40 +86,21 @@ with host;
             };
           };
 
-          output = if hostName == "h310m" then {
+          output = {
             "*".bg = "~/.config/wall fill";#
             "*".scale = "1";#
-            "${secondMonitor}" = {
+            "${mainMonitor}" = {
               mode = "1920x1080";
               pos = "0 0";
             };
-            "${mainMonitor}" = {
-              mode = "1920x1080";
-              pos = "1920 0";
-            };
-          } else if hostName == "probook" then {
-            "*".bg = "~/.config/wall fill";
-            "*".scale = "1";
-            "${mainMonitor}" = {
-              mode = "1920x108";
-              pos = "0 0";
-            };
-          } else {};
+          };
 
-          workspaceOutputAssign = if hostName == "beelink" || hostName == "h310m" then [
+          workspaceOutputAssign = [
             {output = mainMonitor; workspace = "1";}
             {output = mainMonitor; workspace = "2";}
             {output = mainMonitor; workspace = "3";}
             {output = mainMonitor; workspace = "4";}
-            {output = secondMonitor; workspace = "5";}
-            {output = secondMonitor; workspace = "6";}
-            {output = secondMonitor; workspace = "7";}
-            {output = secondMonitor; workspace = "8";}
-          ] else if hostName == "probook" then [
-            {output = mainMonitor; workspace = "1";}
-            {output = mainMonitor; workspace = "2";}
-            {output = mainMonitor; workspace = "3";}
-          ] else [];
+          ];
           defaultWorkspace = "workspace number 1";
 
           colors.focused = {
@@ -183,6 +165,7 @@ with host;
             "XF86MonBrightnessUp" = "exec ${pkgs.light}/bin/light -A 5";
           };
         };
+        extraOptions = [ "--unsupported-gpu" ];
         extraConfig = ''
           set $opacity 0.8
           for_window [class=".*"] opacity 0.95
@@ -196,7 +179,7 @@ with host;
           for_window [title="Picture in picture"] floating enable, move position 1205 634, resize set 700 400, sticky enable
         '';                                    # $ swaymsg -t get_tree or get_outputs
         extraSessionCommands = ''
-          #export WLR_NO_HARDWARE_CURSORS="1";  # Needed for cursor in vm
+          export WLR_NO_HARDWARE_CURSORS="1";  # Needed for cursor in vm
           export XDG_SESSION_TYPE=wayland
           export XDG_SESSION_DESKTOP=sway
           export XDG_CURRENT_DESKTOP=sway
