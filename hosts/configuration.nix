@@ -22,26 +22,26 @@
 #           └─ default.nix
 #
 
-{ config, lib, pkgs, unstable, inputs, vars, ... }:
+{ lib, config, pkgs, stable, inputs, vars, ... }:
 
 let
   terminal = pkgs.${vars.terminal};
 in
 {
-  imports = ( import ../modules/desktops ++
-              import ../modules/editors ++
-              import ../modules/programs ++
-              import ../modules/hardware ++
-              import ../modules/services ++
-              import ../modules/shell ++
-              import ../modules/theming );
+  imports = (import ../modules/desktops ++
+    import ../modules/editors ++
+    import ../modules/hardware ++
+    import ../modules/programs ++
+    import ../modules/services ++
+    import ../modules/shell ++
+    import ../modules/theming);
 
   boot = {
     tmp = {
-      cleanOnBoot =  true;
+      cleanOnBoot = true;
       tmpfsSize = "5GB";
     };
-    kernelPackages = pkgs.linuxPackages_latest;
+    # kernelPackages = pkgs.linuxPackages_latest;
   };
 
   users = {
@@ -57,7 +57,7 @@ in
     };
   };
 
-  time.timeZone = "America/Chicago";        # Time zone and internationalisation
+  time.timeZone = "America/Chicago";
   i18n = {
     defaultLocale = "en_US.UTF-8";
   };
@@ -73,14 +73,17 @@ in
     sudo.wheelNeedsPassword = false;
   };
 
-  fonts.packages = with pkgs; [                # Fonts
-    carlito                                 # NixOS
-    vegur                                   # NixOS
+  fonts.packages = with pkgs; [
+    carlito # NixOS
+    vegur # NixOS
     source-code-pro
     jetbrains-mono
-    font-awesome                            # Icons
-    corefonts                               # MS
-    (nerdfonts.override {                   # Nerdfont Icons override
+    font-awesome # Icons
+    corefonts # MS
+    noto-fonts # Google + Unicode
+    noto-fonts-cjk
+    noto-fonts-emoji
+    (nerdfonts.override {
       fonts = [
         "FiraCode"
       ];
@@ -88,75 +91,72 @@ in
   ];
 
   environment = {
-    variables = {                           # Environment Variables
+    variables = {
       TERMINAL = "${vars.terminal}";
       EDITOR = "${vars.editor}";
       VISUAL = "${vars.editor}";
     };
-    systemPackages = with pkgs; [           # System-Wide Packages
+    systemPackages = with pkgs; [
       # Terminal
-      terminal          # Terminal Emulator
-      btop              # Resource Manager
-      coreutils         # GNU Utilities
-      git               # Version Control
-      killall           # Process Killer
-      lshw              # Hardware Config
-      nano              # Text Editor
-      nix-tree          # Browse Nix Store
-      pciutils          # Manage PCI
-      ranger            # File Manager
-      smartmontools     # Disk Health
-      tldr              # Helper
-      usbutils          # Manage USB
-      wget              # Retriever
-      xdg-utils         # Environment integration
+      terminal # Terminal Emulator
+      btop # Resource Manager
+      cifs-utils # Samba
+      coreutils # GNU Utilities
+      git # Version Control
+      gvfs # Samba
+      killall # Process Killer
+      lshw # Hardware Config
+      nano # Text Editor
+      nodejs # Javascript Runtime
+      nodePackages.pnpm # Package Manager
+      nix-tree # Browse Nix Store
+      pciutils # Manage PCI
+      ranger # File Manager
+      smartmontools # Disk Health
+      tldr # Helper
+      usbutils # Manage USB
+      wget # Retriever
+      xdg-utils # Environment integration
 
       # Video/Audio
-      alsa-utils        # Audio Control
-      feh               # Image Viewer
-      image-roll        # Image Viewer
-      linux-firmware    # Proprietary Hardware Blob
-      mpv               # Media Player
-      pavucontrol       # Audio Control
-      pipewire          # Audio Server/Control
-      pulseaudio        # Audio Server/Control
-      qpwgraph          # Pipewire Graph Manager
-      vlc               # Media Player
-      ffmpeg            # Media convertor
+      alsa-utils # Audio Control
+      feh # Image Viewer
+      linux-firmware # Proprietary Hardware Blob
+      mpv # Media Player
+      pavucontrol # Audio Control
+      pipewire # Audio Server/Control
+      pulseaudio # Audio Server/Control
+      qpwgraph # Pipewire Graph Manager
+      vlc # Media Player
       yt-dlp            # Youtube download
-      audacity          # audio editor
 
       # Apps
-      appimage-run      # Runs AppImages on NixOS
-      firefox           # Browser
-      microsoft-edge    # Browser
-      google-chrome     # Browser
+      appimage-run # Runs AppImages on NixOS
+      firefox # Browser
+      google-chrome # Browser
+      remmina # XRDP & VNC Client
       brave             # Browser
-      remmina           # XRDP & VNC Client
-      networkmanagerapplet
+      signal-desktop    # Family chat
+      qbittorrent
 
       # File Management
       gnome.file-roller # Archive Manager
-      pcmanfm           # File Browser
-      p7zip             # Zip Encryption
-      rsync             # Syncer - $ rsync -r dir1/ dir2/
-      unzip             # Zip Files
-      unrar             # Rar Files
-      wpsoffice         # Office
-      zip               # Zip
-
-      #social media
-      signal-desktop
-      telegram-desktop
-
+      pcmanfm # File Browser
+      p7zip # Zip Encryption
+      rsync # Syncer - $ rsync -r dir1/ dir2/
+      unzip # Zip Files
+      unrar # Rar Files
+      wpsoffice # Office
+      zip # Zip
 
       # Other Packages Found @
       # - ./<host>/default.nix
       # - ../modules
     ] ++
-    (with unstable; [
+    (with stable; [
       # Apps
-      # firefox           # Browser
+      # firefox # Browser
+      image-roll # Image Viewer
     ]);
   };
 
@@ -166,10 +166,10 @@ in
 
   hardware.pulseaudio.enable = false;
   services = {
-    printing = {                            # CUPS
+    printing = {
       enable = true;
     };
-    pipewire = {                            # Sound
+    pipewire = {
       enable = true;
       alsa = {
         enable = true;
@@ -178,27 +178,27 @@ in
       pulse.enable = true;
       jack.enable = true;
     };
-    openssh = {                             # SSH
+    openssh = {
       enable = true;
-      allowSFTP = true;                     # SFTP
+      allowSFTP = true;
       extraConfig = ''
         HostKeyAlgorithms +ssh-rsa
       '';
     };
   };
 
-  flatpak.enable = true;                    # Enable Flatpak (see module options)
+  flatpak.enable = true;
 
-  nix = {                                   # Nix Package Manager Settings
-    settings ={
+  nix = {
+    settings = {
       auto-optimise-store = true;
     };
-    gc = {                                  # Garbage Collection
+    gc = {
       automatic = true;
       dates = "weekly";
-      options = "--delete-older-than 7d";
+      options = "--delete-older-than 2d";
     };
-    package = pkgs.nixVersions.unstable;    # Enable Flakes
+    # package = pkgs.nixVersions.latest;
     registry.nixpkgs.flake = inputs.nixpkgs;
     extraOptions = ''
       experimental-features = nix-command flakes
@@ -206,17 +206,17 @@ in
       keep-derivations      = true
     '';
   };
-  nixpkgs.config.allowUnfree = true;        # Allow Proprietary Software.
+  nixpkgs.config.allowUnfree = true;
 
-  system = {                                # NixOS Settings
-    #autoUpgrade = {                        # Allow Auto Update (not useful in flakes)
-    #  enable = true;
-    #  channel = "https://nixos.org/channels/nixos-unstable";
-    #};
+  system = {
+    # autoUpgrade = {
+    #   enable = true;
+    #   channel = "https://nixos.org/channels/nixos-unstable";
+    # };
     stateVersion = "22.05";
   };
 
-  home-manager.users.${vars.user} = {       # Home-Manager Settings
+  home-manager.users.${vars.user} = {
     home = {
       stateVersion = "22.05";
     };
@@ -225,26 +225,24 @@ in
     };
     xdg = {
       mime.enable = true;
-      configFile."mimeapps.list".force = true;
-      mimeApps = {
+      mimeApps = lib.mkIf (config.gnome.enable == false) {
         enable = true;
         defaultApplications = {
-          "image/jpeg" = ["image-roll.desktop" "feh.desktop"];
-          "image/png" = ["image-roll.desktop" "feh.desktop"];
+          "image/jpeg" = [ "image-roll.desktop" "feh.desktop" ];
+          "image/png" = [ "image-roll.desktop" "feh.desktop" ];
           "text/plain" = "nvim.desktop";
           "text/html" = "nvim.desktop";
           "text/csv" = "nvim.desktop";
-          "application/pdf" = [ "wps-office-pdf.desktop" "firefox.desktop" "google-chrome.desktop"];
+          "application/pdf" = [ "wps-office-pdf.desktop" "firefox.desktop" "google-chrome.desktop" ];
           "application/zip" = "org.gnome.FileRoller.desktop";
           "application/x-tar" = "org.gnome.FileRoller.desktop";
           "application/x-bzip2" = "org.gnome.FileRoller.desktop";
           "application/x-gzip" = "org.gnome.FileRoller.desktop";
-          # "application/x-bittorrent" = "";
-          "x-scheme-handler/http" = ["brave-browser.desktop" "google-chrome.desktop"];
-          "x-scheme-handler/https" = ["brave-browser.desktop" "google-chrome.desktop"];
-          "x-scheme-handler/about" = ["brave-browser.desktop" "google-chrome.desktop"];
-          "x-scheme-handler/unknown" = ["brave-browser.desktop" "google-chrome.desktop"];
-          "x-scheme-handler/mailto" = ["gmail.desktop"];
+          "x-scheme-handler/http" = [ "firefox.desktop" "google-chrome.desktop" ];
+          "x-scheme-handler/https" = [ "firefox.desktop" "google-chrome.desktop" ];
+          "x-scheme-handler/about" = [ "firefox.desktop" "google-chrome.desktop" ];
+          "x-scheme-handler/unknown" = [ "firefox.desktop" "google-chrome.desktop" ];
+          "x-scheme-handler/mailto" = [ "gmail.desktop" ];
           "audio/mp3" = "mpv.desktop";
           "audio/x-matroska" = "mpv.desktop";
           "video/webm" = "mpv.desktop";
@@ -255,13 +253,13 @@ in
       };
       desktopEntries.image-roll = {
         name = "image-roll";
-        exec = "${pkgs.image-roll}/bin/image-roll %F";
-        mimeType = ["image/*"];
+        exec = "${stable.image-roll}/bin/image-roll %F";
+        mimeType = [ "image/*" ];
       };
       desktopEntries.gmail = {
         name = "Gmail";
         exec = ''xdg-open "https://mail.google.com/mail/?view=cm&fs=1&to=%u"'';
-        mimeType = ["x-scheme-handler/mailto"];
+        mimeType = [ "x-scheme-handler/mailto" ];
       };
     };
   };

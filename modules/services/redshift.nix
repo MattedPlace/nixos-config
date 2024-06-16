@@ -2,7 +2,7 @@
 #  Screen Temperature
 #
 
-{ config, lib, pkgs, vars, ...}:
+{ config, lib, vars, ... }:
 
 {
   config = lib.mkIf (config.services.xserver.enable) {
@@ -11,8 +11,8 @@
         redshift = {
           enable = true;
           temperature.night = 3000;
-          latitude = 44.9778;
-          longitude = 93.265;
+          latitude = 50.929818;
+          longitude = 5.338297;
         };
       };
     };

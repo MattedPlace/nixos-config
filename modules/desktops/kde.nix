@@ -20,32 +20,37 @@ with lib;
   config = mkIf (config.kde.enable) {
     programs = {
       zsh.enable = true;
-      kdeconnect = {                                # For GSConnect
+      kdeconnect = {
         enable = true;
-        package = pkgs.plasma5Packages.kdeconnect-kde;
+        package = pkgs.gnomeExtensions.gsconnect;
       };
     };
+
     services = {
+      displayManager = {
+        sddm.enable = true;
+        defaultSession = "plasmawayland";
+      };
+      libinput.enable = true;
       xserver = {
         enable = true;
-
-        layout = "us";
-        libinput.enable = true;
-
-        displayManager = {
-          sddm.enable = true;                       # Display Manager
-          defaultSession = "plasmawayland";
+        xkb = {
+          layout = "us";
+          options = "eurosign:e";
         };
+        modules = [ pkgs.xf86_input_wacom ];
+        wacom.enable = true;
+
         desktopManager.plasma5 = {
-          enable = true;                            # Desktop Environment
+          enable = true;
         };
       };
     };
 
     environment = {
-      systemPackages = with pkgs.libsForQt5; [      # System-Wide Packages
-        bismuth         # Dynamic Tiling
-        packagekit-qt   # Package Updater
+      systemPackages = with pkgs.libsForQt5; [
+        bismuth # Dynamic Tiling
+        packagekit-qt # Package Updater
       ];
       plasma5.excludePackages = with pkgs.libsForQt5; [
         elisa
@@ -56,7 +61,6 @@ with lib;
     };
 
     home-manager.users.${vars.user} = {
-      home.file."/home/Maxwell/.gtkrc-2.0".force = true;
       imports = [
         inputs.plasma-manager.homeManagerModules.plasma-manager
       ];
@@ -64,6 +68,7 @@ with lib;
         enable = true;
         shortcuts = {
           "ActivityManager"."switch-to-activity-21b7f9f5-1878-45ad-b389-58ffa12039d0" = [ ];
+          "KDE Keyboard Layout Switcher"."Switch to Next Keyboard Layout" = "Meta+Alt+K";
           "kaccess"."Toggle Screen Reader On and Off" = "Meta+Alt+S";
           "kcm_touchpad"."Disable Touchpad" = "Touchpad Off";
           "kcm_touchpad"."Enable Touchpad" = "Touchpad On";
@@ -326,6 +331,7 @@ with lib;
           "kdeglobals"."WM"."inactiveBlend" = "161,169,177";
           "kdeglobals"."WM"."inactiveForeground" = "161,169,177";
           "kglobalshortcutsrc"."ActivityManager"."_k_friendly_name" = "Activity Manager";
+          "kglobalshortcutsrc"."KDE Keyboard Layout Switcher"."_k_friendly_name" = "Keyboard Layout Switcher";
           "kglobalshortcutsrc"."kaccess"."_k_friendly_name" = "Accessibility";
           "kglobalshortcutsrc"."kcm_touchpad"."_k_friendly_name" = "Touchpad";
           "kglobalshortcutsrc"."kded5"."_k_friendly_name" = "KDE Daemon";

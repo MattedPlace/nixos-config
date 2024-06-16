@@ -12,7 +12,8 @@
 
 [
   ./avahi.nix
-  #./dunst.nix
+  ./touchegg.nix
+  # ./dunst.nix
   ./flameshot.nix
   ./picom.nix
   ./polybar.nix
@@ -20,7 +21,4 @@
   ./swaync.nix
   ./sxhkd.nix
   ./udiskie.nix
-  ./touchegg.nix
-  ./gvfs.nix
 ]
-

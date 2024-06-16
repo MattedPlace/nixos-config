@@ -6,7 +6,7 @@
 
 with host;
 let
-  polybar = pkgs.polybar.override {                 # Extra Packages
+  polybar = pkgs.polybar.override {
     alsaSupport = true;
     pulseSupport = true;
   };
@@ -18,21 +18,21 @@ in
         polybar = {
           enable = true;
           script = ''
-            #killall -q polybar &
-            #while pgrep -u $UID -x polybar >/dev/null; do sleep 1; done
-            #polybar main &
-            #polybar sec I&
-          '';                                       # Run Polybar on Startup
+            # killall -q polybar &
+            # while pgrep -u $UID -x polybar >/dev/null; do sleep 1; done
+            # polybar main &
+            # polybar sec &
+          ''; # Run Polybar on Startup
           package = polybar;
           config = {
-            "bar/main" = {                          # Bar "main"
+            "bar/main" = {
               monitor = mainMonitor;
               width = "100%";
-              height = 20;
+              height = 15;
               background = "#00000000";
               foreground = "#ccffffff";
 
-              offset-y = 7;
+              offset-y = 2;
               padding-right = 2;
               module-margin-left = 1;
 
@@ -42,12 +42,14 @@ in
               font-3 = "FontAwesome6Brands:style=Regular:size=8";
               font-4 = "FiraCodeNerdFont:size=10";
               modules-left = "logo bspwm";
-              modules-center = "tray";
-              modules-right = "backlight pad memory cpu pad volume pad date";
+              modules-right = "backlight pad memory cpu pad sink volume pad battery date";
+
+              tray-position = "right";
+              tray-detached = "false";
 
               wm-restack = "bspwm";
             };
-            "bar/sec" = {                         # Bar "sec"
+            "bar/sec" = {
               monitor = "${secondMonitor}";
               width = "100%";
               height = 15;
@@ -65,24 +67,46 @@ in
               font-3 = "FontAwesome6Brands:style=Regular:size=8";
               font-4 = "FiraCodeNerdFont:size=10";
               modules-left = "logo bspwm";
-              modules-right = "sink volume pad date";
+              modules-right = "memory cpu pad sink volume pad date";
 
               wm-restack = "bspwm";
             };
-            "module/memory" = {                     # RAM
+            "bar/thi" = {
+              monitor = "${thirdMonitor}";
+              width = "100%";
+              height = 15;
+              background = "#00000000";
+              foreground = "#ccffffff";
+
+              offset-y = 2;
+              spacing = "1.5";
+              padding-right = 2;
+              module-margin-left = 1;
+
+              font-0 = "SourceCodePro:size=10";
+              font-1 = "FontAwesome6Free:style=Solid:size=8";
+              font-2 = "FontAwesome6Free:style=Regular:size=8";
+              font-3 = "FontAwesome6Brands:style=Regular:size=8";
+              font-4 = "FiraCodeNerdFont:size=10";
+              modules-left = "logo bspwm";
+              modules-right = "memory cpu pad sink volume pad date";
+
+              wm-restack = "bspwm";
+            };
+            "module/memory" = {
               type = "internal/memory";
               format = "<label>";
               format-foreground = "#999";
               label = "  %percentage_used%%";
             };
-            "module/cpu" = {                        # CPU
+            "module/cpu" = {
               type = "internal/cpu";
               interval = 1;
               format = "<label>";
               format-foreground = "#999";
               label = "  %percentage%%";
             };
-            "module/volume" = {                     # Volume
+            "module/volume" = {
               type = "internal/pulseaudio";
               interval = 2;
               use-ui-max = "false";
@@ -96,7 +120,7 @@ in
 
               click-right = "${pkgs.pavucontrol}/bin/pavucontrol";
             };
-            "module/backlight" = {                  # Brightness (xbacklight)
+            "module/backlight" = {
               type = "internal/backlight";
               card = "intel_backlight";
               format = "<ramp> <bar>";
@@ -116,7 +140,7 @@ in
               bar-empty-font = 3;
               bar-empty-foreground = "#44";
             };
-            "module/battery" = {                    # Battery
+            "module/battery" = {
               type = "internal/battery";
               full-at = 98;
 
@@ -152,24 +176,34 @@ in
               animation-charging-4 = "";
               animation-charging-framerate = 750;
             };
-            "module/date" = {                       # Time/Date  Day-Month-Year Hour:Minute
-            type = "internal/date";
-              date = "  %%{F#999}%m-%d-%Y%%{F-} %%{F#fff}%l:%M%%{F-}";
+            "module/date" = {
+              type = "internal/date";
+              date = "  %%{F#999}%d-%m-%Y%%{F-} %%{F#fff}%H:%M%%{F-}";
             };
-            "module/bspwm" = {                      # Workspaces
+            "module/bspwm" = {
               type = "internal/bspwm";
               pin-workspace = true;
 
-              ws-icon-0 = "1;";
-              ws-icon-1 = "2;";
-              ws-icon-2 = "3;";
-              ws-icon-3 = "4;";
-              ws-icon-4 = "5;";
-              ws-icon-5 = "6;";
-              ws-icon-6 = "7;";
-              ws-icon-7 = "8;";
-              ws-icon-8 = "9;";
-              ws-icon-9 = "10;";
+              # ws-icon-0 = "1;";
+              # ws-icon-1 = "2;";
+              # ws-icon-2 = "3;";
+              # ws-icon-3 = "4;";
+              # ws-icon-4 = "5;";
+              # ws-icon-5 = "6;";
+              # ws-icon-6 = "7;";
+              # ws-icon-7 = "8;";
+              # ws-icon-8 = "9;";
+              # ws-icon-9 = "10;";
+              ws-icon-0 = "1;1";
+              ws-icon-1 = "2;2";
+              ws-icon-2 = "3;3";
+              ws-icon-3 = "4;4";
+              ws-icon-4 = "5;5";
+              ws-icon-5 = "6;6";
+              ws-icon-6 = "7;7";
+              ws-icon-7 = "8;8";
+              ws-icon-8 = "9;9";
+              ws-icon-9 = "0;0";
 
               format = "<label-state> <label-mode>";
 
@@ -220,7 +254,7 @@ in
               label-private-underline = "#c9665e";
               label-private-padding = 2;
             };
-            "module/title" = {                      # Window Title
+            "module/title" = {
               type = "internal/xwindow";
               format = "<label>";
               format-background = "#00000000";
@@ -231,12 +265,25 @@ in
               label-empty-foreground = "#ccffffff";
             };
 
-            # CUSTOM
-            "module/pad" = {                        # Padding
+            "module/pad" = {
               type = "custom/text";
-              content = " ";
+              content = "    ";
             };
-            "module/logo" = {                       # Menu
+            "module/mic" = {
+              type = "custom/script";
+              interval = 1;
+              tail = "true";
+              exec = "~/.config/polybar/script/mic.sh status";
+              click-left = "~/.config/polybar/script/mic.sh toggle";
+            };
+            "module/sink" = {
+              type = "custom/script";
+              interval = 1;
+              tail = "true";
+              exec = "~/.config/polybar/script/sink.sh status";
+              click-left = "~/.config/polybar/script/sink.sh toggle";
+            };
+            "module/logo" = {
               type = "custom/menu";
               expand-right = true;
 
@@ -252,57 +299,90 @@ in
 
               menu-1-0 = "";
               menu-1-0-exec = "sleep 0.5; bspc quit";
-              menu-1-1 = "";
-              menu-1-1-exec = "sleep 0.5; systemctl suspend";
-              menu-1-2 = "";
-              menu-1-2-exec = "sleep 0.5; systemctl poweroff";
-              menu-1-3 = "";
-              menu-1-3-exec = "sleep 0.5; systemctl reboot";
+              menu-1-1 = "";
+              menu-1-1-exec = "sleep 0.5; xset dpms force standby";
+              menu-1-2 = "";
+              menu-1-2-exec = "sleep 0.5; systemctl suspend";
+              menu-1-3 = "";
+              menu-1-3-exec = "sleep 0.5; systemctl poweroff";
+              menu-1-4 = "";
+              menu-1-4-exec = "sleep 0.5; systemctl reboot";
 
               menu-2-0 = "";
               menu-2-0-exec = "${vars.terminal} &";
               menu-2-1 = "";
-              menu-2-1-exec = "brave &";
+              menu-2-1-exec = "firefox &";
               menu-2-2 = "";
-              menu-2-2-exec = "nvim &";
+              menu-2-2-exec = "emacs &";
               menu-2-3 = "";
-              menu-2-3-exec = "vlc &";
-              menu-2-4 = "";
-              menu-2-4-exec = "steam &";
+              menu-2-3-exec = "plexmediaplayer &";
+              menu-2-4 = "";
+              menu-2-4-exec = "flatpak run com.obsproject.Studio &";
+              menu-2-5 = "";
+              menu-2-5-exec = "lutris &";
+              menu-2-6 = "";
+              menu-2-6-exec = "steam &";
             };
-            "module/bluetooth" = {                  # Bluetooth
+            "module/bluetooth" = {
               type = "custom/text";
               content = "";
               click-left = "${pkgs.blueman}/bin/blueman-manager";
             };
-            "module/wireless-network" = {           # Show either wired or wireless
-              type = "internal/network";
-              interface = "wlo1";
-              interval = "3.0";
-              ping-interval = 10;
-
-              format-connected = "<ramp-signal> <label-connected>";
-              label-connected =  "%{A1:nm-applet:}%essid%%{A}";
-              label-disconnected =  "%{A1:nm-applet:}Disconnected%{A}";
-
-              label-disconnected-foreground = "#66";
-
-              ramp-signal-0 = "";
-
-              animation-packetloss-0 = "";
-              animation-packetloss-0-foreground = "#ffa64c";
-              animation-packetloss-1 = "";
-              animation-packetloss-1-foreground = "#00000000";
-              animation-packetloss-framerate = 500;
-            };
-            "module/tray" = {
-              type = "internal/tray";
-
-              tray-spacing = "16px";
-              tray-size = "80%";
-            };
           };
         };
+      };
+      home.file.".config/polybar/script/mic.sh" = {
+        text = ''
+          #!/bin/sh
+
+          case $1 in
+              "status")
+              #MUTED=$(pacmd list-sources | awk '/\*/,EOF {print}' | awk '/muted/ {print $2; exit}')
+              #if [[ $MUTED = "no" ]]; then
+              MUTED=$(awk -F"[][]" '/Left:/ { print $4 }' <(amixer sget Capture))
+              if [[ $MUTED = "on" ]]; then
+                  echo ''
+              else
+                  echo ''
+              fi
+              ;;
+              "toggle")
+              #ID=$(pacmd list-sources | grep "*\ index:" | cut -d' ' -f5)
+              #pactl set-source-mute $ID toggle
+              ${pkgs.alsa-utils}/bin/amixer set Capture toggle
+              ;;
+          esac
+        '';
+        executable = true;
+      };
+      home.file.".config/polybar/script/sink.sh" = {
+        text = ''
+          #!/bin/sh
+
+          ID1=$(awk '/ Built-in Audio Analog Stereo/ {sub(/.$/,"",$2); print $2 }' <(${pkgs.wireplumber}/bin/wpctl status) | head -n 1)
+          ID2=$(awk '/ S10 Bluetooth Speaker/ {sub(/.$/,"",$2); print $2 }' <(${pkgs.wireplumber}/bin/wpctl status) | sed -n 2p)
+
+          HEAD=$(awk '/ Built-in Audio Analog Stereo/ { print $2 }' <(${pkgs.wireplumber}/bin/wpctl status | grep "*") | sed -n 2p)
+          SPEAK=$(awk '/ S10 Bluetooth Speaker/ { print $2 }' <(${pkgs.wireplumber}/bin/wpctl status | grep "*") | head -n 1)
+
+          case $1 in
+              "status")
+              if [[ $HEAD = "*" ]]; then
+                  echo ''
+              elif [[ $SPEAK = "*" ]]; then
+                  echo '蓼'
+              fi
+              ;;
+              "toggle")
+              if [[ $HEAD = "*" ]]; then
+                  ${pkgs.wireplumber}/bin/wpctl set-default $ID2
+              elif [[ $SPEAK = "*" ]]; then
+                  ${pkgs.wireplumber}/bin/wpctl set-default $ID1
+              fi
+              ;;
+          esac
+        '';
+        executable = true;
       };
     };
   };

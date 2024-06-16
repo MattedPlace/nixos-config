@@ -12,6 +12,7 @@
 
 [
   ./alacritty.nix
+  ./accounts.nix
   ./eww.nix
   ./flatpak.nix
   ./kitty.nix
@@ -19,7 +20,6 @@
   ./rofi.nix
   ./waybar.nix
   ./wofi.nix
-  ./chromium.nix
   ./ranger.nix
-  #./games.nix
+  ./games.nix
 ]

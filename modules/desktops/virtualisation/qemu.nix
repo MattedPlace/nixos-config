@@ -2,14 +2,14 @@
 #  Qemu/KVM With Virt-Manager
 #
 
-{ pkgs, vars, ... }:
+{ config, pkgs, vars, ... }:
 
 {
   boot.extraModprobeConfig = ''
     options kvm_intel nested=1
     options kvm_intel emulate_invalid_guest_state=0
     options kvm ignore_nsrs=1
-  '';                                         # For OSX-KVM
+  ''; # For OSX-KVM
 
   users.groups = {
     libvirtd.members = [ "root" "${vars.user}" ];
@@ -21,7 +21,7 @@
       enable = true;
       qemu = {
         verbatimConfig = ''
-         nvram = [ "${pkgs.OVMF}/FV/OVMF.fd:${pkgs.OVMF}/FV/OVMF_VARS.fd" ]
+          nvram = [ "${pkgs.OVMF}/FV/OVMF.fd:${pkgs.OVMF}/FV/OVMF_VARS.fd" ]
         '';
         swtpm.enable = true;
       };
@@ -31,44 +31,50 @@
 
   environment = {
     systemPackages = with pkgs; [
-      virt-manager    # VM Interface
-      virt-viewer     # Remote VM
-      qemu            # Virtualizer
-      OVMF            # UEFI Firmware
-      gvfs            # Shared Directory
-      swtpm           # TPM
-      virglrenderer   # Virtual OpenGL
+      virt-manager # VM Interface
+      virt-viewer # Remote VM
+      qemu # Virtualizer
+      OVMF # UEFI Firmware
+      gvfs # Shared Directory
+      swtpm # TPM
+      virglrenderer # Virtual OpenGL
     ];
   };
 
-  services = {                                # File Sharing
+  services = {
     gvfs.enable = true;
   };
 
-  #boot ={
-  #  kernelParams = [ "intel_iommu=on" "vfio" "vfio_iommu_type1" "vfio_pci" "vfio_virqfd" ];      # or amd_iommu (cpu)
-  #  kernelModules = [ "vendor-reset" "vfio" "vfio_iommu_type1" "vfio_pci" "vfio_virqfd"];
-  #  extraModulePackages = [ config.boot.kernelPackages.vendor-reset ]; # Presumably fix for GPU Reset Bug
-  #  extraModprobeConfig = "options vfio-pci ids=1002:67DF,1002:AAF0"; # grep PCI_ID /sys/bus/pci/devices/*/uevent
-  #  kernelPatches = [
-  #    {
-  #    name = "vendor-reset-reqs-and-other-stuff";
-  #    patch = null;
-  #    extraConfig = ''
-  #    FTRACE y
-  #    KPROBES y
-  #    FUNCTION_TRACER y
-  #    HWLAT_TRACER y
-  #    TIMERLAT_TRACER y
-  #    IRQSOFF_TRACER y
-  #    OSNOISE_TRACER y
-  #    PCI_QUIRKS y
-  #    KALLSYMS y
-  #    KALLSYMS_ALL y
-  #    '';
-  #    }
-  #  ];
-  #};
+  # OpenGL in VM
+  # 1. Install virglrenderer
+  # 2. Set video to VirtIO and enable 3d acceleration
+  # 3. Under display, set Listen type to none and enable OpenGL (select correct device)
+
+  # GPU Passthrough w/ vendor reset
+  # boot = {
+  #   kernelParams = [ "intel_iommu=on" "vfio" "vfio_iommu_type1" "vfio_pci" "vfio_virqfd" ]; # or amd_iommu (cpu)
+  #   kernelModules = [ "vendor-reset" "vfio" "vfio_iommu_type1" "vfio_pci" "vfio_virqfd" ];
+  #   extraModulePackages = [ config.boot.kernelPackages.vendor-reset ]; # Presumably fix for GPU Reset Bug
+  #   extraModprobeConfig = "options vfio-pci ids=1002:67DF,1002:AAF0"; # grep PCI_ID /sys/bus/pci/devices/*/uevent
+  #   kernelPatches = [
+  #     {
+  #       name = "vendor-reset-reqs-and-other-stuff";
+  #       patch = null;
+  #       extraConfig = ''
+  #         FTRACE y
+  #         KPROBES y
+  #         FUNCTION_TRACER y
+  #         HWLAT_TRACER y
+  #         TIMERLAT_TRACER y
+  #         IRQSOFF_TRACER y
+  #         OSNOISE_TRACER y
+  #         PCI_QUIRKS y
+  #         KALLSYMS y
+  #         KALLSYMS_ALL y
+  #       '';
+  #     }
+  #   ];
+  # };
 }
 
 #SHARED FOLDER
@@ -182,7 +188,7 @@
 # 13 Install correct video drivers
 
 #MACOS ON VIRT-MANAGER
-# General Guide: nixos.wiki/wiki/OSX-KVM
+# General Guide: wiki.nixos.org/wiki/OSX-KVM
 # Repository: github.com/kholia/OSX-KVM
 # IMPORTANT: if you wish to start the virtual machine with virt-manager gui, clone to /home/<user>/.
 # 1. git clone https://github.com/kholia/OSX-KVM

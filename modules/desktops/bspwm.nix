@@ -11,15 +11,17 @@ let
   monitor =
     if hostName == "beelink" then
       "${pkgs.xorg.xrandr}/bin/xrandr --output ${secondMonitor} --mode 1920x1080 --pos 0x0 --rotate normal --output ${mainMonitor} --primary --mode 1920x1080 --pos 1920x0 --rotate normal"
-    else if hostName == "vm" || hostName == "laptop" then
+    else if hostName == "work" then
+      "${pkgs.xorg.xrandr}/bin/xrandr --output ${mainMonitor} --mode 1920x1080 --pos 0x0 --rotate normal --primary --output ${secondMonitor} --mode 1920x1200 --pos 1920x0 --rotate normal --output ${thirdMonitor} --mode 1920x1200 --pos 3840x0 --rotate normal"
+    else if hostName == "vm" || hostName == "probook"  || hostName == "laptop" then
       "${pkgs.xorg.xrandr}/bin/xrandr --mode 1920x1080 --pos 0x0 --rotate normal"
-    else false;
+    else "";
 
   extra = ''
-    killall -q polybar &                            # Kill polybar
+    killall -q polybar &
     while pgrep -u $UID -x polybar >/dev/null; do sleep 1;done
 
-    WORKSPACES                                      # Workspace Tags
+    WORKSPACES
 
     bspc config border_width      3
     bspc config window_gaps      12
@@ -35,29 +37,27 @@ let
 
     #pgrep -x sxhkd > /dev/null || sxhkd &
 
-    feh --bg-tile $HOME/.config/wall                # Wallpaper
+    feh --bg-tile $HOME/.config/wall.png
 
     polybar main & #2>~/log &
-
-    blueman-applet &
-
-    nm-applet &
   '';
 
   extraConf = builtins.replaceStrings [ "WORKSPACES" ]
-  [
-    (if hostName == "beelink" then ''
-      bspc monitor ${mainMonitor} -d 1 2 3 4 5
-      bspc monitor ${secondMonitor} -d 6 7 8 9 0
-      bspc wm -O ${mainMonitor} ${secondMonitor}
-      polybar sec &
-    ''
-    else if hostName == "vm" || hostName == "laptop" then ''
-      bspc monitor -d 1 2 3 4 5
-    ''
-    else false)
-  ]
-  "${extra}";
+    [
+      (if hostName == "beelink" || hostName == "work" then ''
+        bspc monitor ${mainMonitor} -d 1 2 3
+        bspc monitor ${secondMonitor} -d 4 5 6
+        bspc monitor ${thirdMonitor} -d 7 8 9
+        bspc wm -O ${mainMonitor} ${secondMonitor} ${thirdMonitor}
+        polybar sec &
+        polybar thi &
+      ''
+      else if hostName == "vm" || hostName == "probook" then ''
+        bspc monitor -d 1 2 3 4 5
+      ''
+      else "")
+    ]
+    "${extra}";
 in
 {
   options = {
@@ -70,14 +70,11 @@ in
   };
 
   config = mkIf (config.bspwm.enable)
-  {
-    x11wm.enable = true;                            # X11 Window Manager
+    {
+      x11wm.enable = true;
 
-    services = {
-      xserver = {
-        enable = true;
-
-        layout = "us";
+      services = {
+        displayManager.defaultSession = "none+bspwm";
         libinput = {
           enable = true;
           touchpad = {
@@ -88,112 +85,127 @@ in
             disableWhileTyping = true;
           };
         };
+        xserver = {
+          enable = true;
+          xkb = {
+            layout = "us";
+            options = "eurosign:e";
+          };
+          autoRepeatInterval = 50;
+          autoRepeatDelay = 200;
+          modules = [ pkgs.xf86_input_wacom ];
+          wacom.enable = true;
 
-        displayManager = {                          # Display Manager
-          lightdm = {
-            enable = true;
-            background = pkgs.nixos-artwork.wallpapers.nineish-dark-gray.gnomeFilePath;
-            greeters = {
-              gtk = {
-                theme = {
-                  name = "Dracula";
-                  package = pkgs.dracula-theme;
-                };
-                cursorTheme = {
-                  name = "Dracula-cursors";
-                  package = pkgs.dracula-theme;
-                  size = 16;
+          displayManager = {
+            lightdm = {
+              enable = true;
+              background = pkgs.nixos-artwork.wallpapers.nineish-dark-gray.gnomeFilePath;
+              greeters = {
+                gtk = {
+                  theme = {
+                    name = "Dracula";
+                    package = pkgs.dracula-theme;
+                  };
+                  cursorTheme = {
+                    name = "Dracula-cursors";
+                    package = pkgs.dracula-theme;
+                    size = 16;
+                  };
                 };
               };
             };
           };
-          defaultSession = "none+bspwm";
-        };
-        windowManager= {
-          bspwm = {                                 # Window Manager
+          windowManager.bspwm = {
             enable = true;
           };
+
+          displayManager.sessionCommands = monitor;
+
+          serverFlagsSection = ''
+            Option "BlankTime" "0"
+            Option "StandbyTime" "0"
+            Option "SuspendTime" "0"
+            Option "OffTime" "0"
+          ''; # Disable Sleep
+
+          resolutions = [
+            { x = 1920; y = 1080; }
+            { x = 1920; y = 1200; }
+            { x = 1600; y = 900; }
+            { x = 3840; y = 2160; }
+          ];
         };
-
-        displayManager.sessionCommands = monitor;
-
-        serverFlagsSection = ''
-          Option "BlankTime" "0"
-          Option "StandbyTime" "0"
-          Option "SuspendTime" "0"
-          Option "OffTime" "0"
-        '';                                         # Disable Sleep
-
-        resolutions = [
-          { x = 1920; y = 1080; }
-          { x = 1600; y = 900; }
-          { x = 3840; y = 2160; }
-        ];
       };
-    };
 
-    programs.zsh.enable = true;                     # Required for Default User
+      programs.zsh.enable = true;
 
-    environment.systemPackages = with pkgs; [       # System-Wide Packages
-      xclip             # Clipboard
-      xorg.xev          # Event Viewer
-      xorg.xkill        # Process Killer
-      xorg.xrandr       # Monitor Settings
-      xterm             # Terminal
-    ];
+      environment.systemPackages = with pkgs; [
+        xclip # Clipboard
+        xorg.xev # Event Viewer
+        xorg.xkill # Process Killer
+        xorg.xrandr # Monitor Settings
+        xterm # Terminal
+      ];
 
-    home-manager.users.${vars.user} = {
-      xsession = {
-        enable = true;
-        numlock.enable = true;
-        windowManager = {
-          bspwm = {
-            enable = true;
-            monitors = if hostName == "beelink" then {
-              ${mainMonitor} = [ "1" "2" "3" "4" "5" ];
-              ${secondMonitor} = [ "6" "7" "8" "9" "0" ];
-            } else {};
-            rules = {                               # Window Rules (xprop)
-              ".blueman-manager-wrapped" = {
-                state = "floating";
-                sticky = true;
+      home-manager.users.${vars.user} = {
+        xsession = {
+          enable = true;
+          numlock.enable = true;
+          windowManager = {
+            bspwm = {
+              enable = true;
+              monitors =
+                if hostName == "beelink" then {
+                  ${mainMonitor} = [ "1" "2" "3" "4" "5" ];
+                  ${secondMonitor} = [ "6" "7" "8" "9" "0" ];
+                } else { };
+              rules = {
+                # Window Rules (xprop)
+                "Emacs" = {
+                  desktop = "3";
+                  follow = true;
+                  state = "tiled";
+                };
+                ".blueman-manager-wrapped" = {
+                  state = "floating";
+                  sticky = true;
+                };
+                "libreoffice" = {
+                  desktop = "3";
+                  follow = true;
+                };
+                "Lutris" = {
+                  desktop = "5";
+                  follow = true;
+                };
+                "Pavucontrol" = {
+                  state = "floating";
+                  sticky = true;
+                };
+                "Pcmanfm" = {
+                  state = "floating";
+                };
+                "plexmediaplayer" = {
+                  desktop = "4";
+                  follow = true;
+                  state = "fullscreen";
+                };
+                "*:*:Picture in picture" = {
+                  state = "floating";
+                  sticky = true;
+                };
+                "*:*:Picture-in-Picture" = {
+                  state = "floating";
+                  sticky = true;
+                };
+                "Steam" = {
+                  desktop = "5";
+                };
               };
-              "libreoffice" = {
-                desktop = "3";
-                follow = true;
-              };
-              "Lutris" = {
-                desktop = "5";
-                follow = true;
-              };
-              "Pavucontrol" = {
-                state = "floating";
-                sticky = true;
-              };
-              "Pcmanfm" = {
-                state = "floating";
-              };
-              "plexmediaplayer" = {
-                desktop = "4";
-                follow= true;
-                state = "fullscreen";
-              };
-              "*:*:Picture in picture" = {
-                state = "floating";
-                sticky = true;
-              };
-              "*:*:Picture-in-Picture" = {
-                state = "floating";
-                sticky = true;
-              };
-              "Steam" = {
-                desktop = "5";
-              };
+              extraConfig = extraConf;
             };
-            extraConfig = extraConf;
           };
         };
       };
     };
-  };
 }

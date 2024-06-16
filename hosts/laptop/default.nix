@@ -41,7 +41,7 @@ in
     };
   };
 
-  bspwm.enable = true;
+  gnome.enable = true;
   laptop.enable = true;
 
   hardware = {                         # Used for scanning with Xsane

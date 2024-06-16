@@ -1,7 +1,17 @@
-{ lib, pkgs, ... }:
+{ config, lib, system, pkgs, stable, vars, ... }:
 
 let
   colors = import ../theming/colors.nix;
+
+  nvim-spell-nl-utf8-dictionary = builtins.fetchurl {
+    url = "http://ftp.vim.org/vim/runtime/spell/nl.utf-8.spl";
+    sha256 = "sha256:1v4knd9i4zf3lhacnkmhxrq0lgk9aj4iisbni9mxi1syhs4lfgni";
+  };
+
+  nvim-spell-nl-utf8-suggestions = builtins.fetchurl {
+    url = "http://ftp.vim.org/vim/runtime/spell/nl.utf-8.sug";
+    sha256 = "sha256:0clvhlg52w4iqbf5sr4bb3lzja2ch1dirl0963d5vlg84wzc809y";
+  };
 in
 {
   # # steam-run for codeium-vim
@@ -10,17 +20,21 @@ in
   #   vim = "${pkgs.steam-run}/bin/steam-run nvim";
   #   nvim = "${pkgs.steam-run}/bin/steam-run nvim";
   # };
-  environment.systemPackages = with pkgs; [
-    nodejs
-    python3
-    zig
-    go
-  ];
+  environment = {
+    systemPackages = with pkgs; [
+      go
+      nodejs
+      python3
+      ripgrep
+      zig
+    ];
+  };
+
   programs.nixvim = {
     enable = true;
+    enableMan = false;
     viAlias = true;
     vimAlias = true;
-
     autoCmd = [
       {
         event = "VimEnter";
@@ -53,12 +67,12 @@ in
       {
         event = "FileType";
         pattern = [ "markdown" ];
-        command = "setlocal scrolloff=30";
-        desc = "Fixed cursor location on markdown (for preview)";
+        command = "setlocal scrolloff=30 | setlocal wrap";
+        desc = "Fixed cursor location on markdown (for preview) and enable wrapping";
       }
     ];
 
-    options = {
+    opts = {
       number = true;
       relativenumber = true;
       hidden = true;
@@ -71,17 +85,15 @@ in
       wrap = false;
       scrolloff = 5;
       sidescroll = 40;
-      completeopt = ["menu" "menuone" "noselect"];
+      completeopt = [ "menu" "menuone" "noselect" ];
       pumheight = 15;
       fileencoding = "utf-8";
       swapfile = false;
       timeoutlen = 2500;
       conceallevel = 3;
-    };
-
-    colorschemes.onedark = {
-      enable = true;
-      package = pkgs.vimPlugins.onedarkpro-nvim;
+      cursorline = true;
+      spell = false;
+      spelllang = [ "nl" "en" ];
     };
 
     clipboard = {
@@ -101,14 +113,9 @@ in
         options.desc = "Save";
       }
       {
-        key = "<leader>s";
-        action = "<CMD>w<CR>";
-        options.desc = "Save";
-      }
-      {
         key = "<leader>q";
         action = "<CMD>q<CR>";
-        options.desc = "quit";
+        options.desc = "Quit";
       }
       {
         key = "<F2>";
@@ -128,7 +135,7 @@ in
       {
         key = "<F3>";
         action = "<CMD>UndotreeToggle<CR>";
-        options.desc = "Toggle Undotree";
+        options.desc = "Toggle UndoTree";
       }
       {
         key = "<leader>sh";
@@ -188,12 +195,17 @@ in
       {
         key = "<leader>bb";
         action = "<CMD>BufferPick<CR>";
-        options.desc = "View Open Buffer";
+        options.desc = "Select Buffer";
       }
       {
         key = "<leader>bc";
         action = "<CMD>BufferClose<CR>";
-        options.desc = "View Open Buffer";
+        options.desc = "Close Current Buffer";
+      }
+      {
+        key = "<leader>bk";
+        action = "<CMD>BufferClose<CR>";
+        options.desc = "Close Current Buffer";
       }
       {
         key = "<leader>bn";
@@ -245,54 +257,101 @@ in
         mode = "n";
         key = "gd";
         action = "<CMD>lua vim.lsp.buf.hover()<CR>";
+        options.desc = "Show lsp definition in floating window";
       }
       {
         mode = "n";
         key = "gD";
         action = "<CMD>lua vim.lsp.buf.definition()<CR>";
+        options.desc = "Load lsp definition in new buffer";
       }
       {
         mode = "n";
         key = "ge";
         action = "<CMD>lua vim.diagnostic.open_float()<CR>";
+        options.desc = "Show lsp diagnostic in floating window";
       }
       {
         mode = "n";
         key = "<leader>r";
         action = ":! ";
+        options.desc = "Run command";
       }
       {
         mode = "n";
         key = "<TAB>";
         action = "z=";
+        options.desc = "Get spell suggestion";
+      }
+      {
+        mode = "n";
+        key = "\\\\";
+        action = "<CMD>ToggleTerm<CR>";
+        options.desc = "Toggle terminal";
+      }
+      {
+        mode = "t";
+        key = "<esc>";
+        action = "<C-\\><C-n>";
+        options.desc = "Exit terminal mode";
       }
     ];
 
     plugins = {
       lualine.enable = true;
       barbar.enable = true;
-      gitgutter.enable = true;
+      gitgutter = {
+        enable = true;
+        defaultMaps = false;
+      };
+      mini = {
+        enable = true;
+        modules = {
+          indentscope = { };
+          move = { };
+        };
+      };
       indent-blankline = {
         enable = true;
-        scope.enabled = true;
+        settings.scope.enabled = false;
       };
       lastplace.enable = true;
-      comment-nvim.enable = true;
+      comment.enable = true;
       fugitive.enable = true;
       markdown-preview.enable = true;
       nvim-autopairs.enable = true;
       telescope = {
         enable = true;
-        extraOptions = {
+        settings = {
           pickers.find_files = {
             hidden = true;
           };
         };
         keymaps = {
-          "<leader>ff" = "find_files";
-          "<leader>fg" = "live_grep";
-          "<leader>fb" = "buffers";
-          "<leader>fh" = "help_tags";
+          "<leader>ff" = {
+            action = "find_files";
+            options = {
+              desc = "Find File";
+            };
+          };
+          "<leader>fg" = {
+            action = "live_grep";
+            options = {
+              desc = "Find Via Grep";
+            };
+          };
+          "<leader>fb" = {
+            action = "buffers";
+            options = {
+              desc = "Find Buffers";
+            };
+          };
+          "<leader>fh" = {
+            action = "help_tags";
+            options = {
+              desc = "Find Help";
+            };
+          };
         };
       };
       neo-tree = {
@@ -309,8 +368,10 @@ in
       };
       undotree = {
         enable = true;
-        focusOnToggle = true;
-        highlightChangedText = true;
+        settings = {
+          FocusOnToggle = true;
+          HighlightChangedText = true;
+        };
       };
       treesitter = {
         enable = true;
@@ -331,8 +392,22 @@ in
           tailwind = "both";
         };
       };
+      cursorline = {
+        enable = true;
+        cursorline = {
+          enable = true;
+          number = true;
+          timeout = 0;
+        };
+        cursorword = {
+          enable = true;
+          hl = { underline = true; };
+          minLength = 3;
+        };
+      };
       neorg = {
         enable = true;
+        package = stable.vimPlugins.neorg;
         lazyLoading = true;
         modules = {
           "core.defaults".__empty = null;
@@ -349,7 +424,7 @@ in
       lsp = {
         enable = true;
         servers = {
-          nil_ls.enable = true;
+          nil-ls.enable = true;
           svelte.enable = true;
           html.enable = true;
           cssls.enable = true;
@@ -368,6 +443,18 @@ in
             ];
           };
           gopls.enable = true;
+          zls.enable = true;
+        };
+      };
+      lsp-format.enable = true;
+      none-ls = {
+        enable = true;
+        enableLspFormat = true;
+        sources = {
+          formatting = {
+            nixpkgs_fmt.enable = true;
+            markdownlint.enable = true;
+          };
         };
       };
       lspkind = {
@@ -379,6 +466,7 @@ in
             nvim_lua = "[api]";
             path = "[path]";
             luasnip = "[snip]";
+            look = "[look]";
             buffer = "[buffer]";
             orgmode = "[orgmode]";
             neorg = "[neorg]";
@@ -389,58 +477,65 @@ in
       luasnip.enable = true;
       cmp_luasnip.enable = true;
       cmp-nvim-lsp.enable = true;
-      nvim-cmp = {
+      cmp-look.enable = true;
+      cmp = {
         enable = true;
-        snippet.expand = "luasnip";
-        mapping = {
-          "<C-d>" = "cmp.mapping.scroll_docs(-4)";
-          "<C-f>" = "cmp.mapping.scroll_docs(4)";
-          "<C-Space>" = "cmp.mapping.complete()";
-          "<C-e>" = "cmp.mapping.close()";
-          # "<Tab>" = {
-          #   modes = ["i" "s"];
-          #   action = "cmp.mapping.select_next_item()";
-          # };
-          # "<S-Tab>" = {
-          #   modes = ["i" "s"];
-          #   action = "cmp.mapping.select_prev_item()";
-          # };
-          "<Down>" = {
-            modes = ["i" "s"];
-            action = "cmp.mapping.select_next_item()";
+        settings = {
+          snippet.expand = "luasnip";
+          mapping = {
+            "<C-d>" = "cmp.mapping.scroll_docs(-4)";
+            "<C-f>" = "cmp.mapping.scroll_docs(4)";
+            "<C-Space>" = "cmp.mapping.complete()";
+            "<C-e>" = "cmp.mapping.close()";
+            # "<Tab>" = "cmp.mapping(cmp.mapping.select_next_item(), {'i', 's'})";
+            # "<S-Tab>" = "cmp.mapping(cmp.mapping.select_prev_item(), {'i', 's'})";
+            "<Down>" = "cmp.mapping(cmp.mapping.select_next_item(), {'i', 's'})";
+            "<Up>" = "cmp.mapping(cmp.mapping.select_prev_item(), {'i', 's'})";
+            "<C-j>" = "cmp.mapping(cmp.mapping.select_next_item(), {'i', 's'})";
+            "<C-k>" = "cmp.mapping(cmp.mapping.select_prev_item(), {'i', 's'})";
+            "<Tab>" = "cmp.mapping.confirm({ select = true })";
           };
-          "<Up>" = {
-            modes = ["i" "s"];
-            action = "cmp.mapping.select_prev_item()";
-          };
-          "<C-j>" = {
-            modes = ["i" "s"];
-            action = "cmp.mapping.select_next_item()";
-          };
-          "<C-k>" = {
-            modes = ["i" "s"];
-            action = "cmp.mapping.select_prev_item()";
-          };
-          # "<CR>" = "cmp.mapping.confirm({ select = true })";
-          "<Tab>" = "cmp.mapping.confirm({ select = true })";
+          sources = [
+            { name = "nvim_lsp"; }
+            { name = "luasnip"; }
+            { name = "look"; keywordLength = 2; option = { convert_case = true; loud = true; }; }
+            { name = "path"; }
+            { name = "buffer"; }
+            { name = "nvim_lua"; }
+            { name = "orgmode"; }
+            { name = "neorg"; }
+          ];
         };
-        sources = [
-          {name = "nvim_lsp";}
-          {name = "luasnip";}
-          {name = "path";}
-          {name = "buffer";}
-          {name = "nvim_lua";}
-          {name = "orgmode";}
-          {name = "neorg";}
-        ];
+      };
+      which-key = {
+        enable = true;
+        registrations = {
+          "<leader>b" = "+Buffer";
+          "<leader>f" = "+Find";
+          "<leader>o" = "+Org Mode";
+          "<leader>s" = "+Split Window";
+        };
+      };
+      toggleterm = {
+        enable = true;
+        settings = {
+          autoScroll = true;
+          closeOnExit = true;
+          direction = "horizontal";
+          persistMode = true;
+          startInInsert = true;
+        };
       };
     };
     extraPlugins = with pkgs.vimPlugins; [
-      luasnip
       friendly-snippets
+      luasnip
+      nvim-scrollbar
       orgmode
-      vim-table-mode
+      onedarkpro-nvim
       vim-cool
+      vim-prettier
+      vim-table-mode
       # codeium-vim
       (pkgs.vimUtils.buildVimPlugin rec {
         pname = "scope-nvim";
@@ -462,9 +557,28 @@ in
           sha256 = "sha256-x6S4WdgfUr7HGEHToSDy3pSHEwOPQalzWhBUipqMtnw=";
         };
       })
+      (pkgs.vimUtils.buildVimPlugin rec {
+        pname = "follow-md-links.nvim";
+        version = "cf081a0a8e93dd188241a570b9a700b6a546ad1c";
+        src = pkgs.fetchFromGitHub {
+          owner = "jghauser";
+          repo = "follow-md-links.nvim";
+          rev = version;
+          sha256 = "sha256-ElgYrD+5FItPftpjDTdKAQR37XBkU8mZXs7EmAwEKJ4=";
+        };
+      })
+      (pkgs.vimUtils.buildVimPlugin rec {
+        pname = "vim-plist";
+        version = "60e69bec50dfca32f0a62ee2dacdfbe63fd92038";
+        src = pkgs.fetchFromGitHub {
+          owner = "darfink";
+          repo = "vim-plist";
+          rev = version;
+          sha256 = "sha256-OIMXpX/3YXUsDsguY8/lyG5VXjTKB+k5XPfEFUSybng=";
+        };
+      })
     ];
-    extraConfigLua = ''
-      require("luasnip.loaders.from_vscode").lazy_load()
+    extraConfigLua = with colors.scheme.default.hex; ''
       require('orgmode').setup({
         org_agenda_files = { '~/org/**/*' },
         org_default_notes_file = '~/org/refile.org',
@@ -478,15 +592,28 @@ in
         augroup END
       ]]
 
-      require('org-bullets').setup()
-    '';
-    extraConfigLuaPre = with colors.scheme.default.hex; ''
-      require('orgmode').setup_ts_grammar()
       require('onedarkpro').setup({
         colors = {
           bg = "#${bg}",
-        }
+        },
+        options = {
+          cursorline = true,
+        },
       })
+      vim.cmd[[
+        colorscheme onedark
+      ]]
+
+      require('org-bullets').setup()
+
+      require('scrollbar').setup()
+
+      vim.o.runtimepath = vim.o.runtimepath .. ',~/.local/share/nvim/site' -- set spellfile path
     '';
+  };
+
+  home-manager.users.${vars.user} = {
+    home.file.".local/share/nvim/site/spell/nl.utf-8.spl".source = nvim-spell-nl-utf8-dictionary;
+    home.file.".local/share/nvim/site/spell/nl.utf-8.sug".source = nvim-spell-nl-utf8-suggestions;
   };
 }
