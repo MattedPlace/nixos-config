@@ -42,7 +42,7 @@ in
               font-3 = "FontAwesome6Brands:style=Regular:size=8";
               font-4 = "FiraCodeNerdFont:size=10";
               modules-left = "logo bspwm";
-              modules-right = "backlight pad memory cpu pad sink volume pad battery date";
+              modules-right = "backlight pad memory cpu pad volume pad battery date";
 
               tray-position = "right";
               tray-detached = "false";
@@ -67,7 +67,7 @@ in
               font-3 = "FontAwesome6Brands:style=Regular:size=8";
               font-4 = "FiraCodeNerdFont:size=10";
               modules-left = "logo bspwm";
-              modules-right = "memory cpu pad sink volume pad date";
+              modules-right = "memory cpu pad volume pad date";
 
               wm-restack = "bspwm";
             };
@@ -89,7 +89,7 @@ in
               font-3 = "FontAwesome6Brands:style=Regular:size=8";
               font-4 = "FiraCodeNerdFont:size=10";
               modules-left = "logo bspwm";
-              modules-right = "memory cpu pad sink volume pad date";
+              modules-right = "memory cpu pad volume pad date";
 
               wm-restack = "bspwm";
             };
@@ -269,20 +269,6 @@ in
               type = "custom/text";
               content = "    ";
             };
-            "module/mic" = {
-              type = "custom/script";
-              interval = 1;
-              tail = "true";
-              exec = "~/.config/polybar/script/mic.sh status";
-              click-left = "~/.config/polybar/script/mic.sh toggle";
-            };
-            "module/sink" = {
-              type = "custom/script";
-              interval = 1;
-              tail = "true";
-              exec = "~/.config/polybar/script/sink.sh status";
-              click-left = "~/.config/polybar/script/sink.sh toggle";
-            };
             "module/logo" = {
               type = "custom/menu";
               expand-right = true;
@@ -330,59 +316,6 @@ in
             };
           };
         };
-      };
-      home.file.".config/polybar/script/mic.sh" = {
-        text = ''
-          #!/bin/sh
-
-          case $1 in
-              "status")
-              #MUTED=$(pacmd list-sources | awk '/\*/,EOF {print}' | awk '/muted/ {print $2; exit}')
-              #if [[ $MUTED = "no" ]]; then
-              MUTED=$(awk -F"[][]" '/Left:/ { print $4 }' <(amixer sget Capture))
-              if [[ $MUTED = "on" ]]; then
-                  echo ''
-              else
-                  echo ''
-              fi
-              ;;
-              "toggle")
-              #ID=$(pacmd list-sources | grep "*\ index:" | cut -d' ' -f5)
-              #pactl set-source-mute $ID toggle
-              ${pkgs.alsa-utils}/bin/amixer set Capture toggle
-              ;;
-          esac
-        '';
-        executable = true;
-      };
-      home.file.".config/polybar/script/sink.sh" = {
-        text = ''
-          #!/bin/sh
-
-          ID1=$(awk '/ Built-in Audio Analog Stereo/ {sub(/.$/,"",$2); print $2 }' <(${pkgs.wireplumber}/bin/wpctl status) | head -n 1)
-          ID2=$(awk '/ S10 Bluetooth Speaker/ {sub(/.$/,"",$2); print $2 }' <(${pkgs.wireplumber}/bin/wpctl status) | sed -n 2p)
-
-          HEAD=$(awk '/ Built-in Audio Analog Stereo/ { print $2 }' <(${pkgs.wireplumber}/bin/wpctl status | grep "*") | sed -n 2p)
-          SPEAK=$(awk '/ S10 Bluetooth Speaker/ { print $2 }' <(${pkgs.wireplumber}/bin/wpctl status | grep "*") | head -n 1)
-
-          case $1 in
-              "status")
-              if [[ $HEAD = "*" ]]; then
-                  echo ''
-              elif [[ $SPEAK = "*" ]]; then
-                  echo '蓼'
-              fi
-              ;;
-              "toggle")
-              if [[ $HEAD = "*" ]]; then
-                  ${pkgs.wireplumber}/bin/wpctl set-default $ID2
-              elif [[ $SPEAK = "*" ]]; then
-                  ${pkgs.wireplumber}/bin/wpctl set-default $ID1
-              fi
-              ;;
-          esac
-        '';
-        executable = true;
       };
     };
   };

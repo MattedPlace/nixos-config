@@ -12,7 +12,7 @@
 
 [
   ./avahi.nix
-  ./touchegg.nix
+  # ./touchegg.nix
   # ./dunst.nix
   ./flameshot.nix
   ./picom.nix

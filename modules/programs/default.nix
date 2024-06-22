@@ -12,6 +12,7 @@
 
 [
   ./alacritty.nix
+  ./chromium.nix
   ./accounts.nix
   ./eww.nix
   ./flatpak.nix

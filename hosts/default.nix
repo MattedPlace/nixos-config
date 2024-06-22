@@ -77,14 +77,16 @@ in
     ];
   };
 
-  # Work Profile
+  # laptop Profile
   laptop = lib.nixosSystem {
     inherit system;
     specialArgs = {
       inherit inputs system stable hyprland hyprspace vars;
       host = {
-        hostName = "work";
+        hostName = "laptop";
         mainMonitor = "eDP-1";
+        secondMonitor = "";
+        thirdMonitor= "";
       };
     };
     modules = [

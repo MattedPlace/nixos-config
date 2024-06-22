@@ -82,7 +82,6 @@ with lib;
             "org.gnome.Nautilus.desktop"
             "steam.desktop"
             "brave-browser.desktop"
-            "google-chrome.desktop"
             "signal-desktop.desktop"
             "pavucontrol.desktop"
             #   "org.gnome.settings.desktop"

@@ -52,7 +52,7 @@ let
         polybar sec &
         polybar thi &
       ''
-      else if hostName == "vm" || hostName == "probook" then ''
+      else if hostName == "vm" || hostName == "probook" || hostName == "laptop"  then ''
         bspc monitor -d 1 2 3 4 5
       ''
       else "")
@@ -72,7 +72,6 @@ in
   config = mkIf (config.bspwm.enable)
     {
       x11wm.enable = true;
-
       services = {
         displayManager.defaultSession = "none+bspwm";
         libinput = {
@@ -89,12 +88,9 @@ in
           enable = true;
           xkb = {
             layout = "us";
-            options = "eurosign:e";
           };
           autoRepeatInterval = 50;
           autoRepeatDelay = 200;
-          modules = [ pkgs.xf86_input_wacom ];
-          wacom.enable = true;
 
           displayManager = {
             lightdm = {
@@ -158,7 +154,9 @@ in
                 if hostName == "beelink" then {
                   ${mainMonitor} = [ "1" "2" "3" "4" "5" ];
                   ${secondMonitor} = [ "6" "7" "8" "9" "0" ];
-                } else { };
+                } else {
+                  ${mainMonitor} = [ "1" "2" "3" "4" "5" ];
+                };
               rules = {
                 # Window Rules (xprop)
                 "Emacs" = {
