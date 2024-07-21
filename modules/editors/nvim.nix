@@ -377,10 +377,12 @@ in
         enable = true;
         nixvimInjections = true;
         folding = false;
-        indent = true;
         nixGrammars = true;
-        ensureInstalled = "all";
-        incrementalSelection.enable = true;
+        settings = {
+          incremental_selection.enable = true;
+          ensure_installed = "all";
+          indent.enable = true;
+        };
       };
       treesitter-refactor = {
         enable = true;

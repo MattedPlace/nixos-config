@@ -140,7 +140,7 @@ in
       qbittorrent
 
       # File Management
-      gnome.file-roller # Archive Manager
+      file-roller # Archive Manager
       pcmanfm # File Browser
       p7zip # Zip Encryption
       rsync # Syncer - $ rsync -r dir1/ dir2/

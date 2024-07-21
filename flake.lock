@@ -1,5 +1,38 @@
 {
   "nodes": {
+    "aquamarine": {
+      "inputs": {
+        "hyprutils": [
+          "hyprland",
+          "hyprutils"
+        ],
+        "hyprwayland-scanner": [
+          "hyprland",
+          "hyprwayland-scanner"
+        ],
+        "nixpkgs": [
+          "hyprland",
+          "nixpkgs"
+        ],
+        "systems": [
+          "hyprland",
+          "systems"
+        ]
+      },
+      "locked": {
+        "lastModified": 1721487522,
+        "narHash": "sha256-aF3uwUwUK2CgbItoMe3IJF0yidIEWcDx47AiH5y8VKk=",
+        "owner": "hyprwm",
+        "repo": "aquamarine",
+        "rev": "acfea3bd1d9e756c7152e639240d52c6628844b0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hyprwm",
+        "repo": "aquamarine",
+        "type": "github"
+      }
+    },
     "darwin": {
       "inputs": {
         "nixpkgs": [
@@ -7,11 +40,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1721270582,
-        "narHash": "sha256-MdZmYPPExntE5rJu88IhJSy8Um4UyZCTXhOwvzbjDVI=",
+        "lastModified": 1721550066,
+        "narHash": "sha256-wr6sSb+VpXy8HCvBqU6xvhpaARzWUbEK7uN5tLnqYDg=",
         "owner": "lnl7",
         "repo": "nix-darwin",
-        "rev": "a3e4a7b8ffc08c7dc1973822a77ad432e1ec3dec",
+        "rev": "33bf7df5bbfcbbb49e6559b0c96c9e3b26d14e58",
         "type": "github"
       },
       "original": {
@@ -147,11 +180,11 @@
     "emacs-overlay": {
       "flake": false,
       "locked": {
-        "lastModified": 1721495293,
-        "narHash": "sha256-L6U8CEsRNfz3SeJGlKNgga4O89z4QNmU577Eyq9PVCU=",
+        "lastModified": 1721552966,
+        "narHash": "sha256-zvzQgQEMxTaRpvtHlsNMjgdOiOvexfCE2hRaadSS6OY=",
         "owner": "nix-community",
         "repo": "emacs-overlay",
-        "rev": "173aa23e22b32c9d3585a96df74ec7c53d64de92",
+        "rev": "ab15d82f94c8f6373fec1f363c5b6c631453950b",
         "type": "github"
       },
       "original": {
@@ -552,11 +585,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1721135958,
-        "narHash": "sha256-H548rpPMsn25LDKn1PCFmPxmWlClJJGnvdzImHkqjuY=",
+        "lastModified": 1721534365,
+        "narHash": "sha256-XpZOkaSJKdOsz1wU6JfO59Rx2fqtcarQ0y6ndIOKNpI=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "afd2021bedff2de92dfce0e257a3d03ae65c603d",
+        "rev": "635563f245309ef5320f80c7ebcb89b2398d2949",
         "type": "github"
       },
       "original": {
@@ -660,6 +693,7 @@
     },
     "hyprland": {
       "inputs": {
+        "aquamarine": "aquamarine",
         "hyprcursor": "hyprcursor",
         "hyprlang": "hyprlang",
         "hyprutils": "hyprutils",
@@ -669,11 +703,11 @@
         "xdph": "xdph"
       },
       "locked": {
-        "lastModified": 1721463092,
-        "narHash": "sha256-P86aiF7iFAc5sAWL3nXf0XRfhXDAudHpmCh0sW7wrr4=",
+        "lastModified": 1721563149,
+        "narHash": "sha256-dz0Mdrr32jHVVBNdL85yQnKT/yyAq6swD1PvJnt1IXA=",
         "ref": "refs/heads/main",
-        "rev": "f642fb97df5c69267a03452533de383ff8023570",
-        "revCount": 4934,
+        "rev": "cf373d315e9fb060576ed407bd5ee2dfb8a6d2e2",
+        "revCount": 4936,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/hyprwm/Hyprland"
@@ -967,11 +1001,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1721421992,
-        "narHash": "sha256-4Mu+O2/S5XU1D8HLTU53pv20hEH6aiTkUqjLHowYdY8=",
+        "lastModified": 1721571110,
+        "narHash": "sha256-W4KLBlN3g5fABz1Hv/O9Vwq0mFwY3XYuAyGLege1tVM=",
         "owner": "nix-community",
         "repo": "nixvim",
-        "rev": "e80a8874accd45cac90616a7b5faa49c5a68e6b9",
+        "rev": "8eb5763bbbb414c432ced741c5fe8052154d0816",
         "type": "github"
       },
       "original": {
@@ -1026,11 +1060,11 @@
     },
     "nur": {
       "locked": {
-        "lastModified": 1721497138,
-        "narHash": "sha256-lHBXCSFd/iZwSoiHHFLVOeZmyvcOFxt8c0DyXj/cuiw=",
+        "lastModified": 1721571991,
+        "narHash": "sha256-0BFf1/dMFsAhKaX8PQTwkL81BItomTMEieAwjO23AKI=",
         "owner": "nix-community",
         "repo": "NUR",
-        "rev": "1ba95ac769d3c7c48f92482857c162be666aa06d",
+        "rev": "a3b348eb642914b2c9c6f17e114869c47f869555",
         "type": "github"
       },
       "original": {
