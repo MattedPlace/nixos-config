@@ -51,6 +51,29 @@ in
       }
     ];
   };
+  desktop = lib.nixosSystem {
+    inherit system;
+    specialArgs = {
+      inherit inputs system stable hyprland hyprspace vars;
+      host = {
+        hostName = "desktop";
+        mainMonitor = "HDMI-A-1";
+        secondMonitor = "HDMI-A-2";
+      };
+    };
+    modules = [
+      nur.nixosModules.nur
+      nixvim.nixosModules.nixvim
+      ./desktop
+      ./configuration.nix
+
+      home-manager.nixosModules.home-manager
+      {
+        home-manager.useGlobalPkgs = true;
+        home-manager.useUserPackages = true;
+      }
+    ];
+  };
 
   # Work Profile
   work = lib.nixosSystem {

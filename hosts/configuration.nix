@@ -45,13 +45,15 @@ in
   };
 
   users = {
-    groups = { uinput = {}; };          # needed for katana
-    users.${vars.user} = {              # System User
+    groups = { uinput = { }; }; # needed for katana
+    users.${vars.user} = {
+      # System User
       isNormalUser = true;
       extraGroups = [ "wheel" "video" "audio" "camera" "networkmanager" "lp" "scanner" "kvm" "libvirtd" "plex" "uinput" ];
     };
 
-    users.${vars.user2} = {              # System User
+    users.${vars.user2} = {
+      # System User
       isNormalUser = true;
       extraGroups = [ "video" "audio" "camera" "networkmanager" "lp" "scanner" "kvm" "libvirtd" "plex" "uinput" ];
     };
@@ -128,15 +130,15 @@ in
       pulseaudio # Audio Server/Control
       qpwgraph # Pipewire Graph Manager
       vlc # Media Player
-      yt-dlp            # Youtube download
+      yt-dlp # Youtube download
 
       # Apps
       appimage-run # Runs AppImages on NixOS
       firefox # Browser
       google-chrome # Browser
       remmina # XRDP & VNC Client
-      brave             # Browser
-      signal-desktop    # Family chat
+      brave # Browser
+      signal-desktop # Family chat
       qbittorrent
 
       # File Management
@@ -223,6 +225,7 @@ in
     programs = {
       home-manager.enable = true;
     };
+
     xdg = {
       mime.enable = true;
       mimeApps = lib.mkIf (config.gnome.enable == false) {
@@ -254,7 +257,7 @@ in
       desktopEntries.image-roll = {
         name = "image-roll";
         exec = "${stable.image-roll}/bin/image-roll %F";
-        mimeType = [ "image/*" ];
+        mimeType = [ "image" ];
       };
       desktopEntries.gmail = {
         name = "Gmail";

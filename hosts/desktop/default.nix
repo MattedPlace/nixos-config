@@ -21,17 +21,22 @@
 
 {
   imports = [
-              ./hardware-configuration.nix
-              ../../modules/programs/games.nix
-            ] ++
-            ( import ../../modules/desktops/virtualisation );
+    ./hardware-configuration.nix
+    ../../modules/programs/games.nix
+  ] ++
+  (import ../../modules/desktops/virtualisation);
 
   boot = {                                      # Boot options
     kernelParams = [
       "processor.max_cstate=5"
       "rcu_nocbs=0-11"
+      "nvidia_drm.fbdev=1"
     ];  # Set processor.max_cstate to 5 to prevent random crashes
+    blacklistedKernelModules = [ "nouveau" ];
+    kernelPackages = pkgs.linuxPackages_latest;
+
     supportedFilesystems = [ "ntfs" ];
+
     loader = {
       systemd-boot = {
         enable = true;
@@ -39,25 +44,32 @@
       };
       efi = {
         canTouchEfiVariables = true;
-        efiSysMountPoint = "/boot/efi";
+        efiSysMountPoint = "/boot";
       };
       timeout = 5;                              # Auto select time
     };
   };
 
-  environment = {                               # Packages installed system wide
-    systemPackages = with pkgs; [               # This is because some options need to be configured.
-      discord
-      x11vnc
+  environment = {
+    systemPackages = with pkgs; [
+      discord # Messaging
+      gimp # Image Editor
+      go2tv # Casting
+      #google-cloud-sdk-gce # Google Cloud
+      jellyfin-media-player # Media Player
+      kodi # Media Player
+      moonlight-qt # Remote Streaming
+      obs-studio # Live Streaming
       plex-media-player # Media Player
-      simple-scan       # Scanning
-      haskellPackages.cabal-install
+      rclone # Gdrive ($ rclone config | rclone mount --daemon gdrive:<path> <host/path>)
     ];
   };
 
-  flatpak = {                                   # Flatpak Packages (see module options)
+  flatpak = {
     extraPackages = [
+      "com.github.tchx84.Flatseal"
       "com.ultimaker.cura"
+      "com.stremio.Stremio"
     ];
   };
 
@@ -66,22 +78,34 @@
       discord = super.discord.overrideAttrs (
         _: { src = builtins.fetchTarball {
           url = "https://discord.com/api/download?platform=linux&format=tar.gz";
-          sha256 = "12yrhlbigpy44rl3icir3jj2p5fqq2ywgbp5v3m1hxxmbawsm6wi";
+          sha256 = "1mmyxjvwfp8fx89wb02k0rn24pnp2ifj5q4m38m9z919yphahafi";
         };}
       );
     })
   ];
 
+  services.xserver.videoDrivers = [ "nvidia"];
   hardware = {
     graphics = {
       enable = true;
+      enable32Bit = true;
       extraPackages = with pkgs; [
-        libvdpau
-        libGLU
+        vaapiVdpau
+        libvdpau-va-gl
+        # intel-media-driver
+        # intel-vaapi-driver
+        nvidia-vaapi-driver
       ];
-      driSupport32Bit = true;
     };
-    cpu.amd.updateMicrocode = true;
+    nvidia = {
+      modesetting.enable = true;
+      powerManagement.enable = true;
+      powerManagement.finegrained = false;
+      open = false;
+      nvidiaSettings = true;
+      package = config.boot.kernelPackages.nvidiaPackages.beta;
+    };
+
     sane = {                                    # Scanning
       enable = true;
       extraBackends = [ pkgs.sane-airscan ];
@@ -95,34 +119,9 @@
     networkmanager.enable = true;
   };
 
-  services.xserver.videoDrivers = [ "nvidia"];
-  hardware.nvidia = {
-    # Modesetting is required by the wayland wm, but makes x11 wm laggy.
-    modesetting.enable = config.wlwm.enable;
 
-    # Nvidia power management. Experimental, and can cause sleep/suspend to fail.
-    # Enable this if you have graphical corruption issues or application crashes after waking
-    # up from sleep. This fixes it by saving the entire VRAM memory to /tmp/ instead
-    # of just the bare essentials.
-    powerManagement.enable = false;
 
-    # Fine-grained power management. Turns off GPU when not in use.
-    # Experimental and only works on modern Nvidia GPUs (Turing or newer).
-    powerManagement.finegrained = false;
 
-    # Use the NVidia open source kernel module (not to be confused with the
-    # independent third-party "nouveau" open source driver).
-    # Support is limited to the Turing and later architectures. Full list of
-    # supported GPUs is at:
-    # https://github.com/NVIDIA/open-gpu-kernel-modules#compatible-gpus
-    # Only available from driver 515.43.04+
-    # Currently alpha-quality/buggy, so false is currently the recommended setting.
-    open = false;
-
-    # Enable the Nvidia settings menu,
-    # accessible via `nvidia-settings`.
-    nvidiaSettings = true;
-  };
 /*
   services = {
     blueman.enable = true;                      # Bluetooth

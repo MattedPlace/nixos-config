@@ -38,7 +38,6 @@ with lib;
         desktopManager.gnome.enable = true;
       };
     };
-
     environment = {
       systemPackages = with pkgs; [
         dconf-editor

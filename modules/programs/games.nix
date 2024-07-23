@@ -6,50 +6,26 @@
 
 { config, pkgs, nur, lib, vars, host, ... }:
 
-let
-  # PCSX2 Wrapper to run under X11
-  pcsx2 = pkgs.pcsx2.overrideAttrs (old: {
-    nativeBuildInputs = old.nativeBuildInputs ++ [ pkgs.makeWrapper ];
-    postFixup = ''
-      wrapProgram $out/bin/pcsx2 \
-        --set GDK_BACKEND x11
-    '';
-  });
-in
 {
 
-  #hardware.new-lg4ff.enable = true;
-  hardware.bluetooth = {
-    enable = true;
-    settings = {
-      # Wireless controller
-      General = {
-        AutoEnable = true;
-        ControllerMode = "bredr";
-      };
-    };
-  };
 
   users.groups.plugdev.members = [ "root" "${vars.user}" ];
   services = {
-    udev.extraRules = ''
-      KERNEL=="hidraw*", SUBSYSTEM=="hidraw", MODE="0664", GROUP="plugdev"
-    ''; # Group and udev rule needed to have access to the controller's gyro
     ratbagd.enable = true;
-    kanata = if host.hostName == "desktop" then {
-      enable = true;
-      keyboards.g4 = {
-        config = ''
-          (defsrc end)
-          (deflayer default lalt)
-        '';
-        devices = [ "/dev/input/by-id/usb-Logitech_G502_HERO_Gaming_Mouse_067039603137-if01-event-kbd" ];
-      };
-    } else {};
+    kanata =
+      if host.hostName == "desktop" then {
+        enable = true;
+        keyboards.g4 = {
+          config = ''
+            (defsrc end)
+            (deflayer default lalt)
+          '';
+          devices = [ "/dev/input/by-id/usb-Logitech_G502_HERO_Gaming_Mouse_067039603137-if01-event-kbd" ];
+        };
+      } else { };
   };
 
   environment.systemPackages = [
-    # config.nur.repos.c0deaddict.oversteer # Steering Wheel Configuration
     # pkgs.heroic # Game Launcher
     # pkgs.lutris # Game Launcher
     # pkgs.bottles # Game Launcher
