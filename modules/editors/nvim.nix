@@ -506,11 +506,26 @@ in
       };
       which-key = {
         enable = true;
-        registrations = {
-          "<leader>b" = "+Buffer";
-          "<leader>f" = "+Find";
-          "<leader>o" = "+Org Mode";
-          "<leader>s" = "+Split Window";
+        settings = {
+          spec = [
+            {
+              __unkeyed-1 = "<leader>b";
+              desc = "Buffer";
+            }
+            {
+              __unkeyed-1 = "<leader>f";
+
+              desc = "Find";
+            }
+            {
+              __unkeyed-1 = "<leader>o";
+              desc = "Org Mode";
+            }
+            {
+              __unkeyed-1 = "<leader>s";
+              desc = "Split Window";
+            }
+          ];
         };
       };
       toggleterm = {
