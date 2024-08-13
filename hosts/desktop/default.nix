@@ -29,9 +29,9 @@
     kernelParams = [
       "processor.max_cstate=5"
       "rcu_nocbs=0-11"
-      "nvidia_drm.fbdev=1"
+      #  "nvidia_drm.fbdev=1"
     ];  # Set processor.max_cstate to 5 to prevent random crashes
-    blacklistedKernelModules = [ "nouveau" ];
+    #blacklistedKernelModules = [ "nouveau" ];
     kernelPackages = pkgs.linuxPackages_latest;
 
     supportedFilesystems = [ "ntfs" ];
@@ -51,6 +51,7 @@
 
   environment = {
     systemPackages = with pkgs; [
+      libreoffice # office
       discord # Messaging
       gimp # Image Editor
       go2tv # Casting
@@ -83,7 +84,7 @@
     })
   ];
 
-  services.xserver.videoDrivers = [ "nvidia"];
+  services.xserver.videoDrivers = [ "nouveau"];
   hardware = {
     graphics = {
       enable = true;
@@ -93,9 +94,10 @@
         libvdpau-va-gl
         # intel-media-driver
         # intel-vaapi-driver
-        nvidia-vaapi-driver
+        #       nvidia-vaapi-driver
       ];
     };
+    /*
     nvidia = {
       modesetting.enable = true;
       powerManagement.enable = true;
@@ -104,6 +106,7 @@
       nvidiaSettings = true;
       package = config.boot.kernelPackages.nvidiaPackages.beta;
     };
+    */
 
     sane = {                                    # Scanning
       enable = true;
