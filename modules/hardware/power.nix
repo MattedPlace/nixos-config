@@ -7,8 +7,20 @@
 {
   config = lib.mkIf (config.laptop.enable && config.gnome.enable == false) {
     services = {
-      tlp.enable = false; # Disable due to suspend not working when docked and connected to AC
-#      auto-cpufreq.enable = true; # Power Efficiency
+      #tlp.enable = false; # Disable due to suspend not working when docked and connected to AC
+      auto-cpufreq = {
+        enable = true; # Power Efficiency
+        settings = {
+          battery = {
+            governor = "powersave";
+            turbo = "never";
+          };
+          charger = {
+            governor = "performance";
+            turbo = "auto";
+          };
+        };
+      };
     };
 
     home-manager.users.${vars.user} = {
