@@ -22,16 +22,18 @@
 {
   imports = [
     ./hardware-configuration.nix
+    ../../modules/programs/games.nix
   ] ++
+  (import ../../modules/hardware/desktop) ++
   (import ../../modules/desktops/virtualisation);
 
-  boot = {                                      # Boot options
+  boot = {
+    # Boot options
     kernelParams = [
       "processor.max_cstate=5"
       "rcu_nocbs=0-11"
-      #  "nvidia_drm.fbdev=1"
-    ];  # Set processor.max_cstate to 5 to prevent random crashes
-    #blacklistedKernelModules = [ "nouveau" ];
+    ]; # Set processor.max_cstate to 5 to prevent random crashes
+
     kernelPackages = pkgs.linuxPackages_latest;
 
     supportedFilesystems = [ "ntfs" ];
@@ -45,7 +47,7 @@
         canTouchEfiVariables = true;
         efiSysMountPoint = "/boot";
       };
-      timeout = 5;                              # Auto select time
+      timeout = 5; # Auto select time
     };
   };
 
@@ -67,48 +69,27 @@
 
   flatpak = {
     extraPackages = [
-      "com.github.tchx84.Flatseal"
       "com.ultimaker.cura"
-      "com.stremio.Stremio"
     ];
   };
 
-  nixpkgs.overlays = [                          # This overlay will pull the latest version of Discord
+  nixpkgs.overlays = [
+    # This overlay will pull the latest version of Discord
     (self: super: {
       discord = super.discord.overrideAttrs (
-        _: { src = builtins.fetchTarball {
-          url = "https://discord.com/api/download?platform=linux&format=tar.gz";
-          sha256 = "1mmyxjvwfp8fx89wb02k0rn24pnp2ifj5q4m38m9z919yphahafi";
-        };}
+        _: {
+          src = builtins.fetchTarball {
+            url = "https://discord.com/api/download?platform=linux&format=tar.gz";
+            sha256 = "1mmyxjvwfp8fx89wb02k0rn24pnp2ifj5q4m38m9z919yphahafi";
+          };
+        }
       );
     })
   ];
 
-  services.xserver.videoDrivers = [ "nouveau"];
   hardware = {
-    graphics = {
-      enable = true;
-      enable32Bit = true;
-      extraPackages = with pkgs; [
-        vaapiVdpau
-        libvdpau-va-gl
-        # intel-media-driver
-        # intel-vaapi-driver
-        #       nvidia-vaapi-driver
-      ];
-    };
-    /*
-    nvidia = {
-      modesetting.enable = true;
-      powerManagement.enable = true;
-      powerManagement.finegrained = false;
-      open = false;
-      nvidiaSettings = true;
-      package = config.boot.kernelPackages.nvidiaPackages.beta;
-    };
-    */
-
-    sane = {                                    # Scanning
+    sane = {
+      # Scanning
       enable = true;
       extraBackends = [ pkgs.sane-airscan ];
     };
@@ -124,8 +105,8 @@
 
 
 
-/*
-  services = {
+  /*
+    services = {
     blueman.enable = true;                      # Bluetooth
     xserver.videoDrivers = [ "nvidia" ];
     samba = {                                   # File Sharing over local network
@@ -139,6 +120,6 @@
       };
       openFirewall = true;
     };
-  };
+    };
   */
 }
