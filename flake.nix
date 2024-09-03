@@ -13,7 +13,7 @@
 
   inputs =
     {
-      nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable"; # Nix Packages (Default)
+      nixpkgs.url = "github:nixos/nixpkgs/master"; # Nix Packages (Default)
       # nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable"; # Unstable Nix Packages
       nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.05"; # stable Nix Packages
       nixos-hardware.url = "github:nixos/nixos-hardware/master"; # Hardware Specific Configurations

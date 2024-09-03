@@ -50,26 +50,26 @@ with lib;
         eog
         gnome-calculator
         gnome-calendar
-        gnome.gnome-characters
-        gnome.gnome-clocks
-        gnome.gnome-contacts
+        gnome-characters
+        gnome-clocks
+        gnome-contacts
         gnome-font-viewer
-        gnome.gnome-logs
-        gnome.gnome-maps
-        gnome.gnome-music
+        gnome-logs
+        gnome-maps
+        gnome-music
         gnome-system-monitor
-        gnome.gnome-weather
+        gnome-weather
         gnome-connections
         simple-scan
         totem
         yelp
         epiphany
         geary
-        gnome.tali
-        gnome.iagno
-        gnome.hitori
-        gnome.atomix
-        gnome.gnome-initial-setup
+        tali
+        iagno
+        hitori
+        atomix
+        gnome-initial-setup
       ]);
     };
 
