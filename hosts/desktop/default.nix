@@ -29,6 +29,7 @@
 
   boot = {
     # Boot options
+    blacklistedKernelModules = [ "iwlwifi" ];
     kernelParams = [
       "processor.max_cstate=5"
       "rcu_nocbs=0-11"
