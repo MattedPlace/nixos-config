@@ -60,19 +60,6 @@
         inputs.nixpkgs.follows = "nixpkgs-stable";
       };
 
-      # Emacs Overlays
-      emacs-overlay = {
-        url = "github:nix-community/emacs-overlay";
-        flake = false;
-      };
-
-      # Nix-Community Doom Emacs
-      doom-emacs = {
-        url = "github:nix-community/nix-doom-emacs";
-        inputs.nixpkgs.follows = "nixpkgs";
-        inputs.emacs-overlay.follows = "emacs-overlay";
-      };
-
       # Official Hyprland Flake
       hyprland = {
         url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
@@ -92,7 +79,7 @@
       };
     };
 
-  outputs = inputs @ { self, nixpkgs, nixpkgs-stable, nixos-hardware, home-manager, home-manager-stable, nur, nixgl, nixvim, nixvim-stable, doom-emacs, hyprland, hyprspace, plasma-manager, ... }: # Function telling flake which inputs to use
+  outputs = inputs @ { self, nixpkgs, nixpkgs-stable, nixos-hardware, home-manager, home-manager-stable, nur, nixgl, nixvim, nixvim-stable, hyprland, hyprspace, plasma-manager, ... }: # Function telling flake which inputs to use
     let
       # Variables Used In Flake
       vars = {
@@ -107,7 +94,7 @@
       nixosConfigurations = (
         import ./hosts {
           inherit (nixpkgs) lib;
-          inherit inputs nixpkgs nixpkgs-stable nixos-hardware home-manager nur nixvim doom-emacs hyprland hyprspace plasma-manager vars; # Inherit inputs
+          inherit inputs nixpkgs nixpkgs-stable nixos-hardware home-manager nur nixvim hyprland hyprspace plasma-manager vars; # Inherit inputs
         }
       );
 

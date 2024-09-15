@@ -61,8 +61,6 @@
       #google-cloud-sdk-gce # Google Cloud
       jellyfin-media-player # Media Player
       kodi # Media Player
-      moonlight-qt # Remote Streaming
-      obs-studio # Live Streaming
       plex-media-player # Media Player
       rclone # Gdrive ($ rclone config | rclone mount --daemon gdrive:<path> <host/path>)
     ];
@@ -92,7 +90,12 @@
     sane = {
       # Scanning
       enable = true;
-      extraBackends = [ pkgs.sane-airscan ];
+      brscan5 = {
+        enable = true;
+        netDevices = {
+          brother = { model = "HL-2280DW"; ip = "10.0.0.163"; };
+        };
+      };
     };
   };
 
