@@ -288,6 +288,7 @@ in
     ];
 
     plugins = {
+      web-devicons.enable = true;
       lualine.enable = true;
       barbar.enable = true;
       gitgutter = {
@@ -421,7 +422,7 @@ in
           html.enable = true;
           cssls.enable = true;
           eslint.enable = true;
-          tsserver.enable = true;
+          ts-ls.enable = true;
           pyright.enable = true;
           tailwindcss = {
             enable = true;
