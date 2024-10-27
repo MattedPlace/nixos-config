@@ -2,22 +2,23 @@
 
 let
   colors = import ../theming/colors.nix;
+
 in
 {
-  # # steam-run for codeium-vim
-  # # start nvim in bash first time, so the spell files can be downloaded
-  # programs.zsh.shellAliases = {
-  #   vim = "${pkgs.steam-run}/bin/steam-run nvim";
-  #   nvim = "${pkgs.steam-run}/bin/steam-run nvim";
-  # };
   environment = {
     systemPackages = with pkgs; [
       go
       nodejs
-      python3
+      (python3.withPackages (ps: with ps; [
+        pip
+      ]))
       ripgrep
       # zig
     ];
+    variables = {
+      PATH="$HOME/.npm-packages/bin:$PATH";
+      NODE_PATH="$HOME/.npm-packages/lib/node_modules:$NODE_PATH:";
+    };
   };
 
   programs.nixvim = {
@@ -47,12 +48,6 @@ in
         pattern = [ "markdown" "org" "norg" ];
         command = "setlocal spell spelllang=en";
         desc = "Spell Checking";
-      }
-      {
-        event = "FileType";
-        pattern = [ "markdown" "org" "norg" ];
-        command = ":TableModeEnable";
-        desc = "Table Mode";
       }
       {
         event = "FileType";
@@ -290,15 +285,18 @@ in
     plugins = {
       lualine.enable = true;
       barbar.enable = true;
+      web-devicons.enable = true;
       gitgutter = {
         enable = true;
         defaultMaps = false;
       };
       mini = {
         enable = true;
+        # mockDevIcons = true;
         modules = {
           indentscope = { };
           move = { };
+          # icons = { };
         };
       };
       indent-blankline = {
@@ -369,8 +367,9 @@ in
         folding = false;
         nixGrammars = true;
         settings = {
-          incremental_selection.enable = true;
           ensure_installed = "all";
+          highlight.enable = true;
+          incremental_selection.enable = true;
           indent.enable = true;
         };
       };
@@ -399,7 +398,7 @@ in
       };
       neorg = {
         enable = true;
-        package = stable.vimPlugins.neorg;
+        package = pkgs.vimPlugins.neorg;
         lazyLoading = true;
         modules = {
           "core.defaults".__empty = null;
@@ -416,12 +415,12 @@ in
       lsp = {
         enable = true;
         servers = {
-          nil-ls.enable = true;
+          nil_ls.enable = true;
           svelte.enable = true;
           html.enable = true;
           cssls.enable = true;
           eslint.enable = true;
-          tsserver.enable = true;
+          ts_ls.enable = true;
           pyright.enable = true;
           tailwindcss = {
             enable = true;
@@ -436,7 +435,7 @@ in
             ];
           };
           gopls.enable = true;
-          #zls.enable = true;
+          # zls.enable = true;
         };
       };
       lsp-format.enable = true;
@@ -471,7 +470,20 @@ in
         };
       };
       lsp-lines.enable = true;
-      luasnip.enable = true;
+      luasnip = {
+        enable = true;
+        fromVscode = [
+          { paths = "${pkgs.vimPlugins.friendly-snippets}"; }
+        ];
+        /* fromLua = [
+          { paths = ./luasnip/snippets.lua; }
+        ]; */
+      };
+      codeium-vim = {
+        enable = true;
+        package = pkgs.vimPlugins.codeium-vim;
+        settings.bin = "${pkgs.vimPlugins.codeium-vim}/bin/codeium_language_server";
+      };
       cmp_luasnip.enable = true;
       cmp-nvim-lsp.enable = true;
       cmp-look.enable = true;
@@ -502,6 +514,11 @@ in
             { name = "orgmode"; }
             { name = "neorg"; }
           ];
+          window = {
+            completion.border = "rounded";
+            documentation.border = "rounded";
+          };
+          completion.completeopt = "menu,menuone,noselect,preview";
         };
       };
       which-key = {
@@ -540,15 +557,12 @@ in
       };
     };
     extraPlugins = with pkgs.vimPlugins; [
-      friendly-snippets
       luasnip
       nvim-scrollbar
       orgmode
       onedarkpro-nvim
       vim-cool
       vim-prettier
-      vim-table-mode
-      # codeium-vim
       (pkgs.vimUtils.buildVimPlugin rec {
         pname = "scope-nvim";
         version = "cd27af77ad61a7199af5c28d27013fb956eb0e3e";
@@ -613,8 +627,28 @@ in
           transparency = true,
         },
       })
+      local border = {
+        {"╭", "FloatBorder"},
+        {"─", "FloatBorder"},
+        {"╮", "FloatBorder"},
+        {"│", "FloatBorder"},
+        {"╯", "FloatBorder"},
+        {"─", "FloatBorder"},
+        {"╰", "FloatBorder"},
+        {"│", "FloatBorder"},
+      }
+      local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
+      function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
+        opts = opts or {}
+        opts.border = opts.border or border
+        return orig_util_open_floating_preview(contents, syntax, opts, ...)
+      end
       vim.cmd[[
         colorscheme onedark
+        highlight FloatBorder guifg=white guibg=NONE
+        highlight Pmenu guibg=NONE
+        highlight PmenuSbar guibg=NONE
+        highlight PmenuThumb guibg=white
       ]]
 
       require('org-bullets').setup()
@@ -625,5 +659,9 @@ in
 
       vim.opt.fillchars:append({ eob = " " })
     '';
+  };
+
+  home-manager.users.${vars.user} = {
+    home.file.".npmrc".text = "prefix = \${HOME}/.npm-packages";
   };
 }

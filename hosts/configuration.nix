@@ -83,7 +83,7 @@ in
     font-awesome # Icons
     corefonts # MS
     noto-fonts # Google + Unicode
-    noto-fonts-cjk
+    noto-fonts-cjk-sans
     noto-fonts-emoji
     (nerdfonts.override {
       fonts = [
@@ -130,6 +130,7 @@ in
       qpwgraph # Pipewire Graph Manager
       vlc # Media Player
       yt-dlp # Youtube download
+      plex #media streaming
 
       # Apps
       appimage-run # Runs AppImages on NixOS

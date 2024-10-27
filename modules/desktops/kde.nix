@@ -38,8 +38,6 @@ with lib;
           layout = "us";
           options = "eurosign:e";
         };
-        modules = [ pkgs.xf86_input_wacom ];
-        wacom.enable = true;
 
         desktopManager.plasma5 = {
           enable = true;
@@ -304,14 +302,6 @@ with lib;
           "systemsettings.desktop"."kcm-users" = [ ];
           "systemsettings.desktop"."powerdevilprofilesconfig" = [ ];
           "systemsettings.desktop"."screenlocker" = [ ];
-          "wacomtablet"."Map to fullscreen" = "Meta+Ctrl+F";
-          "wacomtablet"."Map to screen 1" = "Meta+Ctrl+1";
-          "wacomtablet"."Map to screen 2" = "Meta+Ctrl+2";
-          "wacomtablet"."Next Profile" = "Meta+Ctrl+N";
-          "wacomtablet"."Previous Profile" = "Meta+Ctrl+P";
-          "wacomtablet"."Toggle screen map selection" = "Meta+Ctrl+M";
-          "wacomtablet"."Toggle stylus mode" = "Meta+Ctrl+S";
-          "wacomtablet"."Toggle touch tool" = "Meta+Ctrl+T";
         };
         configFile = {
           "baloofilerc"."General"."dbVersion" = 2;
@@ -347,7 +337,6 @@ with lib;
           "kglobalshortcutsrc"."org_kde_powerdevil"."_k_friendly_name" = "Power Management";
           "kglobalshortcutsrc"."plasmashell"."_k_friendly_name" = "Plasma";
           "kglobalshortcutsrc"."systemsettings.desktop"."_k_friendly_name" = "System Settings";
-          "kglobalshortcutsrc"."wacomtablet"."_k_friendly_name" = "Wacom Tablet";
           "khotkeysrc"."Data"."DataCount" = 3;
           "khotkeysrc"."Data_1"."Comment" = "KMenuEdit Global Shortcuts";
           "khotkeysrc"."Data_1"."DataCount" = 1;
