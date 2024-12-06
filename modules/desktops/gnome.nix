@@ -90,6 +90,7 @@ with lib;
           ];
           disable-user-extensions = false;
           enabled-extensions = [
+            "clipboard-indicator@tudmotu.com"
             "gsconnect@andyholmes.github.io"
             "blur-my-shell@aunetx"
             "caffeine@patapon.info"
@@ -241,6 +242,7 @@ with lib;
       };
 
       home.packages = with pkgs.gnomeExtensions; [
+        clipboard-indicator
         blur-my-shell
         caffeine
         gsconnect
