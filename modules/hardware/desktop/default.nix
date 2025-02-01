@@ -1,4 +1,4 @@
 [
   ./nvidia.nix
-  # ./nouveau.nix
+ #  ./nouveau.nix
 ]

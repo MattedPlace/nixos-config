@@ -55,38 +55,13 @@
   environment = {
     systemPackages = with pkgs; [
       libreoffice # office
-      discord # Messaging
-      gimp # Image Editor
       go2tv # Casting
       #google-cloud-sdk-gce # Google Cloud
-      jellyfin-media-player # Media Player
-      kodi # Media Player
-      plex-media-player # Media Player
-      rclone # Gdrive ($ rclone config | rclone mount --daemon gdrive:<path> <host/path>)
     ];
   };
-
-  flatpak = {
-    extraPackages = [
-      "com.ultimaker.cura"
-    ];
-  };
-
-  nixpkgs.overlays = [
-    # This overlay will pull the latest version of Discord
-    (self: super: {
-      discord = super.discord.overrideAttrs (
-        _: {
-          src = builtins.fetchTarball {
-            url = "https://discord.com/api/download?platform=linux&format=tar.gz";
-            sha256 = "1mmyxjvwfp8fx89wb02k0rn24pnp2ifj5q4m38m9z919yphahafi";
-          };
-        }
-      );
-    })
-  ];
 
   hardware = {
+    cpu.amd.updateMicrocode = true;
     sane = {
       # Scanning
       enable = true;

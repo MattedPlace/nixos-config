@@ -16,8 +16,8 @@ in
       # zig
     ];
     variables = {
-      PATH="$HOME/.npm-packages/bin:$PATH";
-      NODE_PATH="$HOME/.npm-packages/lib/node_modules:$NODE_PATH:";
+      PATH = "$HOME/.npm-packages/bin:$PATH";
+      NODE_PATH = "$HOME/.npm-packages/lib/node_modules:$NODE_PATH:";
     };
   };
 
@@ -29,7 +29,7 @@ in
     autoCmd = [
       {
         event = "VimEnter";
-        command = "set foldmethod=indent";
+	command = "set foldmethod=indent";
         desc = "Set the fold method to indent";
       }
       {
@@ -288,7 +288,9 @@ in
       web-devicons.enable = true;
       gitgutter = {
         enable = true;
-        defaultMaps = false;
+        settings = {
+          map_keys = false;
+        };
       };
       mini = {
         enable = true;
@@ -376,11 +378,13 @@ in
       treesitter-refactor = {
         enable = true;
       };
-      nvim-colorizer = {
+      colorizer = {
         enable = true;
-        userDefaultOptions = {
-          css = true;
-          tailwind = "both";
+        settings = {
+          user_default_options = {
+            css = true;
+            tailwind = "both";
+          };
         };
       };
       cursorline = {
@@ -399,8 +403,7 @@ in
       neorg = {
         enable = true;
         package = pkgs.vimPlugins.neorg;
-        lazyLoading = true;
-        modules = {
+        settings = {
           "core.defaults".__empty = null;
           "core.dirman".config = {
             workspaces = {
@@ -410,6 +413,7 @@ in
           };
           "core.concealer".__empty = null;
           "core.completion".config.engine = "nvim-cmp";
+          lazy_loading = true;
         };
       };
       lsp = {
@@ -583,7 +587,7 @@ in
           sha256 = "sha256-x6S4WdgfUr7HGEHToSDy3pSHEwOPQalzWhBUipqMtnw=";
         };
       })
-      (pkgs.vimUtils.buildVimPlugin rec {
+      /* (pkgs.vimUtils.buildVimPlugin rec {
         pname = "follow-md-links.nvim";
         version = "cf081a0a8e93dd188241a570b9a700b6a546ad1c";
         src = pkgs.fetchFromGitHub {
@@ -592,7 +596,7 @@ in
           rev = version;
           sha256 = "sha256-ElgYrD+5FItPftpjDTdKAQR37XBkU8mZXs7EmAwEKJ4=";
         };
-      })
+      }) */
       (pkgs.vimUtils.buildVimPlugin rec {
         pname = "vim-plist";
         version = "60e69bec50dfca32f0a62ee2dacdfbe63fd92038";

@@ -26,6 +26,55 @@
 
 let
   terminal = pkgs.${vars.terminal};
+  homeConfig = {
+    home = {
+      stateVersion = "22.05";
+    };
+    programs = {
+      home-manager.enable = true;
+    };
+
+    xdg = {
+      mime.enable = true;
+      mimeApps = lib.mkIf (config.gnome.enable == false) {
+        enable = true;
+        defaultApplications = {
+          "image/jpeg" = [ "image-roll.desktop" "feh.desktop" ];
+          "image/png" = [ "image-roll.desktop" "feh.desktop" ];
+          "text/plain" = "nvim.desktop";
+          "text/html" = "nvim.desktop";
+          "text/csv" = "nvim.desktop";
+          "application/pdf" = [ "wps-office-pdf.desktop" "firefox.desktop" "google-chrome.desktop" ];
+          "application/zip" = "org.gnome.FileRoller.desktop";
+          "application/x-tar" = "org.gnome.FileRoller.desktop";
+          "application/x-bzip2" = "org.gnome.FileRoller.desktop";
+          "application/x-gzip" = "org.gnome.FileRoller.desktop";
+          "x-scheme-handler/http" = [ "firefox.desktop" "google-chrome.desktop" ];
+          "x-scheme-handler/https" = [ "firefox.desktop" "google-chrome.desktop" ];
+          "x-scheme-handler/about" = [ "firefox.desktop" "google-chrome.desktop" ];
+          "x-scheme-handler/unknown" = [ "firefox.desktop" "google-chrome.desktop" ];
+          "x-scheme-handler/mailto" = [ "gmail.desktop" ];
+          "audio/mp3" = "mpv.desktop";
+          "audio/x-matroska" = "mpv.desktop";
+          "video/webm" = "mpv.desktop";
+          "video/mp4" = "mpv.desktop";
+          "video/x-matroska" = "mpv.desktop";
+          "inode/directory" = "pcmanfm.desktop";
+        };
+      };
+      desktopEntries.image-roll = {
+        name = "image-roll";
+        exec = "${stable.image-roll}/bin/image-roll %F";
+        mimeType = [ "image" ];
+      };
+      desktopEntries.gmail = {
+        name = "Gmail";
+        exec = ''xdg-open "https://mail.google.com/mail/?view=cm&fs=1&to=%u"'';
+        mimeType = [ "x-scheme-handler/mailto" ];
+      };
+    };
+  };
+
 in
 {
   imports = (import ../modules/desktops ++
@@ -95,7 +144,7 @@ in
       VISUAL = "${vars.editor}";
     };
     systemPackages = with pkgs; [
-      # Terminal
+       # Terminal
       terminal # Terminal Emulator
       btop # Resource Manager
       cifs-utils # Samba
@@ -105,6 +154,7 @@ in
       killall # Process Killer
       lshw # Hardware Config
       nano # Text Editor
+      nodejs # Javascript Runtime
       nodePackages.pnpm # Package Manager
       nix-tree # Browse Nix Store
       pciutils # Manage PCI
@@ -125,8 +175,6 @@ in
       pulseaudio # Audio Server/Control
       qpwgraph # Pipewire Graph Manager
       vlc # Media Player
-      yt-dlp # Youtube download
-      plex #media streaming
 
       # Apps
       appimage-run # Runs AppImages on NixOS
@@ -147,6 +195,14 @@ in
       wpsoffice # Office
       zip # Zip
 
+      # File Management
+      file-roller # Archive Manager
+      p7zip # Zip Encryption
+      unzip # Zip Files
+      unrar # Rar Files
+      wpsoffice # Office
+      zip # Zip
+
       # Other Packages Found @
       # - ./<host>/default.nix
       # - ../modules
@@ -160,13 +216,17 @@ in
 
   programs = {
     dconf.enable = true;
+    nix-ld = {
+      enable = true;
+      libraries = [ ];
+    };
   };
 
-  hardware.pulseaudio.enable = false;
   services = {
     printing = {
       enable = true;
     };
+    pulseaudio.enable = false;
     pipewire = {
       enable = true;
       alsa = {
@@ -190,13 +250,7 @@ in
   nix = {
     settings = {
       auto-optimise-store = true;
-      substituters = [
-        "https://nix-community.cachix.org"
-        "https://cache.nixos.org/"
-      ];
-      trusted-public-keys = [
-        "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-      ];
+      trusted-users = [ "root" "@wheel" ];
     };
     gc = {
       automatic = true;
@@ -221,101 +275,6 @@ in
     stateVersion = "22.05";
   };
 
-  home-manager.users.${vars.user} = {
-    home = {
-      stateVersion = "22.05";
-    };
-    programs = {
-      home-manager.enable = true;
-    };
-
-    xdg = {
-      mime.enable = true;
-      mimeApps = lib.mkIf (config.gnome.enable == false) {
-        enable = true;
-        defaultApplications = {
-          "image/jpeg" = [ "image-roll.desktop" "feh.desktop" ];
-          "image/png" = [ "image-roll.desktop" "feh.desktop" ];
-          "text/plain" = "nvim.desktop";
-          "text/html" = "nvim.desktop";
-          "text/csv" = "nvim.desktop";
-          "application/pdf" = [ "wps-office-pdf.desktop" "firefox.desktop" "google-chrome.desktop" ];
-          "application/zip" = "org.gnome.FileRoller.desktop";
-          "application/x-tar" = "org.gnome.FileRoller.desktop";
-          "application/x-bzip2" = "org.gnome.FileRoller.desktop";
-          "application/x-gzip" = "org.gnome.FileRoller.desktop";
-          "x-scheme-handler/http" = [ "firefox.desktop" "google-chrome.desktop" ];
-          "x-scheme-handler/https" = [ "firefox.desktop" "google-chrome.desktop" ];
-          "x-scheme-handler/about" = [ "firefox.desktop" "google-chrome.desktop" ];
-          "x-scheme-handler/unknown" = [ "firefox.desktop" "google-chrome.desktop" ];
-          "x-scheme-handler/mailto" = [ "gmail.desktop" ];
-          "audio/mp3" = "mpv.desktop";
-          "audio/x-matroska" = "mpv.desktop";
-          "video/webm" = "mpv.desktop";
-          "video/mp4" = "mpv.desktop";
-          "video/x-matroska" = "mpv.desktop";
-          "inode/directory" = "pcmanfm.desktop";
-        };
-      };
-      desktopEntries.image-roll = {
-        name = "image-roll";
-        exec = "${stable.image-roll}/bin/image-roll %F";
-        mimeType = [ "image" ];
-      };
-      desktopEntries.gmail = {
-        name = "Gmail";
-        exec = ''xdg-open "https://mail.google.com/mail/?view=cm&fs=1&to=%u"'';
-        mimeType = [ "x-scheme-handler/mailto" ];
-      };
-    };
-  };
-
-  home-manager.users.${vars.user2} = {
-    home = {
-      stateVersion = "22.05";
-    };
-    programs = {
-      home-manager.enable = true;
-    };
-
-    xdg = {
-      mime.enable = true;
-      mimeApps = lib.mkIf (config.gnome.enable == false) {
-        enable = true;
-        defaultApplications = {
-          "image/jpeg" = [ "image-roll.desktop" "feh.desktop" ];
-          "image/png" = [ "image-roll.desktop" "feh.desktop" ];
-          "text/plain" = "nvim.desktop";
-          "text/html" = "nvim.desktop";
-          "text/csv" = "nvim.desktop";
-          "application/pdf" = [ "wps-office-pdf.desktop" "firefox.desktop" "google-chrome.desktop" ];
-          "application/zip" = "org.gnome.FileRoller.desktop";
-          "application/x-tar" = "org.gnome.FileRoller.desktop";
-          "application/x-bzip2" = "org.gnome.FileRoller.desktop";
-          "application/x-gzip" = "org.gnome.FileRoller.desktop";
-          "x-scheme-handler/http" = [ "firefox.desktop" "google-chrome.desktop" ];
-          "x-scheme-handler/https" = [ "firefox.desktop" "google-chrome.desktop" ];
-          "x-scheme-handler/about" = [ "firefox.desktop" "google-chrome.desktop" ];
-          "x-scheme-handler/unknown" = [ "firefox.desktop" "google-chrome.desktop" ];
-          "x-scheme-handler/mailto" = [ "gmail.desktop" ];
-          "audio/mp3" = "mpv.desktop";
-          "audio/x-matroska" = "mpv.desktop";
-          "video/webm" = "mpv.desktop";
-          "video/mp4" = "mpv.desktop";
-          "video/x-matroska" = "mpv.desktop";
-          "inode/directory" = "pcmanfm.desktop";
-        };
-      };
-      desktopEntries.image-roll = {
-        name = "image-roll";
-        exec = "${stable.image-roll}/bin/image-roll %F";
-        mimeType = [ "image" ];
-      };
-      desktopEntries.gmail = {
-        name = "Gmail";
-        exec = ''xdg-open "https://mail.google.com/mail/?view=cm&fs=1&to=%u"'';
-        mimeType = [ "x-scheme-handler/mailto" ];
-      };
-    };
-  };
+  home-manager.users.${vars.user} = homeConfig;
+  home-manager.users.${vars.user2} = homeConfig;
 }
