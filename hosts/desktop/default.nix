@@ -61,7 +61,6 @@
   };
 
   hardware = {
-    cpu.amd.updateMicrocode = true;
     sane = {
       # Scanning
       enable = true;

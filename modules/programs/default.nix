@@ -12,15 +12,14 @@
 
 [
   ./alacritty.nix
-  ./chromium.nix
-  #  ./accounts.nix
+  # ./accounts.nix
   #./eww.nix
   ./flatpak.nix
   ./kitty.nix
-  #  ./obs.nix
+  #./obs.nix
   #./rofi.nix
   #./waybar.nix
   #./wofi.nix
-  ./ranger.nix
-  ./games.nix
+  ./chromium.nix
+  # ./games.nix
 ]

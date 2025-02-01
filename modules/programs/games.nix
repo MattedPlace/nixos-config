@@ -4,31 +4,30 @@
 #  When connecting a controller via bluetooth, it might error out. To fix this, remove device, pair - connect - trust, wait for auto disconnect, sudo rmmod btusb, sudo modprobe btusb, pair again.
 #
 
-{ config, pkgs, nur, lib, vars, host, ... }:
+{ config, pkgs, nur, lib, vars, ... }:
 
+let
+  # PCSX2 Wrapper to run under X11
+  pcsx2 = pkgs.pcsx2.overrideAttrs (old: {
+    nativeBuildInputs = old.nativeBuildInputs ++ [ pkgs.makeWrapper ];
+    postFixup = ''
+      wrapProgram $out/bin/pcsx2 \
+        --set GDK_BACKEND x11
+    '';
+  });
+in
 {
-
-
   users.groups.plugdev.members = [ "root" "${vars.user}" ];
-  services = {
-    ratbagd.enable = true;
-    kanata =
-      if host.hostName == "desktop" then {
-        enable = true;
-        keyboards.g4 = {
-          config = ''
-            (defsrc end)
-            (deflayer default lalt)
-          '';
-          devices = [ "/dev/input/by-id/usb-Logitech_G502_HERO_Gaming_Mouse_067039603137-if01-event-kbd" ];
-        };
-      } else { };
-  };
+  services.udev.extraRules = ''
+    KERNEL=="hidraw*", SUBSYSTEM=="hidraw", MODE="0664", GROUP="plugdev"
+  ''; # Group and udev rule needed to have access to the controller's gyro
+
+  #hardware.new-lg4ff.enable = true;
 
   environment.systemPackages = [
+    # config.nur.repos.c0deaddict.oversteer # Steering Wheel Configuration
     # pkgs.heroic # Game Launcher
     # pkgs.lutris # Game Launcher
-    # pkgs.bottles # Game Launcher
     # pkgs.prismlauncher # MC Launcher
     # pkgs.retroarchFull # Emulator
     pkgs.steam # Game Launcher
