@@ -1,5 +1,5 @@
 [
   ./nvidia.nix
-  ./g4.nix
+  ./kanata.nix
  #  ./nouveau.nix
 ]
