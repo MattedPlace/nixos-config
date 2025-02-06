@@ -94,17 +94,16 @@ in
   };
 
   users = {
-    groups = { uinput = { }; }; # needed for katana
     users.${vars.user} = {
       # System User
       isNormalUser = true;
-      extraGroups = [ "wheel" "video" "audio" "camera" "networkmanager" "lp" "scanner" "kvm" "libvirtd" "plex" "uinput" ];
+      extraGroups = [ "wheel" "video" "audio" "camera" "networkmanager" "lp" "scanner" "kvm" "libvirtd" "plex" ];
     };
 
     users.${vars.user2} = {
       # System User
       isNormalUser = true;
-      extraGroups = [ "video" "audio" "camera" "networkmanager" "lp" "scanner" "kvm" "libvirtd" "plex" "uinput" ];
+      extraGroups = [ "video" "audio" "camera" "networkmanager" "lp" "scanner" "kvm" "libvirtd" "plex" ];
     };
   };
 
