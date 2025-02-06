@@ -1,6 +1,9 @@
 {config, lib, pkgs, vars, ...}:
 {
   config = lib.mkIf ( config.laptop.enable ) {
+    environment.systemPackages = with pkgs; [
+      touchegg
+    ];
     services.touchegg.enable = true;
     home-manager.users.${vars.user} = {
       home.file = {

@@ -78,6 +78,31 @@ in
     ];
   };
 
+  # g15 Profile
+  g15 = lib.nixosSystem {
+    inherit system;
+    specialArgs = {
+      inherit inputs system stable hyprland hyprspace vars;
+      host = {
+        hostName = "g15";
+        mainMonitor = "eDP-1";
+        secondMonitor = "";
+        thirdMonitor= "";
+      };
+    };
+    modules = [
+      nixvim.nixosModules.nixvim
+      ./g15
+      ./configuration.nix
+
+      home-manager.nixosModules.home-manager
+      {
+        home-manager.useGlobalPkgs = true;
+        home-manager.useUserPackages = true;
+      }
+    ];
+  };
+
   # VM Profile
   vm = lib.nixosSystem {
     inherit system;
