@@ -2,11 +2,11 @@
 #  Bluetooth
 #
 
-{ pkgs, host, ... }:
+{ pkgs, host, config, ... }:
 
+let isGnome = config.gnome.enable;
+in
 {
-
-
   hardware.bluetooth = {
     enable = true;
     settings = {
@@ -17,10 +17,13 @@
       };
     };
   };
-  services = {
-    blueman.enable = true;
-    udev.extraRules = if host.hostName == "desktop" then ''
-      SUBSYSTEM=="usb", ATTRS{idVendor}=="8087", ATTRS{idProduct}=="0025", ATTR{authorized}="0"
-    '' else '''';
-  };
+
+  services =
+    {
+      blueman.enable = if isGnome then false else true;
+      udev.extraRules =
+        if host.hostName == "desktop" then ''
+          SUBSYSTEM=="usb", ATTRS{idVendor}=="8087", ATTRS{idProduct}=="0025", ATTR{authorized}="0"
+        '' else '''';
+    };
 }

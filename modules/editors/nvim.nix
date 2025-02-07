@@ -387,7 +387,7 @@ in
           };
         };
       };
-      cursorline = {
+      cursorline.settings = {
         enable = true;
         cursorline = {
           enable = true;
