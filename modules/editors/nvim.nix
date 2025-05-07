@@ -2,7 +2,22 @@
 
 let
   colors = import ../theming/colors.nix;
+  livesvelte = pkgs.stdenv.mkDerivation {
+    name = "livesvelte";
+    buildCommand = ''
+      mkdir -p $out/queries/elixir
+      cat > $out/queries/elixir/injections.scm << 'EOF'
+      ; extends
 
+      ; Svelte
+      (sigil
+        (sigil_name) @_sigil_name
+        (quoted_content) @injection.content
+       (#eq? @_sigil_name "V")
+       (#set! injection.language "svelte"))
+      EOF
+    '';
+  };
 in
 {
   environment = {
@@ -29,7 +44,7 @@ in
     autoCmd = [
       {
         event = "VimEnter";
-	command = "set foldmethod=indent";
+        command = "set foldmethod=indent";
         desc = "Set the fold method to indent";
       }
       {
@@ -483,10 +498,10 @@ in
           { paths = ./luasnip/snippets.lua; }
         ]; */
       };
-      codeium-vim = {
+      windsurf-vim = {
         enable = true;
-        package = pkgs.vimPlugins.codeium-vim;
-        settings.bin = "${pkgs.vimPlugins.codeium-vim}/bin/codeium_language_server";
+        package = pkgs.vimPlugins.windsurf-vim;
+        settings.bin = "${pkgs.vimPlugins.windsurf-vim}/bin/windsurf_language_server";
       };
       cmp_luasnip.enable = true;
       cmp-nvim-lsp.enable = true;
@@ -567,6 +582,7 @@ in
       onedarkpro-nvim
       vim-cool
       vim-prettier
+      livesvelte
       (pkgs.vimUtils.buildVimPlugin rec {
         pname = "scope-nvim";
         version = "cd27af77ad61a7199af5c28d27013fb956eb0e3e";
@@ -605,6 +621,16 @@ in
           repo = "vim-plist";
           rev = version;
           sha256 = "sha256-OIMXpX/3YXUsDsguY8/lyG5VXjTKB+k5XPfEFUSybng=";
+        };
+      })
+      (pkgs.vimUtils.buildVimPlugin rec {
+        pname = "vim-monkey-c";
+        version = "2b3b5df632c4d056c0a9975cf7efed72bf0950cb";
+        src = pkgs.fetchFromGitHub {
+          owner = "klimeryk";
+          repo = "vim-monkey-c";
+          rev = version;
+          sha256 = "sha256-DVSxJHNrNCxQJNRJqwo6hxLjx22Qe2mWHcmfhFmPTOg=";
         };
       })
     ];

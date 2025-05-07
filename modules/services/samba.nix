@@ -18,5 +18,9 @@
       };
       openFirewall = true;
     };
+    samba-wsdd = {
+      enable = true;
+      openFirewall = true;
+    };
   };
 }
