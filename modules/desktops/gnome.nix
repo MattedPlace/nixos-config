@@ -98,9 +98,12 @@ with lib;
             "pip-on-top@rafostar.github.com"
             "forge@jmmaranan.com"
             "system-monitor@gnome-shell-extensions.gcampax.github.com"
-          ] ++ (if isLaptop then [ "x11gestures@joseexposito.github.io" ] else []);
+          ] ++ (if isLaptop then [ "x11gestures@joseexposito.github.io" ] else [ ]);
         };
-
+        "org/gnome/software" = {
+          allow-updates = false;
+          download-updates = false;
+        };
         "org/gnome/desktop/interface" = {
           color-scheme = "prefer-dark";
           enable-hot-corners = false;
@@ -250,7 +253,7 @@ with lib;
         pip-on-top
         forge
         system-monitor
-      ] ++ (if isLaptop then [ x11-gestures ] else []);
+      ] ++ (if isLaptop then [ x11-gestures ] else [ ]);
       xdg.desktopEntries.GDrive = {
         name = "GDrive";
         exec = "${pkgs.rclone}/bin/rclone mount --daemon gdrive: /GDrive --vfs-cache-mode=writes";
