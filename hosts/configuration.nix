@@ -143,7 +143,7 @@ in
       VISUAL = "${vars.editor}";
     };
     systemPackages = with pkgs; [
-       # Terminal
+      # Terminal
       terminal # Terminal Emulator
       btop # Resource Manager
       cifs-utils # Samba
@@ -185,21 +185,13 @@ in
       qbittorrent
 
       # File Management
+      libreoffice
       file-roller # Archive Manager
       pcmanfm # File Browser
       p7zip # Zip Encryption
       rsync # Syncer - $ rsync -r dir1/ dir2/
       unzip # Zip Files
       unrar # Rar Files
-      wpsoffice # Office
-      zip # Zip
-
-      # File Management
-      file-roller # Archive Manager
-      p7zip # Zip Encryption
-      unzip # Zip Files
-      unrar # Rar Files
-      wpsoffice # Office
       zip # Zip
 
       # Other Packages Found @
