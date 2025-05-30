@@ -62,6 +62,7 @@ with lib;
         gnome-system-monitor
         gnome-weather
         gnome-connections
+        gnome-software
         simple-scan
         totem
         yelp

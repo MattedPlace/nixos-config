@@ -186,6 +186,7 @@ in
 
       # File Management
       libreoffice
+      wpsoffice
       file-roller # Archive Manager
       pcmanfm # File Browser
       p7zip # Zip Encryption
