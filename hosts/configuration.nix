@@ -185,8 +185,8 @@ in
       qbittorrent
 
       # File Management
-      libreoffice
       wpsoffice
+      libreoffice
       file-roller # Archive Manager
       pcmanfm # File Browser
       p7zip # Zip Encryption

@@ -16,16 +16,21 @@
 
 { config, pkgs, user, ... }:
 {
-  imports = [ ./hardware-configuration.nix ];
+  imports = [
+    ./hardware-configuration.nix
+    ../../modules/programs/games.nix
+
+  ] ++
+  (import ../../modules/desktops/virtualisation);
 
   boot = {
-    loader = { 
+    loader = {
       efi.canTouchEfiVariables = true;
       grub = {
         enable = true;
         devices = [ "nodev" ];
         efiSupport = true;
-	useOSProber = true;
+        useOSProber = true;
       };
     };
     kernelParams = [ "nvidia-drm.modeset=1" "nvidia_drm.fbdev=1" ];
@@ -61,6 +66,13 @@
 
   environment = {
     systemPackages = with pkgs; [
+    ];
+  };
+
+  flatpak = {
+    extraPackages = [
+      "com.github.tchx84.Flatseal"
+      "org.paraview.ParaView"
     ];
   };
 

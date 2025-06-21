@@ -40,14 +40,14 @@ in
 
     autoCmd = [
       {
-        event = "BufWritePre";
-        command = "%s/\\s\\+$//e";
-        desc = "Remove whitespaces on write";
-      }
-      {
         event = "VimEnter";
         command = "set foldmethod=indent";
         desc = "Set the fold method to indent";
+      }
+      {
+        event = "BufWritePre";
+        command = "%s/\\s\\+$//e";
+        desc = "Remove whitespaces on write";
       }
       {
         event = "FileType";
@@ -295,6 +295,12 @@ in
         action = "<C-\\><C-n>";
         options.desc = "Escape terminal mode";
       }
+      {
+        mode = "n";
+        key = "<leader>tf";
+        action = "<CMD>lua vim.g.disable_autoformat = not vim.g.disable_autoformat; vim.notify('Autoformat ' .. (vim.g.disable_autoformat and 'disabled' or 'enabled'))<CR>";
+        options.desc = "Toggle autoformat";
+      }
     ];
 
     highlight = {
@@ -452,7 +458,7 @@ in
             enable = true;
             settings = {
               diagnostics = {
-                globals = [ "vim" "love" ];
+                globals = [ "vim" ];
               };
               workspace = {
                 checkThirdParty = false;
@@ -565,11 +571,14 @@ in
             python = [ "isort" "black" ];
             nix = [ "nixpkgs-fmt" ];
           };
-          format_on_save = {
-            lsp_fallback = true;
-            async = false;
-            timeout_ms = 1000;
-          };
+          format_on_save = ''
+            function(bufnr)
+              if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
+                return
+              end
+              return { timeout_ms = 1000, lsp_fallback = true }, on_format
+             end
+          '';
         };
       };
       lint = {
@@ -649,6 +658,18 @@ in
 
   environment = {
     systemPackages = with pkgs; [
+      gcc
+      gnumake
+      flex
+      bison
+      openmpi
+      scotch
+      boost
+      zlib
+      qt5.qtbase
+      cmake
+      libGL
+      libGLU
       deno
       elixir
       erlang

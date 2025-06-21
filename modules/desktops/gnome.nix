@@ -36,9 +36,10 @@ with lib;
         xkb = {
           layout = "us";
         };
-        displayManager.gdm.enable = true;
-        desktopManager.gnome.enable = true;
       };
+      displayManager.gdm.enable = true;
+      desktopManager.gnome.enable = true;
+
     };
     environment = {
       systemPackages = with pkgs; [
@@ -104,6 +105,10 @@ with lib;
         "org/gnome/software" = {
           allow-updates = false;
           download-updates = false;
+        };
+        "org.gnome.desktop.peripherals.keyboard" = {
+          remember-numlock-state = false;
+          numlock-state = true;
         };
         "org/gnome/desktop/interface" = {
           color-scheme = "prefer-dark";
