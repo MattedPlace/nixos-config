@@ -74,7 +74,6 @@ let
       };
     };
   };
-
 in
 {
   imports = (import ../modules/desktops ++

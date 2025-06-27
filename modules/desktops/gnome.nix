@@ -20,7 +20,10 @@ with lib;
   };
 
   config = mkIf (config.gnome.enable) {
+
     programs = {
+      dconf.profiles.gdm.databases =
+        [{ settings."org/gnome/desktop/peripherals/keyboard" = { numlock-state = true; }; }];
       zsh.enable = true;
       kdeconnect = {
         # GSConnect
@@ -105,10 +108,6 @@ with lib;
         "org/gnome/software" = {
           allow-updates = false;
           download-updates = false;
-        };
-        "org.gnome.desktop.peripherals.keyboard" = {
-          remember-numlock-state = false;
-          numlock-state = true;
         };
         "org/gnome/desktop/interface" = {
           color-scheme = "prefer-dark";
