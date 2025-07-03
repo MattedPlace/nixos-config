@@ -22,8 +22,6 @@ with lib;
   config = mkIf (config.gnome.enable) {
 
     programs = {
-      dconf.profiles.gdm.databases =
-        [{ settings."org/gnome/desktop/peripherals/keyboard" = { numlock-state = true; }; }];
       zsh.enable = true;
       kdeconnect = {
         # GSConnect
@@ -38,6 +36,7 @@ with lib;
         enable = true;
         xkb = {
           layout = "us";
+          options = "numpad:mac"; #numpad always enters digits
         };
       };
       displayManager.gdm.enable = true;
