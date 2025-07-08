@@ -15,40 +15,62 @@ let
         --set GDK_BACKEND x11
     '';
   });
+  vendorId = "2dc8";
+  productId = "3109";
 in
+with lib;
 {
-  users.groups.plugdev.members = [ "root" "${vars.user}" ];
-  services.udev.extraRules = ''
-    KERNEL=="hidraw*", SUBSYSTEM=="hidraw", MODE="0664", GROUP="plugdev"
-  ''; # Group and udev rule needed to have access to the controller's gyro
-
-  #hardware.new-lg4ff.enable = true;
-
-  environment.systemPackages = [
-    # config.nur.repos.c0deaddict.oversteer # Steering Wheel Configuration
-    # pkgs.heroic # Game Launcher
-    # pkgs.lutris # Game Launcher
-    # pkgs.prismlauncher # MC Launcher
-    # pkgs.retroarchFull # Emulator
-    pkgs.steam # Game Launcher
-    # pcsx2 # Emulator
-  ];
-
-  programs = {
-    steam = {
-      enable = true;
-      # remotePlay.openFirewall = true;
+  options = {
+    games = {
+      enable = mkOption {
+        type = types.bool;
+        default = true;
+      };
     };
-    gamemode.enable = true;
-    # Better Gaming Performance
-    # Steam: Right-click game - Properties - Launch options: gamemoderun %command%
-    # Lutris: General Preferences - Enable Feral GameMode
-    #                             - Global options - Add Environment Variables: LD_PRELOAD=/nix/store/*-gamemode-*-lib/lib/libgamemodeauto.so
   };
 
-  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
-    "steam"
-    "steam-original"
-    "steam-runtime"
-  ];
+  config = mkIf (config.games.enable) {
+    users.groups.plugdev.members = [ "root" "${vars.user}" ];
+    services.udev.extraRules = ''
+      ACTION=="add", \
+        ATTRS{idVendor}=="${vendorId}", \
+        ATTRS{idProduct}=="${productId}", MODE="0666", \
+        RUN+="${pkgs.kmod}/bin/modprobe xpad", \
+        RUN+="${pkgs.bash}/bin/sh -c 'echo ${vendorId} ${productId} > /sys/bus/usb/drivers/xpad/new_id'"
+    '';
+
+    environment.systemPackages = [
+      # config.nur.repos.c0deaddict.oversteer # Steering Wheel Configuration
+      # pkgs.heroic # Game Launcher
+      # pkgs.lutris # Game Launcher
+      # pkgs.prismlauncher # MC Launcher
+      # pkgs.retroarchFull # Emulator
+      pkgs.steam # Game Launcher
+      # pcsx2 # Emulator
+    ];
+
+    programs = {
+      steam = {
+        enable = true;
+        # remotePlay.openFirewall = true;
+      };
+      gamemode.enable = true;
+      # Better Gaming Performance Steam: Right-click game - Properties - Launch options: gamemoderun %command%
+      # Lutris: General Preferences - Enable Feral GameMode
+      #                             - Global options - Add Environment Variables: LD_PRELOAD=/nix/store/*-gamemode-*-lib/lib/libgamemodeauto.so
+    };
+
+    hardware = {
+      xpadneo.enable = true;
+      # xpad-noone.enable = true;
+      # xone.enable = true;
+      steam-hardware.enable = true;
+    };
+
+    nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
+      "steam"
+      "steam-original"
+      "steam-runtime"
+    ];
+  };
 }

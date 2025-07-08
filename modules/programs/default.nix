@@ -22,5 +22,5 @@
   #./waybar.nix
   #./wofi.nix
   ./chromium.nix
-  # ./games.nix
+  ./games.nix
 ]

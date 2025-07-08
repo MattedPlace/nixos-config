@@ -22,7 +22,6 @@
 {
   imports = [
     ./hardware-configuration.nix
-    ../../modules/programs/games.nix
   ] ++
   (import ../../modules/hardware/desktop) ++
   (import ../../modules/desktops/virtualisation);
