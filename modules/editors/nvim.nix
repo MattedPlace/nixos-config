@@ -34,7 +34,7 @@ in
       eslint_d
       isort
       nixpkgs-fmt
-      prettierd
+      prettier
       stylua
     ];
 
@@ -96,7 +96,9 @@ in
 
     clipboard = {
       register = "unnamedplus";
-      providers.wl-copy.enable = true;
+      providers.wl-copy = lib.mkIf pkgs.stdenv.isLinux {
+        enable = true;
+      };
     };
 
     globals = {
@@ -382,9 +384,9 @@ in
       };
       neo-tree = {
         enable = true;
-        window.width = 35;
-        closeIfLastWindow = true;
-        extraOptions = {
+        settings = {
+          window.width = 35;
+          closeIfLastWindow = true;
           filesystem = {
             filtered_items = {
               visible = true;
@@ -507,48 +509,33 @@ in
           svelte.enable = true;
           tailwindcss = {
             enable = true;
-            filetypes = [
-              "html"
-              "css"
-              "js"
-              "jsx"
-              "mdx"
-              "svelte"
-              "ts"
-              "tsx"
-              "heex"
-              "elixir"
-              "eelixir"
-            ];
-            extraOptions = {
-              init_options = {
-                userLanguages = {
-                  elixir = "html-eex";
-                  eelixir = "html-eex";
-                  heex = "html-eex";
-                };
-              };
-            };
             settings = {
-              tailwindCSS = {
-                classAttributes = [
-                  "class"
-                  "className"
-                  "class:list"
-                  "classList"
-                  "ngClass"
-                ];
-                experimental = {
-                  classRegex = ''class[:]\s*"([^"]*)"'';
-                };
+              filetypes = [
+                "html"
+                "css"
+                "js"
+                "jsx"
+                "mdx"
+                "svelte"
+                "ts"
+                "tsx"
+                "heex"
+                "elixir"
+                "eelixir"
+              ];
+              includeLanagues = {
+                elixir = "html-eex";
+                eelixir = "html-eex";
+                heex = "html-eex";
               };
-            };
-            onAttach = {
-              override = true;
-              function = ''
-                client.server_capabilities.documentFormattingProvider = false
-                client.server_capabilities.documentRangeFormattingProvider = false
-              '';
+              classAttributes = [
+                "class"
+                "className"
+                "class:list"
+                "classList"
+                "ngClass"
+                ''class[:]\s*"([^"]*)"''
+              ];
             };
           };
           ts_ls.enable = true;
@@ -559,15 +546,17 @@ in
         enable = true;
         settings = {
           formatters_by_ft = {
-            javascript = [ "prettierd" ];
-            typescript = [ "prettierd" ];
-            svelte = [ "prettierd" ];
-            css = [ "prettierd" ];
-            html = [ "prettierd" ];
-            json = [ "prettierd" ];
-            yaml = [ "prettierd" ];
-            markdown = [ "prettierd" ];
+            javascript = [ "prettier" ];
+            typescript = [ "prettier" ];
+            typescriptreact = [ "prettier" ];
+            svelte = [ "prettier" ];
+            css = [ "prettier" ];
+            html = [ "prettier" ];
+            json = [ "prettier" ];
+            yaml = [ "prettier" ];
+            markdown = [ "prettier" ];
             lua = [ "stylua" ];
+            php = [ "prettier" ];
             python = [ "isort" "black" ];
             nix = [ "nixpkgs-fmt" ];
           };
@@ -658,18 +647,6 @@ in
 
   environment = {
     systemPackages = with pkgs; [
-      gcc
-      gnumake
-      flex
-      bison
-      openmpi
-      scotch
-      boost
-      zlib
-      qt5.qtbase
-      cmake
-      libGL
-      libGLU
       deno
       elixir
       erlang
@@ -691,3 +668,4 @@ in
     home.file.".npmrc".text = "prefix = \${HOME}/.npm-packages";
   };
 }
+
