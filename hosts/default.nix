@@ -62,7 +62,7 @@ in
         hostName = "laptop";
         mainMonitor = "eDP-1";
         secondMonitor = "";
-        thirdMonitor= "";
+        thirdMonitor = "";
       };
     };
     modules = [
@@ -87,7 +87,7 @@ in
         hostName = "g15";
         mainMonitor = "eDP-1";
         secondMonitor = "";
-        thirdMonitor= "";
+        thirdMonitor = "";
       };
     };
     modules = [

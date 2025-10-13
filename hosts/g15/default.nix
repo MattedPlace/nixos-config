@@ -15,6 +15,7 @@
 #
 
 { config, pkgs, user, ... }:
+
 {
   imports = [
     ./hardware-configuration.nix
@@ -32,12 +33,15 @@
         useOSProber = true;
       };
     };
-    kernelParams = [ "nvidia-drm.modeset=1" "nvidia_drm.fbdev=1" ];
+    kernelParams = [
+      "nvidia-drm.modeset=1"
+      "nvidia_drm.fbdev=1"
+    ];
     blacklistedKernelModules = [ "nouveau" ];
     kernelPackages = pkgs.linuxPackages_latest;
   };
 
-  gnome.enable = true;
+  hyprland.enable = true;
   laptop.enable = true;
 
   services.xserver.videoDrivers = [ "nvidia" ];
@@ -63,10 +67,10 @@
     };
   };
 
-  environment = {
-    systemPackages = with pkgs; [
-    ];
-  };
+
+  environment.systemPackages = with pkgs; [
+    gimp3
+  ];
 
   flatpak = {
     extraPackages = [

@@ -9,11 +9,9 @@ with lib;
 with host;
 let
   monitor =
-    if hostName == "beelink" then
+    if hostName == "desktop" then
       "${pkgs.xorg.xrandr}/bin/xrandr --output ${secondMonitor} --mode 1920x1080 --pos 0x0 --rotate normal --output ${mainMonitor} --primary --mode 1920x1080 --pos 1920x0 --rotate normal"
-    else if hostName == "work" then
-      "${pkgs.xorg.xrandr}/bin/xrandr --output ${mainMonitor} --mode 1920x1080 --pos 0x0 --rotate normal --primary --output ${secondMonitor} --mode 1920x1200 --pos 1920x0 --rotate normal --output ${thirdMonitor} --mode 1920x1200 --pos 3840x0 --rotate normal"
-    else if hostName == "vm" || hostName == "probook"  || hostName == "laptop" then
+    else if hostName == "vm" || hostName == "g15" || hostName == "laptop" then
       "${pkgs.xorg.xrandr}/bin/xrandr --mode 1920x1080 --pos 0x0 --rotate normal"
     else "";
 
@@ -44,15 +42,13 @@ let
 
   extraConf = builtins.replaceStrings [ "WORKSPACES" ]
     [
-      (if hostName == "beelink" || hostName == "work" then ''
+      (if hostName == "desktop" then ''
         bspc monitor ${mainMonitor} -d 1 2 3
         bspc monitor ${secondMonitor} -d 4 5 6
-        bspc monitor ${thirdMonitor} -d 7 8 9
-        bspc wm -O ${mainMonitor} ${secondMonitor} ${thirdMonitor}
+        bspc wm -O ${mainMonitor} ${secondMonitor}
         polybar sec &
-        polybar thi &
       ''
-      else if hostName == "vm" || hostName == "probook" || hostName == "laptop"  then ''
+      else if hostName == "vm" || hostName == "g15" then ''
         bspc monitor -d 1 2 3 4 5
       ''
       else "")

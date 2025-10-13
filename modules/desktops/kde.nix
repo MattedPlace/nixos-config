@@ -22,7 +22,6 @@ with lib;
       zsh.enable = true;
       kdeconnect = {
         enable = true;
-        package = pkgs.gnomeExtensions.gsconnect;
       };
     };
 
@@ -49,12 +48,6 @@ with lib;
       systemPackages = with pkgs.libsForQt5; [
         bismuth # Dynamic Tiling
         packagekit-qt # Package Updater
-      ];
-      plasma5.excludePackages = with pkgs.libsForQt5; [
-        elisa
-        khelpcenter
-        konsole
-        oxygen
       ];
     };
 

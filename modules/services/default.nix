@@ -13,12 +13,12 @@
 [
   ./avahi.nix
   # ./dunst.nix
-  # ./flameshot.nix
-  #./picom.nix
-  #./polybar.nix
+  ./flameshot.nix
+  ./picom.nix
+  ./polybar.nix
   ./samba.nix
   #./swaync.nix
   ./sxhkd.nix
-  #./udiskie.nix
+  ./udiskie.nix
   ./touchegg.nix
 ]

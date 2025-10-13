@@ -217,6 +217,10 @@ in
     printing = {
       enable = true;
     };
+    plex = {
+      enable = true;
+      openFirewall = true;
+    };
     pulseaudio.enable = false;
     pipewire = {
       enable = true;

@@ -122,7 +122,7 @@ in
             };
             "module/backlight" = {
               type = "internal/backlight";
-              card = "intel_backlight";
+              card = "nvidia_backlight";
               format = "<ramp> <bar>";
 
               ramp-0 = "";

@@ -42,6 +42,18 @@ with host;
           XDG_SESSION_DESKTOP = "Hyprland";
           XCURSOR = "Catppuccin-Mocha-Dark-Cursors";
           XCURSOR_SIZE = 24;
+          NIXOS_OZONE_WL = 1;
+          SDL_VIDEODRIVER = "wayland";
+          OZONE_PLATFORM = "wayland";
+          WLR_RENDERER_ALLOW_SOFTWARE = 1;
+          CLUTTER_BACKEND = "wayland";
+          QT_QPA_PLATFORM = "wayland;xcb";
+          QT_QPA_PLATFORMTHEME = "qt6ct";
+          QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
+          QT_AUTO_SCREEN_SCALE_FACTOR = 1;
+          GDK_BACKEND = "wayland";
+          WLR_NO_HARDWARE_CURSORS = "1";
+          MOZ_ENABLE_WAYLAND = "1";
         };
         sessionVariables =
           if hostName == "xps" then {
@@ -65,14 +77,7 @@ with host;
             GDK_BACKEND = "wayland";
             WLR_NO_HARDWARE_CURSORS = "1";
             MOZ_ENABLE_WAYLAND = "1";
-          } else {
-            # QT_QPA_PLATFORM = "wayland";
-            QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
-
-            GDK_BACKEND = "wayland";
-            WLR_NO_HARDWARE_CURSORS = "1";
-            MOZ_ENABLE_WAYLAND = "1";
-          };
+          } else { };
         systemPackages = with pkgs; [
           grimblast # Screenshot
           hyprcursor # Cursor
@@ -84,6 +89,10 @@ with host;
         ];
       };
 
+    services.getty = {
+      autologinUser = "${vars.user}";
+      autologinOnce = true;
+    };
     programs.hyprland = {
       enable = true;
       package = hyprland.packages.${pkgs.system}.hyprland;
@@ -92,20 +101,7 @@ with host;
     security.pam.services.hyprlock = {
       # text = "auth include system-auth";
       text = "auth include login";
-      fprintAuth = if hostName == "xps" then true else false;
       enableGnomeKeyring = true;
-    };
-
-    services.greetd = {
-      enable = true;
-      settings = {
-        default_session = {
-          # command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --time-format '%I:%M %p | %a • %h | %F' --cmd Hyprland";
-          command = "${config.programs.hyprland.package}/bin/Hyprland"; # tuigreet not needed with exec-once hyprlock
-          user = vars.user;
-        };
-      };
-      vt = 7;
     };
 
     systemd.sleep.extraConfig = ''
@@ -130,7 +126,7 @@ with host;
             if [ "$action" == "lock" ]; then
               ${pkgs.hyprlock}/bin/hyprlock
             elif [ "$action" == "suspend" ]; then
-              ${pkgs.systemd}/bin/systemctl suspend
+              ${pkgs.systemd}/bin/systemctl poweroff
             fi
           fi
         '';
@@ -252,7 +248,6 @@ with host;
               active_opacity = 1;
               inactive_opacity = 1;
               fullscreen_opacity = 1;
-              drop_shadow = false;
             };
             monitor = [
               ",preferred,auto,1,mirror,${toString mainMonitor}"
@@ -260,11 +255,9 @@ with host;
               "${toString mainMonitor},1920x1080@60,1920x0,1"
               "${toString secondMonitor},1920x1080@60,0x0,1"
             ] else if hostName == "work" then [
-              "${toString mainMonitor},1920x1080@60,0x0,1"
-              "${toString secondMonitor},1920x1200@60,1920x0,1"
-              "${toString thirdMonitor},1920x1200@60,3840x0,1"
-              "DP-6,1920x1200@60,1920x0,1"
-              "DP-7,1920x1200@60,3840x0,1"
+              "${toString mainMonitor},preferred,0x0,1"
+              "${toString secondMonitorDesc},1920x1200@60,1920x0,1"
+              "${toString thirdMonitorDesc},1920x1200@60,3840x0,1"
             ] else if hostName == "xps" then [
               "${toString mainMonitor},3840x2400@60,0x0,2"
               "${toString secondMonitor},1920x1080@60,1920x0,1"
@@ -289,7 +282,11 @@ with host;
                 "4, monitor:${toString secondMonitor}"
                 "5, monitor:${toString secondMonitor}"
                 "6, monitor:${toString secondMonitor}"
-              ] else [ ];
+              ] else [
+                "1, monitor:${toString mainMonitor}"
+                "2, monitor:${toString mainMonitor}"
+                "3, monitor:${toString mainMonitor}"
+              ];
             animations = {
               enabled = false;
               bezier = [
@@ -301,7 +298,7 @@ with host;
               animation = [
                 "windows, 1, 4, overshot, slide"
                 "windowsIn, 1, 2, smoothOut"
-                "windowsOut, 1, 0.5, smoothOut"
+                "windowsOut, 1, 1, smoothOut"
                 "windowsMove, 1, 3, smoothIn, slide"
                 "border, 1, 5, default"
                 "fade, 1, 4, smoothIn"
@@ -321,22 +318,23 @@ with host;
               numlock_by_default = 1;
               accel_profile = "flat";
               sensitivity = 0.8;
+              natural_scroll = true;
               touchpad =
-                if hostName == "work" || hostName == "xps" || hostName == "probook" then {
+                if hostName == "g15" then {
                   natural_scroll = true;
                   scroll_factor = 0.2;
                   middle_button_emulation = true;
-                  tap-to-click = true;
+                  tap-to-click = false;
                 } else { };
             };
-            gestures =
-              if hostName == "work" || hostName == "xps" || hostName == "probook" then {
-                workspace_swipe = true;
-                workspace_swipe_fingers = 3;
-                workspace_swipe_distance = 100;
-                workspace_swipe_create_new = true;
-              } else { };
-
+            device = {
+              name = "maxwell’s-magic-mouse";
+              sensitivity = 0.2;
+              natural_scroll = true;
+            };
+            cursor = {
+              no_hardware_cursors = true;
+            };
             dwindle = {
               pseudotile = false;
               force_split = 2;
@@ -352,6 +350,9 @@ with host;
             };
             debug = {
               damage_tracking = 2;
+            };
+            ecosystem = {
+              no_update_news = true;
             };
             bindm = [
               "SUPER,mouse:272,movewindow"
@@ -424,7 +425,7 @@ with host;
               "SUPERCTRL,down,resizeactive,0 60"
             ];
             bindl =
-              if hostName == "xps" || hostName == "work" then [
+              if hostName == "g15" then [
                 ",switch:Lid Switch,exec,$HOME/.config/hypr/script/clamshell.sh"
               ] else [ ];
             windowrulev2 = [
@@ -452,11 +453,7 @@ with host;
               "${pkgs.blueman}/bin/blueman-applet"
               "${pkgs.swaynotificationcenter}/bin/swaync"
               # "${pkgs.hyprpaper}/bin/hyprpaper"
-            ] ++ (if hostName == "work" then [
-              "${pkgs.networkmanagerapplet}/bin/nm-applet --indicator"
-              "${pkgs.rclone}/bin/rclone mount --daemon gdrive: /GDrive --vfs-cache-mode=writes"
-              # "${pkgs.google-drive-ocamlfuse}/bin/google-drive-ocamlfuse /GDrive"
-            ] else [ ]) ++ (if hostName == "xps" then [
+            ] ++ (if hostName == "g15" then [
               "${pkgs.networkmanagerapplet}/bin/nm-applet --indicator"
             ] else [ ]);
             # env = [
@@ -478,7 +475,7 @@ with host;
                   ${config.programs.hyprland.package}/bin/hyprctl keyword monitor "${toString mainMonitor}, disable"
                 else
                   ${pkgs.hyprlock}/bin/hyprlock
-                  ${pkgs.systemd}/bin/systemctl suspend
+                  ${pkgs.systemd}/bin/systemctl poweroff
                 fi
               fi
             '';
