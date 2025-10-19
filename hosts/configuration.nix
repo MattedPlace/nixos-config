@@ -41,18 +41,18 @@ let
         defaultApplications = {
           "image/jpeg" = [ "image-roll.desktop" "feh.desktop" ];
           "image/png" = [ "image-roll.desktop" "feh.desktop" ];
-          "text/plain" = "nvim.desktop";
-          "text/html" = "nvim.desktop";
-          "text/csv" = "nvim.desktop";
-          "application/pdf" = [ "wps-office-pdf.desktop" "firefox.desktop" "google-chrome.desktop" ];
+          "text/plain" = "typora.desktop";
+          "text/html" = "typora.desktop";
+          "text/csv" = "typora.desktop";
+          "application/pdf" = [ "brave-browser.desktop" ];
           "application/zip" = "org.gnome.FileRoller.desktop";
           "application/x-tar" = "org.gnome.FileRoller.desktop";
           "application/x-bzip2" = "org.gnome.FileRoller.desktop";
           "application/x-gzip" = "org.gnome.FileRoller.desktop";
-          "x-scheme-handler/http" = [ "firefox.desktop" "google-chrome.desktop" ];
-          "x-scheme-handler/https" = [ "firefox.desktop" "google-chrome.desktop" ];
-          "x-scheme-handler/about" = [ "firefox.desktop" "google-chrome.desktop" ];
-          "x-scheme-handler/unknown" = [ "firefox.desktop" "google-chrome.desktop" ];
+          "x-scheme-handler/http" = [ "brave-browser.desktop" ];
+          "x-scheme-handler/https" = [ "brave-browser.desktop" ];
+          "x-scheme-handler/about" = [ "brave-browser.desktop" ];
+          "x-scheme-handler/unknown" = [ "brave-browser.desktop" ];
           "x-scheme-handler/mailto" = [ "gmail.desktop" ];
           "audio/mp3" = "mpv.desktop";
           "audio/x-matroska" = "mpv.desktop";
@@ -162,6 +162,7 @@ in
       usbutils # Manage USB
       wget # Retriever
       xdg-utils # Environment integration
+      typora # basic text editor
 
       # Video/Audio
       alsa-utils # Audio Control
@@ -217,10 +218,6 @@ in
     printing = {
       enable = true;
     };
-    plex = {
-      enable = true;
-      openFirewall = true;
-    };
     pulseaudio.enable = false;
     pipewire = {
       enable = true;
@@ -237,6 +234,15 @@ in
       extraConfig = ''
         HostKeyAlgorithms +ssh-rsa
       '';
+    };
+  };
+
+  networking = {
+    networkmanager = {
+      enable = true;
+      plugins = with pkgs; [
+        networkmanager-openvpn
+      ];
     };
   };
 

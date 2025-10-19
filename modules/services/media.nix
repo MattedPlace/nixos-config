@@ -26,13 +26,25 @@
       enable = true;
       openFirewall = true;
     };
-    deluge = {
+    flaresolverr = {
+      enable = true;
+      openFirewall = true;
+    };
+    /*
+      deluge = {
       enable = true;
       web.enable = true;
       user = "root";
       group = "users";
       openFirewall = true;
       web.openFirewall = true;
+      };
+    */
+    plex = {
+      enable = true;
+      openFirewall = true;
+      user = "plex";
+      group = "plex";
     };
   };
 }

@@ -40,7 +40,6 @@ let
       "memory"
       "custom/pad"
       "pulseaudio"
-      "custom/sink"
       "custom/pad"
       "clock"
       "tray"
@@ -51,10 +50,11 @@ let
       "custom/pad"
       "battery"
       "custom/pad"
+      "idle_inhibitor"
+      "custom/pad"
       "backlight"
       "custom/pad"
       "pulseaudio"
-      "custom/sink"
       "custom/pad"
       "clock"
       "tray"
@@ -106,7 +106,6 @@ in
           #mode,
           #clock,
           #pulseaudio,
-          #custom-sink,
           #network,
           #mpd,
           #memory,
@@ -116,9 +115,7 @@ in
           #disk,
           #backlight,
           #battery,
-          #custom-mouse,
-          #custom-kb,
-          #custom-ds4,
+          #idle_inhibitor,
           #tray {
             color: #${hex.text};
             background-clip: padding-box;
@@ -303,12 +300,12 @@ in
               on-click-right = "${pkgs.pamixer}/bin/pamixer --default-source -t";
               on-click-middle = "${pkgs.pavucontrol}/bin/pavucontrol";
             };
-            "custom/sink" = {
-              format = "{}";
-              exec = "$HOME/.config/waybar/script/sink.sh";
-              interval = 2;
-              on-click = "$HOME/.config/waybar/script/switch.sh";
-              tooltip = false;
+            idle_inhibitor = {
+              format = "{icon}";
+              format-icons = {
+                activated = "󰒳";
+                deactivated = "󰒲";
+              };
             };
             "custom/mouse" = {
               format = "{}";

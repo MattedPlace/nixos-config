@@ -21,4 +21,5 @@
   ./sxhkd.nix
   ./udiskie.nix
   ./touchegg.nix
+  ./media.nix
 ]
