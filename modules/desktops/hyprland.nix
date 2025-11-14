@@ -55,29 +55,6 @@ with host;
           WLR_NO_HARDWARE_CURSORS = "1";
           MOZ_ENABLE_WAYLAND = "1";
         };
-        sessionVariables =
-          if hostName == "xps" then {
-            LIBVA_DRIVER_NAME = "nvidia";
-            __GLX_VENDOR_LIBRARY_NAME = "nvidia";
-            NVD_BACKEND = "direct";
-            __NV_PRIME_RENDER_OFFLOAD = "1";
-            __NV_PRIME_RENDER_OFFLOAD_PROVIDER = "NVIDIA-G0";
-            __VK_LAYER_NV_optimus = "NVIDIA_only";
-            GBM_BACKEND = "nvidia";
-            # EGL_PLATFORM = "wayland";
-            # __GL_GSYNC_ALLOWED = "0";
-            # __GL_VRR_ALLOWED = "0";
-            # WLR_DRM_NO_ATOMIC = "1";
-            # MOZ_DISABLE_RDD_SANDBOX = "1";
-            # _JAVA_AWT_WM_NONREPARENTING = "1";
-
-            # QT_QPA_PLATFORM = "wayland";
-            QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
-
-            GDK_BACKEND = "wayland";
-            WLR_NO_HARDWARE_CURSORS = "1";
-            MOZ_ENABLE_WAYLAND = "1";
-          } else { };
         systemPackages = with pkgs; [
           grimblast # Screenshot
           hyprcursor # Cursor
@@ -93,6 +70,7 @@ with host;
       autologinUser = "${vars.user}";
       autologinOnce = true;
     };
+
     programs.hyprland = {
       enable = true;
       package = hyprland.packages.${pkgs.system}.hyprland;
@@ -106,10 +84,10 @@ with host;
 
     systemd.sleep.extraConfig = ''
       AllowSuspend=yes
-      AllowHibernation=no
-      AllowSuspendThenHibernate=no
+      AllowHibernation=yes
+      AllowSuspendThenHibernate=yes
       AllowHybridSleep=yes
-    ''; # Clamshell Mode
+    '';
 
     nix.settings = {
       substituters = [ "https://hyprland.cachix.org" ];
@@ -117,25 +95,12 @@ with host;
     };
 
     home-manager.users.${vars.user} =
-      let
-        lid = if hostName == "xps" then "LID0" else "LID";
-        lockScript = pkgs.writeShellScript "lock-script" ''
-          action=$1
-          ${pkgs.pipewire}/bin/pw-cli i all | ${pkgs.ripgrep}/bin/rg running
-          if [ $? == 1 ]; then
-            if [ "$action" == "lock" ]; then
-              ${pkgs.hyprlock}/bin/hyprlock
-            elif [ "$action" == "suspend" ]; then
-              ${pkgs.systemd}/bin/systemctl poweroff
-            fi
-          fi
-        '';
-      in
       {
         imports = [
           hyprland.homeManagerModules.default
         ];
 
+        /*
         programs.hyprlock = {
           enable = true;
           settings = {
@@ -184,24 +149,19 @@ with host;
             ];
           };
         };
-
+        */
         services.hypridle = {
           enable = true;
           settings = {
             general = {
-              before_sleep_cmd = "${pkgs.systemd}/bin/loginctl lock-session";
               after_sleep_cmd = "${config.programs.hyprland.package}/bin/hyprctl dispatch dpms on";
               ignore_dbus_inhibit = true;
-              lock_cmd = "pidof ${pkgs.hyprlock}/bin/hyprlock || ${pkgs.hyprlock}/bin/hyprlock";
             };
             listener = [
               {
-                timeout = 300;
-                on-timeout = "${lockScript.outPath} lock";
-              }
-              {
-                timeout = 1800;
-                on-timeout = "${lockScript.outPath} suspend";
+                timeout = 330;
+                on-timeout = "${pkgs.hyprland}/bin/hyprctl dispatch dpms off";
+                on-resume = "${pkgs.hyprland}/bin/hyprctl dispatch dpms on";
               }
             ];
           };
@@ -266,23 +226,7 @@ with host;
               "${toString mainMonitor},1920x1080@60,0x0,1"
             ]);
             workspace =
-              if hostName == "beelink" || hostName == "h310m" then [
-                "1, monitor:${toString mainMonitor}"
-                "2, monitor:${toString mainMonitor}"
-                "3, monitor:${toString mainMonitor}"
-                "4, monitor:${toString mainMonitor}"
-                "5, monitor:${toString secondMonitor}"
-                "6, monitor:${toString secondMonitor}"
-                "7, monitor:${toString secondMonitor}"
-                "8, monitor:${toString secondMonitor}"
-              ] else if hostName == "xps" || hostName == "work" then [
-                "1, monitor:${toString mainMonitor}"
-                "2, monitor:${toString mainMonitor}"
-                "3, monitor:${toString mainMonitor}"
-                "4, monitor:${toString secondMonitor}"
-                "5, monitor:${toString secondMonitor}"
-                "6, monitor:${toString secondMonitor}"
-              ] else [
+              [
                 "1, monitor:${toString mainMonitor}"
                 "2, monitor:${toString mainMonitor}"
                 "3, monitor:${toString mainMonitor}"
@@ -363,7 +307,7 @@ with host;
               "SUPER,Q,killactive,"
               "SUPER,Escape,exit,"
               "SUPER,S,exec,${pkgs.systemd}/bin/systemctl suspend"
-              "SUPER,L,exec,${pkgs.hyprlock}/bin/hyprlock"
+              #"SUPER,L,exec,${pkgs.hyprlock}/bin/hyprlock"
               # "SUPER,E,exec,GDK_BACKEND=x11 ${pkgs.pcmanfm}/bin/pcmanfm"
               "SUPER,E,exec,${pkgs.pcmanfm}/bin/pcmanfm"
               "SUPER,F,togglefloating,"
@@ -445,7 +389,7 @@ with host;
             ];
             exec-once = [
               "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
-              "${pkgs.hyprlock}/bin/hyprlock"
+              #   "${pkgs.hyprlock}/bin/hyprlock"
               "ln -s $XDG_RUNTIME_DIR/hypr /tmp/hypr"
               "${pkgs.waybar}/bin/waybar -c $HOME/.config/waybar/config"
               "${pkgs.eww}/bin/eww daemon"
@@ -460,26 +404,6 @@ with host;
             #   "XCURSOR,Catppuccin-Mocha-Dark-Cursors"
             #   "XCURSOR_SIZE,24"
             # ];
-          };
-        };
-
-        home.file = {
-          ".config/hypr/script/clamshell.sh" = {
-            text = ''
-              #!/bin/sh
-
-              if grep open /proc/acpi/button/lid/${lid}/state; then
-                ${config.programs.hyprland.package}/bin/hyprctl keyword monitor "${toString mainMonitor}, 1920x1080, 0x0, 1"
-              else
-                if [[ `hyprctl monitors | grep "Monitor" | wc -l` != 1 ]]; then
-                  ${config.programs.hyprland.package}/bin/hyprctl keyword monitor "${toString mainMonitor}, disable"
-                else
-                  ${pkgs.hyprlock}/bin/hyprlock
-                  ${pkgs.systemd}/bin/systemctl poweroff
-                fi
-              fi
-            '';
-            executable = true;
           };
         };
       };

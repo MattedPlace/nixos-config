@@ -131,7 +131,7 @@ in
     corefonts # MS
     noto-fonts # Google + Unicode
     noto-fonts-cjk-sans
-    noto-fonts-emoji
+    noto-fonts-color-emoji
     nerd-fonts.fira-code
   ];
 
@@ -182,7 +182,6 @@ in
       remmina # XRDP & VNC Client
       brave # Browser
       signal-desktop # Family chat
-      qbittorrent
 
       # File Management
       wpsoffice

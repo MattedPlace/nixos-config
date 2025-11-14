@@ -4,24 +4,25 @@
 
 {
   services = {
-    radarr = {
+    /*
+      radarr = {
+      enable = true;
+      group = "plex";
+      openFirewall = true;
+      };
+      sonarr = {
       enable = true;
       user = "root";
       group = "users";
       openFirewall = true;
-    };
-    sonarr = {
+      };
+      bazarr = {
       enable = true;
       user = "root";
       group = "users";
       openFirewall = true;
-    };
-    bazarr = {
-      enable = true;
-      user = "root";
-      group = "users";
-      openFirewall = true;
-    };
+      };
+    */
     prowlarr = {
       enable = true;
       openFirewall = true;
@@ -30,16 +31,13 @@
       enable = true;
       openFirewall = true;
     };
-    /*
-      deluge = {
+    deluge = {
       enable = true;
       web.enable = true;
-      user = "root";
-      group = "users";
+      group = "plex";
       openFirewall = true;
       web.openFirewall = true;
-      };
-    */
+    };
     plex = {
       enable = true;
       openFirewall = true;

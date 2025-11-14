@@ -6,8 +6,6 @@
 
 { config, lib, pkgs, vars, ... }:
 
-let isLaptop = config.laptop.enable;
-in
 with lib;
 {
   options = {
@@ -20,7 +18,6 @@ with lib;
   };
 
   config = mkIf (config.gnome.enable) {
-
     programs = {
       zsh.enable = true;
       kdeconnect = {
@@ -29,7 +26,6 @@ with lib;
         package = pkgs.gnomeExtensions.gsconnect;
       };
     };
-
     services = {
       libinput.enable = true;
       xserver = {
@@ -41,7 +37,6 @@ with lib;
       };
       displayManager.gdm.enable = true;
       desktopManager.gnome.enable = true;
-
     };
     environment = {
       systemPackages = with pkgs; [
@@ -78,7 +73,6 @@ with lib;
         gnome-initial-setup
       ]);
     };
-
     home-manager.users.${vars.user} = {
       dconf.settings = {
         "org/gnome/shell" = {
@@ -102,7 +96,7 @@ with lib;
             "pip-on-top@rafostar.github.com"
             "forge@jmmaranan.com"
             "system-monitor@gnome-shell-extensions.gcampax.github.com"
-          ] ++ (if isLaptop then [ "x11gestures@joseexposito.github.io" ] else [ ]);
+          ];
         };
         "org/gnome/software" = {
           allow-updates = false;
@@ -168,7 +162,6 @@ with lib;
           close = [ "<super>q" "<alt>f4" ];
           toggle-fullscreen = [ "<super>f" ];
         };
-
         "org/gnome/mutter" = {
           workspaces-only-on-primary = false;
           center-new-windows = true;
@@ -180,7 +173,6 @@ with lib;
           toggle-tiled-left = [ "@as []" ]; # Tiling
           toggle-tiled-right = [ "@as []" ];
         };
-
         "org/gnome/settings-daemon/plugins/power" = {
           sleep-interactive-ac-type = "nothing";
         };
@@ -248,7 +240,6 @@ with lib;
           window-toggle-float = [ "<shift><super>f" ];
         };
       };
-
       home.packages = with pkgs.gnomeExtensions; [
         clipboard-indicator
         blur-my-shell
@@ -257,11 +248,7 @@ with lib;
         pip-on-top
         forge
         system-monitor
-      ] ++ (if isLaptop then [ x11-gestures ] else [ ]);
-      xdg.desktopEntries.GDrive = {
-        name = "GDrive";
-        exec = "${pkgs.rclone}/bin/rclone mount --daemon gdrive: /GDrive --vfs-cache-mode=writes";
-      };
+      ];
     };
   };
 }

@@ -23,6 +23,8 @@
       };
     };
 
+    powerManagement.enable = true;
+
     home-manager.users.${vars.user} = {
       services = {
         cbatticon = {

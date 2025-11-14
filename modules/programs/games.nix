@@ -7,14 +7,6 @@
 { config, pkgs, nur, lib, vars, ... }:
 
 let
-  # PCSX2 Wrapper to run under X11
-  pcsx2 = pkgs.pcsx2.overrideAttrs (old: {
-    nativeBuildInputs = old.nativeBuildInputs ++ [ pkgs.makeWrapper ];
-    postFixup = ''
-      wrapProgram $out/bin/pcsx2 \
-        --set GDK_BACKEND x11
-    '';
-  });
   vendorId = "2dc8";
   productId = "3109";
 in
@@ -40,9 +32,8 @@ with lib;
     '';
 
     environment.systemPackages = [
-      # config.nur.repos.c0deaddict.oversteer # Steering Wheel Configuration
-      # pkgs.heroic # Game Launcher
-      # pkgs.lutris # Game Launcher
+      pkgs.heroic # Game Launcher
+      pkgs.lutris # Game Launcher
       # pkgs.prismlauncher # MC Launcher
       # pkgs.retroarchFull # Emulator
       pkgs.steam # Game Launcher

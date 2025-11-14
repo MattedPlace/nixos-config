@@ -14,7 +14,8 @@
 #           └─ default.nix
 #
 
-{ config, pkgs, user, ... }:
+{ config, pkgs, user, lib, ... }:
+
 
 {
   imports = [
@@ -33,57 +34,26 @@
         useOSProber = true;
       };
     };
-    kernelParams = [
-      "nvidia-drm.modeset=1"
-      "nvidia_drm.fbdev=1"
-    ];
-    blacklistedKernelModules = [ "nouveau" ];
     kernelPackages = pkgs.linuxPackages_latest;
   };
 
-  hyprland.enable = true;
+  gnome.enable = true;
   laptop.enable = true;
-
-  services = {
-    xserver.videoDrivers = [ "nvidia" ];
-  };
-
-
-  hardware = {
-    graphics = {
-      enable = true;
-    };
-    nvidia = {
-      modesetting.enable = true;
-      open = false;
-      nvidiaSettings = true;
-      package = config.boot.kernelPackages.nvidiaPackages.beta;
-      prime = {
-        offload = {
-          enable = true;
-          enableOffloadCmd = true;
-        };
-        # sync.enable = true;
-        amdgpuBusId = "PCI:6:0:0";
-        nvidiaBusId = "PCI:1:0:0";
-      };
-    };
-  };
-
+  #noNvidia.enable = true;
+  nvidiaLaptop.enable = true;
 
   environment.systemPackages = with pkgs; [
     gimp3
   ];
-
   flatpak = {
     extraPackages = [
       "com.github.tchx84.Flatseal"
       "org.paraview.ParaView"
     ];
   };
-
   networking = {
     hostName = "MaxwellG15";
     networkmanager.enable = true;
   };
+  services.logind.settings.Login.HandleLidSwitch = "ignore";
 }

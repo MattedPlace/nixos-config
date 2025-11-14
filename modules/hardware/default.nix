@@ -14,4 +14,6 @@
   ./bluetooth.nix
   #./dslr.nix
   ./power.nix
+  ./nvidia.nix
+  ./nonvidia.nix
 ]
