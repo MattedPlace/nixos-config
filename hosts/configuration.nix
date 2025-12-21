@@ -173,7 +173,6 @@ in
       pipewire # Audio Server/Control
       pulseaudio # Audio Server/Control
       qpwgraph # Pipewire Graph Manager
-      vlc # Media Player
 
       # Apps
       appimage-run # Runs AppImages on NixOS
@@ -184,8 +183,8 @@ in
       signal-desktop # Family chat
 
       # File Management
-      wpsoffice
-      libreoffice
+      #wpsoffice
+      #libreoffice
       file-roller # Archive Manager
       pcmanfm # File Browser
       p7zip # Zip Encryption

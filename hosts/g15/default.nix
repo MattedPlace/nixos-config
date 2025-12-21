@@ -14,7 +14,7 @@
 #           └─ default.nix
 #
 
-{ config, pkgs, user, lib, ... }:
+{ config, pkgs, user, lib, inputs, ... }:
 
 
 {
@@ -41,8 +41,14 @@
   laptop.enable = true;
   #noNvidia.enable = true;
   nvidiaLaptop.enable = true;
+  services.usbmuxd = {
+    enable = true;
+    package = pkgs.usbmuxd2;
+  };
 
   environment.systemPackages = with pkgs; [
+    libimobiledevice
+    ifuse # optional, to mount using 'ifuse'
     gimp3
   ];
   flatpak = {
