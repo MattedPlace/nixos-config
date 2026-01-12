@@ -32,6 +32,7 @@ with lib;
     '';
 
     environment.systemPackages = [
+      pkgs.pkgsi686Linux.gperftools
       pkgs.heroic # Game Launcher
       pkgs.lutris # Game Launcher
       # pkgs.prismlauncher # MC Launcher
