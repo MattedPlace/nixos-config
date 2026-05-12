@@ -1,29 +1,28 @@
-#
-#  Bluetooth
-#
-
-{ pkgs, host, config, ... }:
-
-let isGnome = config.gnome.enable;
-in
 {
-  hardware.bluetooth = {
-    enable = true;
-    settings = {
-      General = {
-        Enable = "Source,Sink,Media,Socket";
-        AutoEnable = true;
-        ControllerMode = "dual";
-      };
-    };
-  };
-
-  services =
+  flake.modules.nixos.bluetooth =
+    { pkgs, ... }:
     {
-      blueman.enable = if isGnome then false else true;
-      udev.extraRules =
-        if host.hostName == "desktop" then ''
-          SUBSYSTEM=="usb", ATTRS{idVendor}=="8087", ATTRS{idProduct}=="0025", ATTR{authorized}="0"
-        '' else '''';
+      hardware.bluetooth = {
+        enable = true;
+        settings = {
+          General = {
+            Enable = "Source,Sink,Media,Socket";
+            AutoEnable = true;
+            ControllerMode = "bredr";
+          };
+        };
+      };
+
+      services.blueman.enable = true;
+
+      systemd.user.services.mpris-proxy = {
+        description = "Mpris proxy";
+        after = [
+          "network.target"
+          "sound.target"
+        ];
+        wantedBy = [ "default.target" ];
+        serviceConfig.ExecStart = "${pkgs.bluez}/bin/mpris-proxy";
+      };
     };
 }

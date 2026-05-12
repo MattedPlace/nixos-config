@@ -1,38 +1,8 @@
-#
-#  Power Management
-#
-
-{ config, lib, vars, ... }:
-
 {
-  config = lib.mkIf (config.laptop.enable && config.gnome.enable == false && config.kde.enable == false) {
+  flake.modules.nixos.power = {
     services = {
-      #tlp.enable = false; # Disable due to suspend not working when docked and connected to AC
-      auto-cpufreq = {
-        enable = true; # Power Efficiency
-        settings = {
-          battery = {
-            governor = "powersave";
-            turbo = "never";
-          };
-          charger = {
-            governor = "performance";
-            turbo = "auto";
-          };
-        };
-      };
-    };
-
-    home-manager.users.${vars.user} = {
-      services = {
-        cbatticon = {
-          enable = true;
-          criticalLevelPercent = 10;
-          commandCriticalLevel = ''notify-send "battery critical!"'';
-          lowLevelPercent = 30;
-          iconType = "standard";
-        };
-      };
+      tlp.enable = false;
+      auto-cpufreq.enable = true;
     };
   };
 }

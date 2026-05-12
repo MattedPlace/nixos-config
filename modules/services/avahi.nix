@@ -1,16 +1,14 @@
-#
-#  Network Discoverability
-#
-
 {
-  services = {
-    avahi = {
-      enable = true;
-      nssmdns4 = true;
-      publish = {
+  flake.modules.nixos.base = {
+    services = {
+      avahi = {
         enable = true;
-        addresses = true;
-        userServices = true;
+        nssmdns4 = true;
+        publish = {
+          enable = true;
+          addresses = true;
+          userServices = true;
+        };
       };
     };
   };

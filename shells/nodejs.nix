@@ -1,27 +1,17 @@
-with import <nixpkgs> {};
-mkShell {
-  name = "React-Electron-Shell";
-  buildInputs = with pkgs; [
-    nodePackages.create-react-app
-    electron
+{
+  pkgs,
+  ...
+}:
+
+{
+  packages = with pkgs; [
     nodejs
-    yarn
-
-    fakeroot
-    dpkg
-    rpm
-
-    patchelf
-    binutils
+    nodePackages.npm
   ];
-  ELECTRON_OVERRIDE_DIST_PATH = "${electron}/bin/"; #NEEDED to not get errors on npm start
 
   shellHook = ''
+    npm set prefix ~/.npm-global
+    export PATH="$HOME/.npm-global/bin:$PATH"
     echo "done"
   '';
 }
-
-# ELECTRON
-#$ npx create-electron-app <appname>
-#$ npm start    #inside directory
-#$ rs           #restart/reload
