@@ -239,10 +239,10 @@ in
             repeat_delay = 250;
             numlock_by_default = 1;
             accel_profile = "adaptive";
-            sensitivity = 0.5;
+            sensitivity = 0.1;
             natural_scroll = false;
             touchpad =
-              if host.name == "work" then
+              if host.name == "g15" then
                 {
                   natural_scroll = true;
                   scroll_factor = 0.2;
@@ -273,7 +273,7 @@ in
             else
               { };
           dwindle = {
-            pseudotile = false;
+            #pseudotile = false;
             force_split = 2;
             preserve_split = true;
           };
@@ -390,7 +390,7 @@ in
       };
 
       home.file =
-        if host.name == "work" then
+        if host.name == "g15" then
           {
             ".config/hypr/script/clamshell.sh" = {
               text = ''

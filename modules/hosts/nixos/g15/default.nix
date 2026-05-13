@@ -33,9 +33,10 @@ in
       screen
       audio
       bluetooth
+      power
 
       nixvim
-      gnome
+      hyprland
       flatpak
       virtualisation
     ];
