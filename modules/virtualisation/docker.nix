@@ -1,14 +1,17 @@
 {
-  flake.modules.nixos.base =
-    { config, pkgs, ... }:
-    {
-      virtualisation.docker.enable = true;
+  /*
+    flake.modules.nixos.base =
 
-      users.groups.docker.members = [ "${config.host.user.name}" ];
+      { config, pkgs, ... }:
+      {
+        virtualisation.docker.enable = true;
 
-      environment.systemPackages = with pkgs; [
-        docker
-        docker-compose
-      ];
-    };
+        users.groups.docker.members = [ "${config.host.user.name}" ];
+
+        environment.systemPackages = with pkgs; [
+          docker
+          docker-compose
+        ];
+      };
+  */
 }

@@ -234,20 +234,21 @@ in
           input = {
             kb_layout = "us";
             # kb_variant=,dvorak
-            kb_options = "caps:escape";
-            follow_mouse = 2;
+            # kb_options = "caps:escape";
+            follow_mouse = 1;
+            mouse_refocus = false;
             repeat_delay = 250;
             numlock_by_default = 1;
             accel_profile = "adaptive";
-            sensitivity = 0.5;
+            sensitivity = 0.1;
             natural_scroll = false;
             touchpad =
-              if host.name == "work" then
+              if host.name == "g15" then
                 {
                   natural_scroll = true;
                   scroll_factor = 0.2;
-                  middle_button_emulation = true;
-                  tap-to-click = true;
+                  middle_button_emulation = false;
+                  tap-to-click = false;
                 }
               else
                 { };
@@ -263,17 +264,15 @@ in
             no_hardware_cursors = true;
           };
           gestures =
-            if host.name == "work" then
+            if host.name == "g15" then
               {
-                workspace_swipe = true;
-                workspace_swipe_fingers = 3;
-                workspace_swipe_distance = 100;
+                gesture = "3, horizontal, workspace";
                 workspace_swipe_create_new = true;
               }
             else
               { };
           dwindle = {
-            pseudotile = false;
+            #pseudotile = false;
             force_split = 2;
             preserve_split = true;
           };
@@ -297,6 +296,7 @@ in
           ];
           bind = [
             "SUPER,Return,exec,${pkgs.kitty}/bin/kitty"
+            "SUPER,B,exec,${pkgs.brave}/bin/brave"
             "SUPER,Q,killactive,"
             "SUPER,Escape,exit,"
             "SUPER,S,exec,${pkgs.noctalia-shell}/bin/noctalia-shell ipc call lockScreen lock && ${pkgs.systemd}/bin/systemctl suspend"
@@ -378,10 +378,9 @@ in
             "${pkgs.noctalia-shell}/bin/noctalia-shell"
           ]
           ++ (
-            if host.name == "work" then
+            if host.name == "g15" then
               [
                 "${pkgs.networkmanagerapplet}/bin/nm-applet --indicator"
-                "${pkgs.rclone}/bin/rclone mount --daemon gdrive: /GDrive --vfs-cache-mode=writes"
               ]
             else
               [ ]
@@ -390,7 +389,7 @@ in
       };
 
       home.file =
-        if host.name == "work" then
+        if host.name == "g15" then
           {
             ".config/hypr/script/clamshell.sh" = {
               text = ''

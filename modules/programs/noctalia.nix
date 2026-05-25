@@ -24,6 +24,7 @@
       programs.noctalia-shell = {
         enable = true;
         settings = {
+          general.clockFormat = "h:mm AP";
           bar = {
             barType = "simple";
             position = "top";
@@ -90,6 +91,10 @@
                   id = "Volume";
                 }
                 {
+                  id = "Battery";
+                  displayMode = "icon-always";
+                }
+                {
                   id = "NotificationHistory";
                 }
                 {
@@ -105,13 +110,17 @@
                   id = "ControlCenter";
                 }
                 {
+
+                  formatHorizontal = "h:mm AP ddd, MMM dd ";
                   id = "Clock";
                 }
               ];
             };
           };
           location = {
-            name = "Hasselt";
+            name = "Minneapolis";
+            useFahrenheit = true;
+            use12hourFormat = true;
           };
           dock = {
             enabled = false;

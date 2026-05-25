@@ -20,7 +20,6 @@
           lshw # Hardware Config
           #          nano # Text Editor
           nodejs # Javascript Runtime
-          #nodePackages.pnpm # Package Manager
           nix-tree # Browse Nix Store
           pciutils # Manage PCI
           ranger # File Manager
@@ -44,6 +43,8 @@
           firefox # Browser
           google-chrome # Browser
           remmina # XRDP & VNC Client
+          gimp # image Manipulation
+          signal-desktop # family chat
 
           # File Management
           file-roller # Archive Manager

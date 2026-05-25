@@ -1,6 +1,10 @@
 {
   flake.modules.nixos.gnome =
-    { config, pkgs, ... }:
+    {
+      config,
+      pkgs,
+      ...
+    }:
     {
       services = {
         displayManager.gdm.enable = true;
@@ -26,12 +30,11 @@
               "steam.desktop"
               "brave-browser.desktop"
               "signal-desktop.desktop"
-              "pavucontrol.desktop"
-              "org.gnome.settings.desktop"
               "kitty.desktop"
             ];
             disable-user-extensions = false;
             enabled-extensions = [
+              "clipboard-indicator@tudmotu.com"
               "blur-my-shell@aunetx"
               "caffeine@patapon.info"
               "pip-on-top@rafostar.github.com"
@@ -124,6 +127,7 @@
               "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
               "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/"
               "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/"
+              "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3/"
             ];
             search = [ "<super>space" ];
           };
@@ -142,7 +146,11 @@
             command = "nautilus";
             name = "open-file-browser";
           };
-
+          "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3" = {
+            binding = "<super>b";
+            command = "brave";
+            name = "open-web-browser";
+          };
           "org/gnome/shell/extensions/caffeine" = {
             enable-fullscreen = true;
             restore-state = true;
@@ -185,6 +193,7 @@
         };
 
         home.packages = with pkgs.gnomeExtensions; [
+          clipboard-indicator
           blur-my-shell
           caffeine
           forge
