@@ -25,7 +25,7 @@
             "text/csv" = "nvim-kitty.desktop";
             "application/pdf" = [
               "wps-office-pdf.desktop"
-              "firefox.desktop"
+              "brave-browser.desktop"
               "google-chrome.desktop"
             ];
             "application/zip" = "org.gnome.FileRoller.desktop";
@@ -33,19 +33,19 @@
             "application/x-bzip2" = "org.gnome.FileRoller.desktop";
             "application/x-gzip" = "org.gnome.FileRoller.desktop";
             "x-scheme-handler/http" = [
-              "firefox.desktop"
+              "brave-browser.desktop"
               "google-chrome.desktop"
             ];
             "x-scheme-handler/https" = [
-              "firefox.desktop"
+              "brave-browser.desktop"
               "google-chrome.desktop"
             ];
             "x-scheme-handler/about" = [
-              "firefox.desktop"
+              "brave-browser.desktop"
               "google-chrome.desktop"
             ];
             "x-scheme-handler/unknown" = [
-              "firefox.desktop"
+              "brave-browser.desktop"
               "google-chrome.desktop"
             ];
             "x-scheme-handler/mailto" = [ "gmail.desktop" ];
