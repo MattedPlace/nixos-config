@@ -1,10 +1,11 @@
 {
   flake.modules.nixos.g15 =
-    { config
-    , lib
-    , modulesPath
-    , pkgs
-    , ...
+    {
+      config,
+      lib,
+      modulesPath,
+      pkgs,
+      ...
     }:
     {
       imports = [
@@ -20,6 +21,7 @@
       boot.initrd.kernelModules = [ ];
       boot.kernelModules = [ "kvm-amd" ];
       boot.extraModulePackages = [ ];
+      boot.kernelPackages = pkgs.linuxPackages_latest;
 
       boot = {
         loader = {
