@@ -25,7 +25,7 @@
           modesetting.enable = true;
           open = false;
           nvidiaSettings = true;
-          package = config.boot.kernelPackages.nvidiaPackages.beta;
+          package = config.boot.kernelPackages.nvidiaPackages.production;
           prime = {
             offload = {
               enable = true;
