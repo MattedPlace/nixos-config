@@ -34,6 +34,8 @@ in
       audio
       bluetooth
       power
+      print
+      scan
 
       nixvim
       hyprland

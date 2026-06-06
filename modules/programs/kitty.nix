@@ -1,9 +1,11 @@
 {
   flake.modules.homeManager.kitty =
-    { pkgs
-    , config
-    , osConfig ? null
-    , ...
+    {
+      pkgs,
+      config,
+      lib,
+      osConfig ? null,
+      ...
     }:
     {
       programs = {
@@ -14,7 +16,7 @@
             enable_audio_bell = "no";
             resize_debounce_time = 0;
             shell = "${pkgs.zsh}/bin/zsh";
-            #background_opacity = 0.8;
+            background_opacity = lib.mkForce "0.8";
             background_blur = 16;
           };
         };

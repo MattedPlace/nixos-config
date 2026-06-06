@@ -30,6 +30,8 @@ in
 
       nixvim
       gnome
+      print
+      scan
       #   flatpak
       #   virtualisation
       games
