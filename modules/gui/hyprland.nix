@@ -354,6 +354,7 @@ in
             ",XF86AudioMicMute,exec,${pkgs.pamixer}/bin/pamixer --default-source -t"
             ",XF86MonBrightnessDown,exec,${pkgs.brightnessctl}/bin/brightnessctl set +10%"
             ",XF86MonBrightnessUP,exec,${pkgs.brightnessctl}/bin/brightnessctl set 10%-"
+            ",XF86AudioPlay, exec, ${pkgs.playerctl}/bin/playerctl play-pause"
           ];
           binde = [
             "SUPERALT,right,resizeactive,60 0"
