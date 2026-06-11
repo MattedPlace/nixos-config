@@ -27,7 +27,7 @@
 
     hyprland.url = "github:hyprwm/Hyprland?submodules=1";
 
-    noctalia.url = "github:noctalia-dev/noctalia-shell";
+    noctalia.url = "github:noctalia-dev/noctalia/legacy-v4";
     noctalia.inputs.nixpkgs.follows = "nixpkgs";
   };
 
@@ -61,11 +61,11 @@
               inputs.nur.overlays.default
               (final: prev: {
                 stable = import inputs.nixpkgs-stable {
-                  system = prev.system;
+                  system = prev.stdenv.hostPlatform.system;
                   config.allowUnfree = true;
                 };
                 master = import inputs.nixpkgs-master {
-                  system = prev.system;
+                  system = prev.stdenv.hostPlatform.system;
                   config.allowUnfree = true;
                 };
               })
