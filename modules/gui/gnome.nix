@@ -6,6 +6,88 @@
       ...
     }:
     {
+      nixpkgs.overlays = [
+        (
+          final: prev: with final; {
+            gnomeExtensions = prev.gnomeExtensions // {
+              forge = stdenv.mkDerivation rec {
+                pname = "gnome-ext-forge";
+                version = "unstable-2026-05-03";
+                uuid = "forge@jmmaranan.com";
+
+                src = fetchFromGitHub {
+                  owner = "forge-ext";
+                  repo = "forge";
+                  rev = "0319a7125db1088556b159a69bbec77e111afca7";
+                  hash = "sha256-IyjHjL1RqxZZZgMnRlmavnae3OqZvRT6aSwKouQRopc=";
+                };
+
+                nativeBuildInputs = [
+                  glib
+                  gettext
+                ];
+
+                dontConfigure = true;
+                dontBuild = true;
+
+                installPhase = ''
+                  runHook preInstall
+                  target="$out/share/gnome-shell/extensions/${uuid}"
+                  install -d "$target"
+
+                  # Compile gsettings schemas in-place, then copy the whole schemas
+                  # directory (the compiled file lands beside the .xml inputs).
+                  glib-compile-schemas schemas
+
+                  # Stub the contributors file that the Makefile would generate from
+                  # `git shortlog`. Empty list — prefs page renders without names.
+                  install -d lib/prefs
+                  cat > lib/prefs/metadata.js <<'EOF'
+                  export const developers = Object.entries([].reduce((acc, x) => ({ ...acc, [x.email]: acc[x.email] ?? x.name }), {})).map(([email, name]) => name + ' <' + email + '>');
+                  EOF
+
+                  # Compile translation catalogs (best-effort — translations are
+                  # nice-to-have, not load-blocking).
+                  if [ -d po ]; then
+                    for po in po/*.po; do
+                      [ -e "$po" ] || continue
+                      name=$(basename "$po" .po)
+                      install -d "$target/locale/$name/LC_MESSAGES"
+                      msgfmt -c "$po" -o "$target/locale/$name/LC_MESSAGES/forge.mo" || true
+                    done
+                  fi
+
+                  # Copy the runtime files (mirrors the Makefile's `build` target).
+                  cp metadata.json "$target/"
+                  cp ./*.js "$target/"
+                  cp ./*.css "$target/"
+                  cp LICENSE "$target/"
+                  cp -r resources "$target/"
+                  cp -r schemas "$target/"
+                  cp -r config "$target/"
+                  cp -r lib "$target/"
+
+                  runHook postInstall
+                '';
+
+                meta = with lib; {
+                  description = "i3/sway-style tiling and window manager for GNOME Shell";
+                  longDescription = ''
+                    Forge provides tree-based tiling with vertical and horizontal split
+                    containers similar to i3-wm and sway-wm, plus Vim-like keybindings
+                    for navigating, swapping, and moving windows in the containers.
+                    Works on both X11 and Wayland.
+                  '';
+                  homepage = "https://github.com/forge-ext/forge";
+                  license = licenses.gpl3Plus;
+                  platforms = platforms.linux;
+                  maintainers = [ ];
+                };
+              };
+            };
+          }
+        )
+      ];
       services = {
         displayManager.gdm.enable = true;
         desktopManager.gnome.enable = true;
