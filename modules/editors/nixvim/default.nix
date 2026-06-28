@@ -17,8 +17,8 @@ let
   packages =
     pkgs: with pkgs; [
       deno
-      elixir
-      erlang
+      beamPackages.elixir
+      beamPackages.erlang
       git
       go
       nodejs
