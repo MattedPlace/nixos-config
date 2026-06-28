@@ -5,31 +5,6 @@
   flake.modules.nixos.base =
     { pkgs, ... }:
     {
-      nixpkgs.overlays = [
-        (final: prev: {
-          customplex = prev.plex.override {
-            plexRaw = prev.plexRaw.overrideAttrs (old: rec {
-              pname = "plexmediaserver";
-              version =
-                (builtins.fromJSON (
-                  builtins.readFile (
-                    builtins.fetchurl {
-                      url = "https://plex.tv/api/downloads/1.json";
-                      sha256 = "0x8bkl1cyi4xfvjhvv7mmrs5m4yyah7cg2hqml5ww02sp9101pcq";
-                    }
-                  )
-                )).computer.Linux.version;
-              src = prev.fetchurl {
-                url = "https://downloads.plex.tv/plex-media-server-new/${version}/debian/plexmediaserver_${version}_amd64.deb";
-                sha256 = "sha256-dgkj0Uny/d0DnExgYWjxfl2cFsiattlGzb7Guzmtro4=";
-              };
-              passthru = old.passthru // {
-                inherit version;
-              };
-            });
-          };
-        })
-      ];
       services = {
         /*
           radarr = {
@@ -66,7 +41,7 @@
           web.openFirewall = true;
         };
         plex = {
-          package = pkgs.customplex;
+          package = pkgs.currentPlex;
           enable = true;
           openFirewall = true;
           user = "plex";

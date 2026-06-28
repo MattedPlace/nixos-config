@@ -57,7 +57,7 @@
               allowUnfree = true;
               nvidia.acceptLicense = true;
             };
-            overlays = [
+            overlays = import ./overlays { inherit inputs; } ++ [
               inputs.nur.overlays.default
               (final: prev: {
                 stable = import inputs.nixpkgs-stable {
