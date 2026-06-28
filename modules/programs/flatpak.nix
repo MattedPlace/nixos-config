@@ -37,8 +37,8 @@
         };
         packages = [
           "com.github.tchx84.Flatseal"
-          "com.stremio.Stremio"
-          "info.portfolio_performance.PortfolioPerformance"
+          # "com.stremio.Stremio"
+          #"info.portfolio_performance.PortfolioPerformance"
         ];
       };
     };

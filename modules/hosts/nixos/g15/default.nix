@@ -51,6 +51,7 @@ in
         mime
 
         kitty
+        obs
 
         noctalia
       ];

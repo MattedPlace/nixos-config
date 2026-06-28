@@ -16,6 +16,7 @@
         "root"
         "${config.host.user.name}"
       ];
+      #make controllers work
       services.udev.extraRules = ''
         ACTION=="add", \
           ATTRS{idVendor}=="${vendorId}", \
