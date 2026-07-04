@@ -5,4 +5,7 @@
   })
 
   (import ./custom-packages.nix)
+  (import ./custom-plex.nix)
+  (import ./custom-xrizer.nix)
+  (import ./opencomposite-priorites.nix)
 ]

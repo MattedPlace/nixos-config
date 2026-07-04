@@ -3,5 +3,4 @@ final: _prev: {
   # for rationale). Source-of-truth for UUID + version is the metadata.json
   # baked into the upstream commit we pin.
   gnome-ext-forge = final.callPackage ../pkgs/gnome-ext-forge { };
-  currentPlex = final.callPackage ../pkgs/currentPlex { };
 }

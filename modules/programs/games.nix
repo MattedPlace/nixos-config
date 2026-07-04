@@ -32,6 +32,10 @@
         # pkgs.prismlauncher # MC Launcher
         # pkgs.retroarchFull # Emulator
         pkgs.steam # Game Launcher
+        pkgs.android-tools # ADB for VR
+        pkgs.sidequest # Oculus tool
+        pkgs.opencomposite-priorities # compositor for VR
+        pkgs.xrizer-custom # compositor for VR
         # pcsx2 # Emulator
       ];
 
@@ -44,10 +48,36 @@
           ];
         };
         gamemode.enable = true;
+        /*
+          alvr = {
+            enable = true;
+            openFirewall = true;
+          };
+        */
 
         # Better Gaming Performance Steam: Right-click game - Properties - Launch options: gamemoderun %command%
         # Lutris: General Preferences - Enable Feral GameMode
         #                             - Global options - Add Environment Variables: LD_PRELOAD=/nix/store/*-gamemode-*-lib/lib/libgamemodeauto.so
+      };
+      services.wivrn = {
+        enable = true;
+        openFirewall = true;
+
+        # Run WiVRn as a systemd service on startup
+        autoStart = true;
+
+        # If you're running this with an nVidia GPU and want to use GPU Encoding (and don't otherwise have CUDA enabled system wide), you need to override the cudaSupport variable.
+        package = (pkgs.wivrn.override { cudaSupport = true; });
+
+        # You should use the default configuration (which is no configuration), as that works the best out of the box.
+        # However, if you need to configure something see https://github.com/WiVRn/WiVRn/blob/master/docs/configuration.md for configuration options and https://mynixos.com/nixpkgs/option/services.wivrn.config.json for an example configuration.
+      };
+
+      networking.firewall = {
+        allowedUDPPorts = [
+          10400
+          10401
+        ]; # SteamVR
       };
 
       hardware = {

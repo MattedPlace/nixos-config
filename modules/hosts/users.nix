@@ -13,6 +13,7 @@
           "networkmanager"
           "lp"
           "scanner"
+          "adbusers"
         ];
       };
       security.sudo.wheelNeedsPassword = false;

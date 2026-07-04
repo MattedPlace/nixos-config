@@ -41,7 +41,7 @@
           web.openFirewall = true;
         };
         plex = {
-          package = pkgs.currentPlex;
+          package = pkgs.custom-plex;
           enable = true;
           openFirewall = true;
           user = "plex";

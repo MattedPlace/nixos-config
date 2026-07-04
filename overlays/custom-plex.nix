@@ -1,11 +1,5 @@
-# customplex.nix
-{
-  pkgs,
-}:
-
-let
-  # Override plexRaw to fetch the latest version from the Plex API
-  plexRaw' = pkgs.plexRaw.overrideAttrs (old: rec {
+_final: prev: {
+  custom-plex = prev.plex.overrideAttrs (old: rec {
     pname = "plexmediaserver";
     version =
       (builtins.fromJSON (
@@ -16,7 +10,7 @@ let
           }
         )
       )).computer.Linux.version;
-    src = pkgs.fetchurl {
+    src = prev.fetchurl {
       url = "https://downloads.plex.tv/plex-media-server-new/${version}/debian/plexmediaserver_${version}_amd64.deb";
       sha256 = "sha256-dgkj0Uny/d0DnExgYWjxfl2cFsiattlGzb7Guzmtro4=";
     };
@@ -24,5 +18,4 @@ let
       inherit version;
     };
   });
-in
-pkgs.plex.override { plexRaw = plexRaw'; }
+}

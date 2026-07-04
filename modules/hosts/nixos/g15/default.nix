@@ -39,8 +39,10 @@ in
 
       nixvim
       hyprland
+      #gnome
       flatpak
       virtualisation
+
     ];
   };
 
