@@ -73,13 +73,6 @@
         # However, if you need to configure something see https://github.com/WiVRn/WiVRn/blob/master/docs/configuration.md for configuration options and https://mynixos.com/nixpkgs/option/services.wivrn.config.json for an example configuration.
       };
 
-      networking.firewall = {
-        allowedUDPPorts = [
-          10400
-          10401
-        ]; # SteamVR
-      };
-
       hardware = {
         xpadneo.enable = true;
         # xpad-noone.enable = true;

@@ -57,7 +57,7 @@
           };
           pyright.enable = true;
           svelte.enable = true;
-          vue_ls.enable = true;
+          #vue_ls.enable = true;
           tailwindcss = {
             enable = true;
             settings = {
