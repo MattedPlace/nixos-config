@@ -1,6 +1,6 @@
 _final: prev: {
-  xrizer-custom = prev.xrizer.overrideAttrs (old: rec {
-    version = "0.1.0";
+  xrizer-custom = prev.xrizer.overrideAttrs (rec {
+    version = "custom";
     src = _final.fetchFromGitHub {
       owner = "RinLovesYou";
       repo = "xrizer";

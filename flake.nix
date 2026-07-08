@@ -8,6 +8,9 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
     import-tree.url = "github:vic/import-tree";
 
+    nixpkgs-xr.url = "github:nix-community/nixpkgs-xr";
+    nixpkgs-xr.inputs.nixpkgs.follows = "nixpkgs";
+
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -59,6 +62,7 @@
             };
             overlays = import ./overlays { inherit inputs; } ++ [
               inputs.nur.overlays.default
+              inputs.nixpkgs-xr.overlays.default
               (final: prev: {
                 stable = import inputs.nixpkgs-stable {
                   system = prev.stdenv.hostPlatform.system;
