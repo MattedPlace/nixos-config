@@ -29,6 +29,8 @@ in
       g15
 
       games
+      controller
+      vr
 
       screen
       audio

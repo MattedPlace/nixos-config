@@ -34,6 +34,7 @@
           openFirewall = true;
         };
         deluge = {
+          package = pkgs.stable.deluge;
           enable = true;
           web.enable = true;
           group = "plex";

@@ -35,6 +35,7 @@ in
       #   flatpak
       #   virtualisation
       games
+      controller
     ];
   };
 
