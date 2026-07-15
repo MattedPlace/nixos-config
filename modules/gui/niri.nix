@@ -6,29 +6,29 @@
   flake.modules.nixos.niri =
     { config, pkgs, ... }:
     {
-      # environment.loginShellInit = ''
-      #   if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
-      #     niri-session -l
-      #   fi
-      # '';
+      specialisation.niri_.configuration = {
+        # environment.loginShellInit = ''
+        #   if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
+        #     niri-session -l
+        #   fi
+        # '';
 
-      services.greetd = {
-        enable = true;
-        settings = {
-          default_session = {
-            command = "${pkgs.niri}/bin/niri-session -l";
-            user = config.host.user.name;
+        services.greetd = {
+          enable = true;
+          settings = {
+            default_session = {
+              command = "${pkgs.niri}/bin/niri-session -l";
+              user = config.host.user.name;
+            };
           };
         };
+
+        programs.niri.enable = true;
+        home-manager.users.${config.host.user.name}.imports = [
+          flake.config.flake.modules.homeManager.niri
+        ];
       };
-
-      programs.niri.enable = true;
-
-      home-manager.users.${config.host.user.name}.imports = [
-        flake.config.flake.modules.homeManager.niri
-      ];
     };
-
   flake.modules.homeManager.niri =
     { pkgs, ... }:
     {
@@ -431,6 +431,7 @@
 
             // Suggested binds for running programs: terminal, app launcher, screen locker.
             Mod+Return hotkey-overlay-title="Open a Terminal: kitty" { spawn "kitty"; }
+            Mod+B hotkey-overlay-title="Open a Terminal: kitty" { spawn "brave"; }
             // Mod+Space hotkey-overlay-title="Run an Application: fuzzel" { spawn "fuzzel"; }
             Mod+Space hotkey-overlay-title="Run" { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
             Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn "swaylock"; }

@@ -41,7 +41,8 @@ in
 
       nixvim
       hyprland
-      #gnome
+      gnome
+      niri
       flatpak
       virtualisation
 

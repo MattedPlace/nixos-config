@@ -17,66 +17,66 @@ in
       hyprland = hyprlandPkg { inherit pkgs; };
     in
     {
-      environment =
-        let
-          exec = "exec dbus-launch start-hyprland";
-        in
-        {
-          loginShellInit = ''
-            if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
-              ${exec}
-            fi
-          '';
+      specialisation.hyprland_.configuration = {
+        environment =
+          let
+            exec = "exec dbus-launch start-hyprland";
+          in
+          {
+            loginShellInit = ''
+              if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
+                ${exec}
+              fi
+            '';
 
-          systemPackages = with pkgs; [
-            grimblast # Screenshot
-            hyprcursor # Cursor
-            hyprpaper # Wallpaper
-            wl-clipboard # Clipboard
-            wlr-randr # Monitor Settings
-            xwayland # X session
-            nwg-look
-          ];
+            systemPackages = with pkgs; [
+              grimblast # Screenshot
+              hyprcursor # Cursor
+              hyprpaper # Wallpaper
+              wl-clipboard # Clipboard
+              wlr-randr # Monitor Settings
+              xwayland # X session
+              nwg-look
+            ];
+          };
+
+        programs.hyprland = {
+          enable = true;
+          package = hyprland;
         };
 
-      programs.hyprland = {
-        enable = true;
-        package = hyprland;
-      };
+        security.pam.services.hyprlock = {
+          text = "auth include login";
+          enableGnomeKeyring = true;
+        };
 
-      security.pam.services.hyprlock = {
-        text = "auth include login";
-        enableGnomeKeyring = true;
-      };
-
-      services.greetd = {
-        enable = true;
-        settings = {
-          default_session = {
-            command = "${hyprland}/bin/Hyprland";
-            user = config.host.user.name;
+        services.greetd = {
+          enable = true;
+          settings = {
+            default_session = {
+              command = "${hyprland}/bin/Hyprland";
+              user = config.host.user.name;
+            };
           };
         };
+
+        systemd.sleep.settings.Sleep = {
+          AllowSuspend = "yes";
+          AllowHibernation = "no";
+          AllowSuspendThenHibernate = "no";
+          AllowHybridSleep = "yes";
+        }; # Clamshell Mode
+
+        nix.settings = {
+          substituters = [ "https://hyprland.cachix.org" ];
+          trusted-substituters = [ "https://hyprland.cachix.org" ];
+          trusted-public-keys = [ "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc=" ];
+        };
+        home-manager.users.${config.host.user.name}.imports = [
+          flake.config.flake.modules.homeManager.hyprland
+        ];
       };
-
-      systemd.sleep.settings.Sleep = {
-        AllowSuspend = "yes";
-        AllowHibernation = "no";
-        AllowSuspendThenHibernate = "no";
-        AllowHybridSleep = "yes";
-      }; # Clamshell Mode
-
-      nix.settings = {
-        substituters = [ "https://hyprland.cachix.org" ];
-        trusted-substituters = [ "https://hyprland.cachix.org" ];
-        trusted-public-keys = [ "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc=" ];
-      };
-
-      home-manager.users.${config.host.user.name}.imports = [
-        flake.config.flake.modules.homeManager.hyprland
-      ];
     };
-
   flake.modules.homeManager.hyprland =
     {
       config,
@@ -112,6 +112,7 @@ in
           ${pkgs.systemd}/bin/systemctl suspend
         fi
       '';
+
     in
     {
       imports = [
@@ -310,7 +311,6 @@ in
             "SUPER,R,forcerendererreload"
             "SUPERSHIFT,R,exec,${hyprland}/bin/hyprctl reload"
             "SUPER,T,exec,${pkgs.kitty}/bin/kitty -e nvim"
-            "SUPER,K,exec,${hyprland}/bin/hyprctl switchxkblayout keychron-k8-keychron-k8 next"
             "SUPER,left,movefocus,l"
             "SUPER,right,movefocus,r"
             "SUPER,up,movefocus,u"
