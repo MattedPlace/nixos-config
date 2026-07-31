@@ -1,5 +1,7 @@
-_final: prev: {
-  custom-plex = prev.plex.overrideAttrs (old: rec {
+_final: prev:
+let
+  # 1. Build a custom plexRaw derivation with the latest version
+  custom-plexRaw = prev.plexRaw.overrideAttrs (old: rec {
     pname = "plexmediaserver";
     version =
       (builtins.fromJSON (
@@ -18,4 +20,11 @@ _final: prev: {
       inherit version;
     };
   });
+
+in
+{
+  # 2. Override the FHS wrapper (the 'plex' package) to use our custom raw package
+  custom-plex = prev.plex.override {
+    plexRaw = custom-plexRaw;
+  };
 }

@@ -17,16 +17,8 @@ let
   packages =
     pkgs: with pkgs; [
       deno
-      beamPackages.elixir
-      beamPackages.erlang
       git
       go
-      nodejs
-      (python3.withPackages (
-        ps: with ps; [
-          pip
-        ]
-      ))
       ripgrep
       zig
     ];

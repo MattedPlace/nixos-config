@@ -32,6 +32,13 @@
 
     noctalia.url = "github:noctalia-dev/noctalia/legacy-v4";
     noctalia.inputs.nixpkgs.follows = "nixpkgs";
+
+    # Development and utilities
+    sops-nix = {
+      url = "github:mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    nixpkgs-f2k.url = "github:moni-dz/nixpkgs-f2k";
   };
 
   outputs =
@@ -62,6 +69,8 @@
             };
             overlays = import ./overlays { inherit inputs; } ++ [
               inputs.nur.overlays.default
+              inputs.sops-nix.overlays.default
+              inputs.nixpkgs-f2k.overlays.default
               inputs.nixpkgs-xr.overlays.default
               (final: prev: {
                 stable = import inputs.nixpkgs-stable {
