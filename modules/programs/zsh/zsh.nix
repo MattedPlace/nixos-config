@@ -2,7 +2,6 @@
   flake.modules.nixos.base =
     { config, pkgs, ... }:
     {
-
       users.users.${config.host.user.name} = {
         shell = pkgs.zsh;
       };
@@ -78,7 +77,6 @@
 
       # Enable Zsh configuration
       programs = {
-
         zsh = {
           enable = true;
           enableCompletion = true;
@@ -156,10 +154,6 @@
               file = "share/zsh/plugins/you-should-use/you-should-use.plugin.zsh";
             }
 
-            # Note: zsh-github-copilot removed — it printed "gh copilot extension
-            # not found" on every shell (the gh-copilot CLI isn't installed and
-            # isn't wanted; the AI stack here is Claude / Antigravity / Ollama).
-
             # Note: Removed zsh-syntax-highlighting plugin since we use built-in syntaxHighlighting
             # Note: Removed zsh-autosuggestions plugin since we use built-in autosuggestion
             # Note: Removed zsh-autocomplete to avoid conflicts with built-in completion
@@ -186,8 +180,6 @@
               fi
             fi
 
-            # Safe sourcing of external configs
-            [[ -f ~/.openai.sh ]] && source ~/.openai.sh
 
 
             # Enhanced history management
@@ -207,36 +199,11 @@
             # MCP (Model Context Protocol) Environment Variables
             export OBSIDIAN_VAULT_PATH="$HOME/Documents/Caliti"
 
-            # Claude Code 2.1.2+ Environment Variables
-            export FORCE_AUTOUPDATE_PLUGINS=true  # Force plugin autoupdate even when main autoupdater is disabled
 
             # Modern history with atuin
             if command -v atuin >/dev/null 2>&1; then
               eval "$(atuin init zsh)"
             fi
-
-            # Enhanced AIChat integration
-            if command -v aichat >/dev/null 2>&1; then
-              zmodload zsh/zle
-              _aichat_zsh() {
-                if [[ -n "$BUFFER" ]]; then
-                  local _old=$BUFFER
-                  BUFFER+="⌛"
-                  zle -I && zle redisplay
-                  local result
-                  result=$(aichat -e "$_old" 2>/dev/null)
-                  if [[ $? -eq 0 && -n "$result" ]]; then
-                    BUFFER="$result"
-                  else
-                    BUFFER="$_old"
-                  fi
-                  zle end-of-line
-                fi
-              }
-              zle -N _aichat_zsh
-              bindkey '\ee' _aichat_zsh
-            fi
-
           '';
 
           # Enhanced completion system with performance optimizations
@@ -583,8 +550,6 @@
             export EDITOR="nvim"
             export VISUAL="$EDITOR"
 
-            # Enable Claude Code LSP tools
-            export ENABLE_LSP_TOOLS=1
 
             # Performance optimizations
             export KEYTIMEOUT=1
@@ -683,11 +648,9 @@
 
             # Safe unique aliases
             reload = "exec zsh";
-            weather = "curl -s https://wttr.in/London";
             myip = "curl -s https://ipinfo.io/ip";
             ezals = "eza --header --git --classify --long --binary --group --time-style=long-iso --links --all --group-directories-first --sort=name --icons";
             fzfpreview = "fzf --preview 'bat --color=always --line-range :50 {}'";
-            aiexplain = "aichat --role explain";
           };
         };
 
