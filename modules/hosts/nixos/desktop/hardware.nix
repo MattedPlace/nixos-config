@@ -24,7 +24,7 @@
       boot = {
         # Boot options
         blacklistedKernelModules = [
-          "iwlwifi"
+          #"iwlwifi" wifi for intel
         ];
         kernelParams = [
           "processor.max_cstate=5"
