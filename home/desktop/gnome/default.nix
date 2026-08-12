@@ -1,0 +1,185 @@
+{ config
+, lib
+, pkgs
+, ...
+}:
+let
+  inherit (lib) mkOption mkIf mkEnableOption mkDefault types literalExpression;
+  cfg = config.desktop.gnome;
+in
+{
+  options.desktop.gnome = {
+    enable = mkEnableOption "GNOME desktop environment";
+
+    extensions = {
+      enable = mkEnableOption "GNOME Shell extensions";
+
+      packages = mkOption {
+        type = types.listOf types.package;
+        default = [ ];
+        description = "List of GNOME Shell extension packages to install";
+        example = literalExpression ''
+          with pkgs.gnomeExtensions; [
+            dash-to-dock
+            appindicator
+            vitals
+          ]
+        '';
+      };
+    };
+
+    apps = {
+      enable = mkEnableOption "Additional GNOME applications";
+
+      packages = mkOption {
+        type = types.listOf types.package;
+        default = [ ];
+        description = "List of additional GNOME application packages to install";
+        example = literalExpression ''
+          with pkgs; [
+            gnome-tweaks
+            dconf-editor
+            gnome-extension-manager
+          ]
+        '';
+      };
+    };
+
+    theme = {
+      enable = mkEnableOption "GNOME theming from the active base16 scheme";
+
+      variant = mkOption {
+        type = types.enum [ "dark" "light" ];
+        default = "dark";
+        description = "Theme variant to use";
+      };
+    };
+
+    keybindings = {
+      enable = mkEnableOption "Custom GNOME keybindings";
+    };
+  };
+
+  imports = [
+    ./host-profile.nix
+    ./theme.nix
+    ./extensions.nix
+    ./apps.nix
+    ./authenticator.nix
+    ./keybindings.nix
+    ./wl-clipboard-hide.nix
+  ];
+
+  config = mkIf cfg.enable {
+    # Enable GNOME desktop services
+    services.gnome-keyring.enable = true;
+
+    # Essential GNOME packages
+    home.packages = with pkgs; [
+      # Core GNOME utilities
+      gnome-tweaks
+      dconf-editor
+      gnome-extension-manager
+      # No named GTK theme package: Stylix generates the GTK theme from the
+      # active base16 scheme. A named GTK theme package used to live here purely to
+      # back the dconf gtk-theme override that theme.nix no longer sets.
+
+      # Additional utilities
+      gnome-screenshot
+      gnome-system-monitor
+      gnome-calculator
+      gnome-calendar
+      gnome-weather
+
+      # File management
+      nautilus
+      file-roller
+
+      # Media
+      eog # Eye of GNOME (image viewer)
+      totem # GNOME Videos
+
+      # Text editing
+      gedit
+    ];
+
+    # GNOME settings via dconf
+    dconf.settings = {
+      "org/gnome/desktop/interface" = {
+        clock-format = "24h";
+        show-battery-percentage = true;
+        # libadwaita accent (GNOME 47+). This is a fixed enum, not a hex
+        # value, so it cannot track the scheme exactly — "green" is the
+        # closest stop to the Alien HUD phosphor accent (base0B).
+        accent-color = "green";
+        gtk-theme = mkDefault (
+          if cfg.theme.enable
+          then "Adwaita-dark"
+          else "Adwaita"
+        );
+        icon-theme = mkDefault "Adwaita";
+        cursor-theme = mkDefault "Adwaita";
+      };
+
+      "org/gnome/desktop/wm/preferences" = {
+        button-layout = "appmenu:minimize,maximize,close";
+        focus-mode = "click";
+      };
+
+      "org/gnome/mutter" = {
+        dynamic-workspaces = true;
+        auto-maximize = true;
+        center-new-windows = true;
+        workspaces-only-on-primary = false;
+        experimental-features = [ "variable-refresh-rate" ];
+      };
+
+      # Note: org/gnome/shell.favorite-apps is declared once in apps.nix
+      # (snapshot of p620 live state). Don't re-declare here — HM merges
+      # rather than replaces dconf array values, which produces a dock
+      # with duplicate entries.
+
+      # Privacy settings
+      "org/gnome/desktop/privacy" = {
+        report-technical-problems = false;
+        send-software-usage-stats = false;
+      };
+
+      # Power settings live in apps.nix under the Remote Desktop block —
+      # GNOME RDP is enabled on every host so the no-sleep policy applies
+      # uniformly there.
+
+      # Window management
+      "org/gnome/desktop/wm/keybindings" = {
+        close = [ "<Super>q" ];
+        toggle-maximized = [ "<Super>m" ];
+        toggle-fullscreen = [ "F11" ];
+      };
+
+      # Application switcher
+      "org/gnome/shell/keybindings" = {
+        switch-to-application-1 = [ "<Super>1" ];
+        switch-to-application-2 = [ "<Super>2" ];
+        switch-to-application-3 = [ "<Super>3" ];
+        switch-to-application-4 = [ "<Super>4" ];
+        switch-to-application-5 = [ "<Super>5" ];
+      };
+    };
+
+    # XDG mime applications (XDG directories handled by base-home.nix)
+    xdg.mimeApps = {
+      enable = true;
+      defaultApplications = {
+        "text/html" = "google-chrome.desktop";
+        "x-scheme-handler/http" = "google-chrome.desktop";
+        "x-scheme-handler/https" = "google-chrome.desktop";
+        "x-scheme-handler/about" = "google-chrome.desktop";
+        "x-scheme-handler/unknown" = "google-chrome.desktop";
+        "inode/directory" = "org.gnome.Nautilus.desktop";
+        "application/pdf" = "org.gnome.Evince.desktop";
+        "image/jpeg" = "org.gnome.eog.desktop";
+        "image/png" = "org.gnome.eog.desktop";
+      };
+    };
+  };
+}

@@ -1,0 +1,408 @@
+# Claude Code MCP Configuration
+#
+# Renders ~/.claude/settings.local.json with the per-host MCP server set.
+# As of issue #398 this file is *seeded* (init-template) rather than
+# managed as a nix-store symlink — Claude Code mutates it at runtime
+# (`claude mcp add`, accepted permissions) and a read-only symlink would
+# break with EACCES.
+#
+# Tradeoff: once Claude Code or the user edits the file, subsequent
+# `nixos-rebuild switch` runs will NOT push new declarative MCP servers
+# into it. To resync to the Nix-declared set, delete the file and
+# re-activate (e.g. `home-manager switch` or any `nixos-rebuild switch`).
+#
+# Follows docs/NIXOS-ANTI-PATTERNS.md security patterns.
+{ config, lib, pkgs, osConfig, ... }:
+let
+  # Access system-level MCP configuration via osConfig
+  mcpCfg = osConfig.features.ai.mcp or { };
+  enabled = mcpCfg.enable or false;
+  obsidianEnabled = mcpCfg.obsidian.enable or false;
+  linkedinEnabled = mcpCfg.linkedin.enable or false;
+  atlassianEnabled = mcpCfg.atlassian.enable or false;
+  whatsappEnabled = mcpCfg.whatsapp.enable or false;
+
+  # Helper function to create shell script wrappers
+  mkWrapper = name: script: pkgs.writeShellScript name script;
+
+  mcpSettingsTemplate = pkgs.writeText "claude-mcp-settings.local.json"
+    (builtins.toJSON {
+      mcpServers =
+        # Always enabled MCP servers
+        {
+          # Playwright MCP for browser automation
+          playwright = {
+            command = "${pkgs.nodejs}/bin/npx";
+            args = [ "-y" "@playwright/mcp@latest" ];
+            env = {
+              PLAYWRIGHT_BROWSERS_PATH = "${pkgs.playwright-driver.browsers}";
+              PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = "true";
+            };
+            description = "Browser automation using Playwright - AI-powered web testing, form filling, and DOM interaction";
+          };
+
+          # BrowserMCP for privacy-focused browser automation
+          browsermcp = {
+            command = "${pkgs.nodejs}/bin/npx";
+            args = [ "@browsermcp/mcp@latest" ];
+            description = "Browser automation with privacy - AI-powered web automation (requires Chrome extension)";
+          };
+
+          # Context7 for up-to-date library documentation
+          context7 = {
+            type = "stdio";
+            command = "${pkgs.nodejs}/bin/npx";
+            args = [ "-y" "@upstash/context7-mcp@latest" ];
+            description = "Up-to-date library documentation - prevents coding hallucinations with current docs";
+          };
+
+          # Sequential Thinking for systematic problem-solving
+          sequential-thinking = {
+            command = "${pkgs.nodejs}/bin/npx";
+            args = [ "-y" "@modelcontextprotocol/server-sequential-thinking" ];
+            description = "Dynamic and reflective problem-solving through systematic thinking - helps break down complex problems into steps";
+          };
+
+          # Ollama code-delegation: hand isolated, well-specified coding tasks
+          # to a local qwen2.5-coder model and review the output. Claude stays
+          # the supervisor; Ollama is the junior worker. Default backend is
+          # per-host — p620 has local Ollama; other hosts reach p620 over the
+          # tailnet. The tools also accept host="p510" for the bigctx coder.
+          ollama-code = {
+            command = "${pkgs.customPkgs.ollama-mcp}/bin/ollama-mcp";
+            args = [ ];
+            env = {
+              OLLAMA_HOST =
+                if osConfig.networking.hostName == "p620"
+                then "http://localhost:11434"
+                else "http://p620:11434";
+            };
+            description = "Delegate isolated coding tasks to local Ollama coder models (qwen2.5-coder on p620/p510) and review the output — Claude supervises, Ollama drafts";
+          };
+
+          # NotebookLM MCP for Google NotebookLM interaction
+          notebooklm = {
+            command = "${pkgs.uv}/bin/uvx";
+            args = [ "--from" "notebooklm-mcp-cli" "notebooklm-mcp" ];
+            description = "Google NotebookLM interaction - create notebooks, add sources, generate audio/video overviews, query content via AI";
+          };
+
+          # Terraform MCP for Infrastructure as Code
+          terraform = {
+            command = if pkgs ? terraform-mcp-server then "${pkgs.terraform-mcp-server}/bin/terraform-mcp-server" else "${pkgs.writeShellScript "terraform-mcp-placeholder" "echo 'Terraform MCP not available'"}";
+            args = [ ];
+            description = "Terraform Infrastructure as Code - manage and query terraform configurations";
+          };
+
+          # Plex MCP server on p510 (SSE via mcp-proxy). Remote daemon —
+          # reachable over LAN/tailnet; no local secret needed on the client.
+          plex-mcp = {
+            type = "sse";
+            url = "http://p510:3010/sse";
+            description = "Plex library, watch stats, recommendations, and Sonarr/Radarr control (p510)";
+          };
+
+          # *arr suite MCP on p510 (SSE via mcp-proxy). Sonarr/Radarr/Prowlarr/
+          # Overseerr automation; NZBGeek is reached through Prowlarr.
+          arr-suite = {
+            type = "sse";
+            url = "http://p510:3011/sse";
+            description = "Sonarr/Radarr/Prowlarr/Overseerr automation; NZBGeek via Prowlarr (p510)";
+          };
+
+          # Audiobook MCP on p510 (SSE via mcp-proxy). AudioBookBay search/add
+          # (torrent) + NZBGeek search/grab (Usenet) + Audiobookshelf library.
+          audiobook = {
+            type = "sse";
+            url = "http://p510:3012/sse";
+            description = "Audiobook acquisition: AudioBookBay + NZBGeek search/grab, Audiobookshelf library (p510)";
+          };
+
+          # n8n MCP server — built-in streamable-http endpoint on the public
+          # tunnel. Bearer token comes from the user's shell env (N8N_MCP_TOKEN,
+          # set by load-api-keys from /run/agenix/api-n8n-mcp). Provides tools
+          # for programmatic workflow construction via the n8n Workflow SDK
+          # (search_nodes, get_sdk_reference, create_workflow, …).
+          n8n = {
+            type = "http";
+            url = "https://n8n.freundcloud.org.uk/mcp-server/http";
+            headers = {
+              Authorization = "Bearer \${N8N_MCP_TOKEN}";
+            };
+            description = "n8n workflow automation — build and run workflows via the n8n Workflow SDK (public tunnel)";
+          };
+        }
+        # Obsidian MCP - conditional configuration based on implementation
+        // (lib.optionalAttrs obsidianEnabled {
+          "obsidian-rest" =
+            if mcpCfg.obsidian.implementation == "zero-dependency"
+            then {
+              command = if pkgs ? obsidian-mcp then "${pkgs.obsidian-mcp}/bin/obsidian-mcp" else "${pkgs.writeShellScript "obsidian-mcp-placeholder" "echo 'Obsidian MCP not available'"}";
+              args = [ mcpCfg.obsidian.vaultPath ];
+              description = "Obsidian vault knowledge base (zero-dependency, read-only)";
+            }
+            else {
+              command = "${mkWrapper "obsidian-mcp-rest-wrapper" ''
+                export OBSIDIAN_API_KEY_FILE=${mcpCfg.obsidian.restApi.apiKeyFile}
+                export OBSIDIAN_HOST=${mcpCfg.obsidian.restApi.host}
+                export OBSIDIAN_PORT=${toString mcpCfg.obsidian.restApi.port}
+                export VERIFY_SSL=${if mcpCfg.obsidian.restApi.verifySsl then "true" else "false"}
+                ${if pkgs ? obsidian-mcp-rest then ''
+                  exec ${pkgs.obsidian-mcp-rest}/bin/obsidian-mcp-rest "$@"
+                '' else ''
+                  echo "Obsidian MCP REST not available" >&2
+                  exit 1
+                ''}
+              ''}";
+              args = [ ];
+              description = "Obsidian vault with full CRUD via REST API plugin - requires Local REST API plugin installed";
+            };
+        })
+        # GitHub MCP server (if GitHub token available)
+        // (lib.optionalAttrs (osConfig.age.secrets."api-github-token" or null != null) {
+          github = {
+            command = "${mkWrapper "github-mcp-wrapper" ''
+              # github-mcp-server only reads GITHUB_PERSONAL_ACCESS_TOKEN (not
+              # GITHUB_TOKEN_FILE) and needs the `stdio` subcommand to start.
+              export GITHUB_PERSONAL_ACCESS_TOKEN="$(cat ${osConfig.age.secrets."api-github-token".path})"
+              exec ${pkgs.github-mcp-server}/bin/github-mcp-server stdio "$@"
+            ''}";
+            args = [ ];
+            description = "GitHub repository integration - PR automation, issue management, repository queries";
+          };
+        })
+        # LinkedIn MCP server (if LinkedIn cookie available)
+        // (lib.optionalAttrs linkedinEnabled {
+          linkedin = {
+            command = "${mkWrapper "linkedin-mcp-wrapper" ''
+              export LINKEDIN_COOKIE_FILE=${osConfig.age.secrets."api-linkedin-cookie".path}
+              exec ${pkgs.docker}/bin/docker run --rm -i \
+                --read-only \
+                --security-opt=no-new-privileges \
+                --cap-drop=ALL \
+                -e LINKEDIN_COOKIE="$(cat $LINKEDIN_COOKIE_FILE)" \
+                stickerdaniel/linkedin-mcp-server:latest "$@"
+            ''}";
+            args = [ ];
+            description = "LinkedIn professional networking and job search";
+          };
+        })
+        # WhatsApp MCP server
+        // (lib.optionalAttrs whatsappEnabled {
+          whatsapp = {
+            command = "${mkWrapper "whatsapp-mcp-wrapper" ''
+              # Ensure WhatsApp bridge service is running
+              if ! systemctl is-active --quiet whatsapp-bridge; then
+                echo "ERROR: WhatsApp bridge service is not running" >&2
+                echo "Start service: systemctl start whatsapp-bridge" >&2
+                echo "View QR code for authentication: journalctl -u whatsapp-bridge -f" >&2
+                exit 1
+              fi
+
+              # Launch MCP server
+              exec ${pkgs.customPkgs.whatsapp-mcp.whatsappMcpServer}/bin/whatsapp-mcp-server "$@"
+            ''}";
+            args = [ ];
+            description = "WhatsApp messaging integration - AI-assisted WhatsApp send/receive, message history queries (requires bridge service + QR auth)";
+          };
+        })
+        # Atlassian MCP server (Jira and Confluence)
+        // (lib.optionalAttrs atlassianEnabled (
+          let
+            mode = mcpCfg.atlassian.mode or "cloud";
+            jiraEnabled = mcpCfg.atlassian.jira.enable or false;
+            confluenceEnabled = mcpCfg.atlassian.confluence.enable or false;
+          in
+          {
+            atlassian = {
+              command = "${mkWrapper "atlassian-mcp-wrapper" (
+                if mode == "cloud" then ''
+                  ${lib.optionalString jiraEnabled ''
+                    export JIRA_URL="${mcpCfg.atlassian.jira.url}"
+                    export JIRA_USERNAME="${mcpCfg.atlassian.jira.username}"
+                    export JIRA_TOKEN_FILE="${mcpCfg.atlassian.jira.tokenFile}"
+                  ''}
+                  ${lib.optionalString confluenceEnabled ''
+                    export CONFLUENCE_URL="${mcpCfg.atlassian.confluence.url}"
+                    export CONFLUENCE_USERNAME="${mcpCfg.atlassian.confluence.username}"
+                    export CONFLUENCE_TOKEN_FILE="${mcpCfg.atlassian.confluence.tokenFile}"
+                  ''}
+                  export ATLASSIAN_MODE="cloud"
+                  exec ${pkgs.customPkgs.atlassian-mcp}/bin/atlassian-mcp "$@"
+                '' else ''
+                  ${lib.optionalString jiraEnabled ''
+                    export JIRA_URL="${mcpCfg.atlassian.jira.url}"
+                    export JIRA_PAT_FILE="${mcpCfg.atlassian.jira.patFile}"
+                  ''}
+                  ${lib.optionalString confluenceEnabled ''
+                    export CONFLUENCE_URL="${mcpCfg.atlassian.confluence.url}"
+                    export CONFLUENCE_PAT_FILE="${mcpCfg.atlassian.confluence.patFile}"
+                  ''}
+                  export ATLASSIAN_MODE="self-hosted"
+                  exec ${pkgs.customPkgs.atlassian-mcp}/bin/atlassian-mcp "$@"
+                ''
+              )}";
+              args = [ ];
+              description = "Atlassian Jira and Confluence integration - issue tracking, project management, and documentation (${mode} mode)";
+            };
+          }
+        ))
+        # Grafana MCP server (if enabled in servers configuration)
+        // (lib.optionalAttrs (mcpCfg.servers.grafana or false) {
+          grafana = {
+            command = if pkgs ? mcp-grafana then "${pkgs.mcp-grafana}/bin/mcp-grafana" else "${pkgs.writeShellScript "grafana-mcp-placeholder" "echo 'Grafana MCP not available'"}";
+            args = [
+              "--url"
+              "http://p620:3001" # P620 is the monitoring server
+              "--token"
+              "\${GRAFANA_API_TOKEN}"
+            ];
+            description = "Grafana dashboard and metrics integration - query monitoring data from P620";
+          };
+        });
+    });
+in
+{
+  config = lib.mkIf enabled {
+    # Seed ~/.claude/settings.local.json from a Nix-rendered template
+    # ONLY if the file is missing or a legacy nix-store symlink. After
+    # that, Claude Code owns it (claude mcp add etc.). To resync to the
+    # Nix-declared MCP set, delete the file and re-activate. See #398.
+    home.activation.claudeMcpSettingsInit = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      target="$HOME/.claude/settings.local.json"
+      mkdir -p "$HOME/.claude"
+
+      if [ -L "$target" ]; then
+        $DRY_RUN_CMD rm -f "$target"
+      fi
+
+      if [ ! -e "$target" ]; then
+        $DRY_RUN_CMD install -m 0644 ${mcpSettingsTemplate} "$target"
+        $DRY_RUN_CMD echo "Seeded $target from Nix template"
+      fi
+    '';
+
+    # Documentation file: Claude Code never reads it, never writes it,
+    # so a nix-store symlink is fine.
+    home.file.".claude/MCP-README.md".text = ''
+      # Claude Code MCP Configuration
+
+      As of issue #398 ~/.claude/settings.local.json is SEEDED ONCE from
+      this Nix module and then owned by Claude Code (so `claude mcp add`
+      and runtime permission prompts work). To resync to the Nix-declared
+      MCP servers, delete the file and re-run `nixos-rebuild switch`.
+
+      ## Configuration Location
+
+      Source: ${config.home.homeDirectory}/.config/nixos/home/development/claude-code-mcp.nix
+      Generated: ~/.claude/settings.local.json (seed-only after #398)
+
+      ## Enabled MCP Servers
+
+      ### Always Enabled
+
+      #### Playwright
+      - Browser automation using Playwright accessibility tree
+      - NixOS-compatible browser paths configured
+      - Supports web testing, form filling, and DOM interaction
+      - Example: "Open browser to example.com and take a screenshot"
+
+      #### BrowserMCP
+      - Privacy-focused browser automation
+      - Requires Chrome extension installation
+      - AI-powered web automation
+
+      #### Context7
+      - Up-to-date library documentation
+      - Prevents coding hallucinations with current documentation
+
+      #### Sequential Thinking
+      - Dynamic and reflective problem-solving
+      - Breaks down complex problems into systematic steps
+      - Example: "Think through the architecture for this feature step by step"
+
+      #### Terraform
+      - Infrastructure as Code support
+      - Manage and query Terraform configurations
+
+      ### Conditionally Enabled
+
+      ${lib.optionalString obsidianEnabled ''
+      #### Obsidian (${mcpCfg.obsidian.implementation})
+      ${if mcpCfg.obsidian.implementation == "rest-api" then ''
+      - Mode: REST API (full CRUD operations)
+      - Plugin Required: Obsidian Local REST API
+      - Host: ${mcpCfg.obsidian.restApi.host}
+      - Port: ${toString mcpCfg.obsidian.restApi.port}
+      - SSL Verification: ${if mcpCfg.obsidian.restApi.verifySsl then "Enabled" else "Disabled"}
+      '' else ''
+      - Mode: Zero-dependency (read-only)
+      - Vault Path: ${mcpCfg.obsidian.vaultPath}
+      - No plugin required
+      ''}
+      ''}
+
+      ${lib.optionalString (osConfig.age.secrets."api-github-token" or null != null) ''
+      #### GitHub
+      - Repository integration
+      - PR automation and issue management
+      - Token loaded from: ${osConfig.age.secrets."api-github-token".path}
+      ''}
+
+      ${lib.optionalString linkedinEnabled ''
+      #### LinkedIn
+      - Professional networking and job search
+      - Profile scraping and company research
+      - Job searches with keyword/location filters
+      - Note: Cookie expires ~30 days, requires periodic refresh
+      ''}
+
+      ${lib.optionalString whatsappEnabled ''
+      #### WhatsApp
+      - AI-assisted WhatsApp messaging
+      - Send/receive messages via natural language
+      - Query message history and conversations
+      - Group chat support
+      - Media file support${lib.optionalString mcpCfg.whatsapp.enableVoiceMessages " (voice messages enabled)"}
+      - Requires: whatsapp-bridge service running
+      - Authentication: QR code scan (expires ~20 days)
+      - View QR: journalctl -u whatsapp-bridge -f
+      ''}
+
+      ${lib.optionalString atlassianEnabled ''
+      #### Atlassian (${mcpCfg.atlassian.mode or "cloud"} mode)
+      ${lib.optionalString (mcpCfg.atlassian.jira.enable or false) ''
+      - **Jira Integration**:
+        - URL: ${mcpCfg.atlassian.jira.url or "Not configured"}
+      ''}
+      ${lib.optionalString (mcpCfg.atlassian.confluence.enable or false) ''
+      - **Confluence Integration**:
+        - URL: ${mcpCfg.atlassian.confluence.url or "Not configured"}
+      ''}
+      ''}
+
+      ${lib.optionalString (mcpCfg.servers.grafana or false) ''
+      #### Grafana
+      - Dashboard and metrics integration
+      - Query monitoring data from P620 server
+      - Requires GRAFANA_API_TOKEN environment variable
+      ''}
+
+      ## Resync after manual edits
+
+      To replace whatever is currently at ~/.claude/settings.local.json
+      with the Nix-declared baseline:
+
+      ```
+      rm ~/.claude/settings.local.json
+      home-manager switch  # or nixos-rebuild switch
+      ```
+
+      ## Security Notes
+
+      - API keys and tokens loaded at runtime (not in Nix store)
+      - Secrets managed via agenix
+      - Shell wrappers generated with proper paths
+    '';
+  };
+}

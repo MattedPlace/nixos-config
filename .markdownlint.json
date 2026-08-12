@@ -1,0 +1,27 @@
+{
+  "default": true,
+  "MD013": {
+    "line_length": 120,
+    "code_blocks": false,
+    "tables": false
+  },
+  "MD033": {
+    "allowed_elements": [
+      "kbd",
+      "br",
+      "details",
+      "summary",
+      "div"
+    ]
+  },
+  "MD041": false,
+  "MD024": {
+    "allow_different_nesting": true
+  },
+  "MD029": {
+    "style": "ordered"
+  },
+  "MD060": {
+    "style": "leading_and_trailing"
+  }
+}

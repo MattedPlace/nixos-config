@@ -1,0 +1,51 @@
+{ pkgs
+, config
+, lib
+, ...
+}:
+let
+  inherit (lib) mkIf mkEnableOption;
+  inherit (config.lib.stylix) colors;
+  cfg = config.desktop.screenshots.flameshot;
+in
+{
+  options.desktop.screenshots.flameshot = {
+    enable = mkEnableOption {
+      default = false;
+      description = "Enable FlameShot screenshots";
+    };
+  };
+  config = mkIf cfg.enable {
+    # Ensure screenshots directory exists
+    home.file."Pictures/screenshots/.keep".text = "";
+
+    services.flameshot = {
+      enable = true;
+      package = pkgs.flameshot.override { enableWlrSupport = true; };
+      settings = {
+        General = {
+          showStartupLaunchMessage = false;
+          showHelp = false;
+          # Stylix has no flameshot target, so drive the two colour knobs it
+          # exposes from the active base16 scheme: phosphor green for the
+          # selection chrome, plate cream for the contrast pass.
+          uiColor = colors.withHashtag.base0B;
+          contrastUiColor = colors.withHashtag.base05;
+          saveAsFileExtension = "png";
+          savePath = "${config.home.homeDirectory}/Pictures/screenshots";
+          copyPathAfterSave = false;
+          startupLaunch = true; # Auto-start on login
+          disabledGrimWarning = true; # Disable grim adapter warning
+          useGrimAdapter = true; # Use grim adapter for Wayland
+        };
+        Shortcuts = {
+          TYPE_ARROW = "A";
+          TYPE_RECTANGLE = "R";
+          TYPE_CIRCLE = "C";
+          TYPE_MARKER = "M";
+          TYPE_TEXT = "T";
+        };
+      };
+    };
+  };
+}

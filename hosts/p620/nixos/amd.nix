@@ -1,0 +1,129 @@
+{ pkgs, ... }: {
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+    extraPackages32 = with pkgs.driversi686Linux; [
+      # 32-bit Mesa DRI drivers for compatibility
+      mesa
+      # amdvlk removed - RADV (Mesa Vulkan) is now default
+    ];
+    extraPackages = with pkgs; [
+      # Mesa DRI drivers for OpenGL/EGL support
+      mesa
+      # libglvnd - REQUIRED for COSMIC compositor (provides libEGL.so.1)
+      libglvnd
+      # Vulkan and video acceleration
+      # vulkan-validation-layers dropped: debug-only layer, broken build on
+      # nixpkgs 1.4.350.0 (update_deps.py git-clones in the sandbox). RADV
+      # Vulkan works via mesa + vulkan-loader without it.
+      libva-vdpau-driver
+      # amdvlk removed - RADV (Mesa Vulkan) is now default
+      rocmPackages.clr.icd
+    ];
+  };
+
+  # Enable AMD GPU features
+  hardware.amdgpu = {
+    opencl.enable = true;
+    # RADV (Mesa's Vulkan driver) is now enabled by default
+    # amdvlk has been removed in favor of RADV
+    # Load firmware early in the boot process for better stability
+    # loadInInitrd = true;
+  };
+
+  environment = {
+    systemPackages = with pkgs; [
+      libva
+      libva-utils
+      lact
+      mesa-demos
+      # rocmPackages.clr provides bin/clinfo (ROCm-aware); pkgs.clinfo collides
+      rocmPackages.rocm-smi
+      rocmPackages.rocminfo
+      rocmPackages.rocsolver
+      rocmPackages.rocsparse
+      rocmPackages.rocm-runtime
+      rocmPackages.rpp-hip
+      # rocmPackages.rpp-cpu shares share/rpp/test/* with rpp-hip; on GPU host rpp-hip wins
+      rocmPackages.clr
+      rocmPackages.clr.icd
+      rocmPackages.rocm-cmake
+      rocmPackages.rocm-device-libs
+      rocmPackages.hipblas
+      rocmPackages.rocblas
+      # rocmPackages.hip-common overlaps with clr on include/hip; clr is sufficient
+      radeontop
+      vulkan-loader
+      vulkan-tools
+      microcode-amd
+    ];
+  };
+
+  # Systemd configuration
+  systemd = {
+    packages = with pkgs; [ lact ];
+    services.lactd = {
+      wantedBy = [ "multi-user.target" ];
+      # Trigger auto-profile after lactd starts (breaks cyclic dependency)
+      wants = [ "lact-auto-profile.service" ];
+      # Add restart-on-failure for better reliability
+      serviceConfig = {
+        Restart = "on-failure";
+        RestartSec = "5s";
+      };
+    };
+
+    # Auto-apply GPU profile on boot (currently using Default profile)
+    # To create custom profiles, use the LACT GUI or CLI: lact cli profile set <profile-name>
+    services.lact-auto-profile = {
+      description = "Apply LACT GPU profile";
+      after = [ "lactd.service" ];
+      # Removed wantedBy to break cycle - lactd.wants triggers this instead
+      serviceConfig = {
+        Type = "oneshot";
+        # Apply Default profile (change profile name after creating custom profiles)
+        ExecStart = "${pkgs.bash}/bin/bash -c 'sleep 5 && ${pkgs.lact}/bin/lact cli profile set Default || true'";
+        RemainAfterExit = true;
+      };
+    };
+
+    tmpfiles.rules = [
+      "L+    /opt/rocm   -    -    -     -    ${pkgs.rocmPackages.clr}"
+    ];
+  };
+
+  # Performance tuning
+  boot = {
+    # Kernel parameters for better GPU performance.
+    #
+    # NOTE: amdgpu.dcfeaturemask=1 was REMOVED 2026-04-26. Bit 0 is
+    # DC_FBC_MASK (Frame Buffer Compression), which causes screen
+    # flickering / corruption on RDNA3 (RX 7900 XTX) — diagnosed after
+    # heavy "screen glitches" reports under cosmic-comp 1.0.10 on Mesa
+    # 26.0.5 / kernel 7.0. The kernel default leaves FBC off on this
+    # silicon for a reason; do not re-enable without a confirmed fix
+    # in mainline kernel + Mesa. If you bring it back, retest under
+    # mixed Chrome (XWayland) + native Wayland workloads first.
+    kernelParams = [
+      "amdgpu.ppfeaturemask=0xffffffff" # Enable power management features (LACT/undervolt)
+    ];
+    # Blacklist incompatible modules
+    blacklistedKernelModules = [ "radeon" ];
+  };
+
+  # Environment variables for better AMD compatibility
+  environment.variables = {
+    # DRI and VA-API variables for proper driver loading
+    LIBVA_DRIVER_NAME = "radeonsi";
+    VDPAU_DRIVER = "radeonsi";
+    DRI_PRIME = "1";
+
+    # Uncomment if you want to force RADV (Mesa Vulkan driver)
+    # AMD_VULKAN_ICD = "RADV";
+
+    # ROCm environment variables for better compatibility
+    # CRITICAL: Required for RX 7900 XTX (gfx1100) ROCm support
+    HSA_OVERRIDE_GFX_VERSION = "11.0.0";
+    # ROC_ENABLE_PRE_VEGA = "1";
+  };
+}

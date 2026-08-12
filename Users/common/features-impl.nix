@@ -1,0 +1,102 @@
+{
+  config,
+  lib,
+  ...
+}:
+let
+  inherit (lib) mkIf mkMerge;
+  cfg = config.features;
+in
+{
+  imports = [
+    ./features.nix
+  ];
+
+  config = mkMerge [
+    # Terminal implementations
+    (mkIf cfg.terminals.enable {
+      alacritty.enable = cfg.terminals.alacritty;
+      foot.enable = cfg.terminals.foot;
+      wezterm.enable = cfg.terminals.wezterm;
+      kitty.enable = cfg.terminals.kitty;
+      ghostty.enable = cfg.terminals.ghostty;
+      warp.enable = cfg.terminals.warp;
+      wave.enable = cfg.terminals.wave;
+    })
+
+    # Editor implementations
+    (mkIf cfg.editors.enable {
+      editor = {
+        cursor.enable = cfg.editors.cursor;
+        neovim.enable = cfg.editors.neovim;
+        windsurf.enable = cfg.editors.windsurf;
+        zed.enable = cfg.editors.zed;
+      };
+    })
+
+    # Browser implementations
+    (mkIf cfg.browsers.enable {
+      browsers = {
+        chrome.enable = cfg.browsers.chrome;
+        firefox.enable = cfg.browsers.firefox;
+        edge.enable = cfg.browsers.edge;
+        brave.enable = cfg.browsers.brave;
+        opera.enable = cfg.browsers.opera;
+      };
+    })
+
+    # Desktop implementations
+    (mkIf cfg.desktop.enable {
+      desktop = {
+        zathura.enable = cfg.desktop.zathura;
+        screenshots = {
+          flameshot.enable = cfg.desktop.flameshot;
+          wayland.enable = cfg.desktop.waylandScreenshots;
+        };
+      };
+
+      # Communication and media apps
+      programs = {
+        obs.enable = cfg.desktop.obs;
+        evince.enable = cfg.desktop.evince;
+        kdeconnect.enable = cfg.desktop.kdeconnect;
+      };
+
+      # File managers
+      # desktop.vicinae.enable = cfg.desktop.vicinae; # Temporarily disabled - module not imported
+    })
+
+    # CLI tool implementations
+    (mkIf cfg.cli.enable {
+      cli = {
+        bat.enable = cfg.cli.bat;
+        direnv.enable = cfg.cli.direnv;
+        fzf.enable = cfg.cli.fzf;
+        lf.enable = cfg.cli.lf;
+        starship.enable = cfg.cli.starship;
+        yazi.enable = cfg.cli.yazi;
+        zoxide.enable = cfg.cli.zoxide;
+        markdown.enable = cfg.cli.markdown;
+        versioncontrol.gh.enable = cfg.cli.gh;
+      };
+    })
+
+    # Terminal multiplexer implementations
+    (mkIf cfg.multiplexers.enable {
+      multiplexer = {
+        tmux.enable = cfg.multiplexers.tmux;
+        zellij.enable = cfg.multiplexers.zellij;
+      };
+    })
+
+    # Gaming implementations
+    (mkIf cfg.gaming.enable {
+      # Import Steam config if enabled
+    })
+
+    # Development implementations - packages and configurations only
+    (mkIf cfg.development.enable {
+      # Development modules are imported at the top level in imports.nix
+    })
+  ];
+}

@@ -1,0 +1,135 @@
+# Enhanced System Information and Monitoring
+# System monitoring utilities with fastfetch
+{ pkgs
+, lib
+, ...
+}:
+let
+  inherit (lib) mkIf mkMerge optionals optionalString flatten;
+  # Feature flags for system monitoring
+  cfg = {
+    systemMonitors = {
+      btop = true;
+      htop = true;
+      nvtop = true;
+      iotop = true;
+      fastfetch = true;
+    };
+
+    utilities = {
+      processTools = true; # procs, killall, etc.
+      diskTools = true; # ncdu, dust, duf, etc.
+      networkTools = true; # bandwhich, nethogs, etc.
+      textTools = true; # ripgrep, fd, jq, etc.
+    };
+  };
+in
+{
+  # Enhanced system monitoring packages
+  home.packages = with pkgs;
+    flatten [
+      # fastfetch is deliberately NOT listed here: home/shell/fastfetch owns it
+      # and installs a wrapped package that picks an animated kitty-graphics
+      # logo when the terminal can show one. Adding the bare pkgs.fastfetch
+      # alongside it puts both in the profile and the unwrapped binary wins.
+
+      # System monitors
+      (optionals cfg.systemMonitors.btop [ btop ])
+      (optionals cfg.systemMonitors.htop [ htop ])
+      (optionals cfg.systemMonitors.nvtop [ nvtopPackages.full ])
+      (optionals cfg.systemMonitors.iotop [ iotop ])
+
+      # Process tools
+      # Note: pstree removed to avoid conflict with psmisc package (which also provides pstree)
+      (optionals cfg.utilities.processTools [ procs lsof killall ])
+
+      # Disk utilities
+      (optionals cfg.utilities.diskTools [ ncdu dust duf tree ])
+
+      # Network tools
+      (optionals cfg.utilities.networkTools [ bandwhich nethogs iftop nload speedtest-cli ])
+
+      # Text processing
+      (optionals cfg.utilities.textTools [ ripgrep fd jq yq-go tokei ])
+    ];
+
+  # Enhanced btop configuration
+  programs.btop = mkIf cfg.systemMonitors.btop {
+    enable = true;
+    settings = {
+      # No color_theme here: Stylix's btop target writes a "stylix" theme from
+      # the active base16 scheme and wins over this anyway. Naming a bundled
+      # theme only misdescribed what actually rendered.
+      theme_background = false;
+      vim_keys = true;
+      rounded_corners = true;
+      graph_symbol = "braille";
+      shown_boxes = "cpu mem net proc";
+      update_ms = 2000;
+      proc_sorting = "cpu lazy";
+      proc_tree = false;
+      proc_colors = true;
+      proc_gradient = true;
+      cpu_graph_upper = "total";
+      cpu_single_graph = false;
+      show_uptime = true;
+      check_temp = true;
+      show_coretemp = true;
+      show_cpu_freq = true;
+      mem_graphs = true;
+      show_swap = true;
+      show_disks = true;
+      net_auto = true;
+      net_sync = false;
+    };
+  };
+
+  # Custom monitoring scripts
+  home.file = mkMerge [
+    # System dashboard script
+    {
+      ".local/bin/system-dashboard" = {
+        text = ''
+          #!/bin/sh
+          # Enhanced system monitoring dashboard
+          echo "╭─────────────────────────────────────╮"
+          echo "│          System Dashboard           │"
+          echo "╰─────────────────────────────────────╯"
+          echo
+
+          # System info
+          echo "📊 System Information:"
+          ${optionalString cfg.systemMonitors.fastfetch "fastfetch --config small"}
+          echo
+
+          # Resource usage
+          echo "💾 Storage Usage:"
+          ${optionalString cfg.utilities.diskTools "${pkgs.duf}/bin/duf"}
+          echo
+
+          # Process overview
+          echo "⚡ Top Processes:"
+          ${optionalString cfg.utilities.processTools "${pkgs.procs}/bin/procs --tree --color always | head -15"}
+          echo
+
+          # Network activity
+          echo "🌐 Network Activity:"
+          ${optionalString cfg.utilities.networkTools "${pkgs.bandwhich}/bin/bandwhich --interfaces"}
+        '';
+        executable = true;
+      };
+    }
+
+    # Quick system info script
+    {
+      ".local/bin/sysinfo" = {
+        text = ''
+          #!/bin/sh
+          # Quick system information
+          ${optionalString cfg.systemMonitors.fastfetch "fastfetch"}
+        '';
+        executable = true;
+      };
+    }
+  ];
+}

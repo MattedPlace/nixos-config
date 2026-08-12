@@ -1,0 +1,199 @@
+{ config
+, lib
+, pkgs
+, ...
+}:
+let
+  inherit (lib) mkIf mkEnableOption;
+  inherit (config.lib.stylix) colors;
+
+  # Gate the per-GPU tool path interpolations on what the host actually
+  # uses. Without this, every host pulls BOTH rocm-smi and nvidia-x11
+  # into its closure (~150MB+ of unused driver downloads on hosts that
+  # don't have the matching GPU), because Nix records string-interpolated
+  # store paths as build-time dependencies regardless of runtime checks.
+  drivers = config.services.xserver.videoDrivers;
+  hasAmd = builtins.elem "amdgpu" drivers;
+  hasNvidia = builtins.elem "nvidia" drivers;
+
+  # On the matching-GPU host: use the resolved store path (works at
+  # runtime). On the other host: bare binary name — `command -v` will
+  # always fail (the binary isn't on PATH) AND no nvidia-x11/rocm-smi
+  # gets dragged into the closure.
+  rocmSmi = if hasAmd then "${pkgs.rocmPackages.rocm-smi}/bin/rocm-smi" else "rocm-smi";
+  nvidiaSmi = if hasNvidia then "${pkgs.linuxPackages.nvidia_x11}/bin/nvidia-smi" else "nvidia-smi";
+
+  # Temperature dashboard script with proper dependencies
+  tempDashboard = pkgs.writeShellScriptBin "temp-dashboard" ''
+        #!/usr/bin/env bash
+
+        # Temperature Dashboard for NixOS using yad for GUI
+        # Shows CPU, GPU, and NVMe temperatures
+
+        get_cpu_temp() {
+            local temp_path=""
+
+            # Look for k10temp (AMD) or coretemp (Intel)
+            for hwmon in /sys/class/hwmon/hwmon*/; do
+                if [[ -f "$hwmon/name" ]]; then
+                    local name=$(cat "$hwmon/name")
+                    if [[ "$name" == "k10temp" || "$name" == "coretemp" ]]; then
+                        if [[ -f "$hwmon/temp1_input" ]]; then
+                            temp_path="$hwmon/temp1_input"
+                            break
+                        fi
+                    fi
+                fi
+            done
+
+            if [[ -n "$temp_path" && -f "$temp_path" ]]; then
+                local temp_millicelsius=$(cat "$temp_path")
+                echo "scale=1; $temp_millicelsius / 1000" | ${pkgs.bc}/bin/bc
+            else
+                echo "N/A"
+            fi
+        }
+
+        get_gpu_temp() {
+            # Try AMD GPU first
+            if command -v ${rocmSmi} >/dev/null 2>&1; then
+                local temp=$(${rocmSmi} --showtemp 2>/dev/null | grep -oP '\d+(?=°C)' | head -1)
+                if [[ -n "$temp" ]]; then
+                    echo "$temp"
+                    return
+                fi
+            fi
+
+            # Try NVIDIA GPU
+            if command -v ${nvidiaSmi} >/dev/null 2>&1; then
+                local temp=$(${nvidiaSmi} --query-gpu=temperature.gpu --format=csv,noheader,nounits 2>/dev/null)
+                if [[ -n "$temp" && "$temp" != "N/A" ]]; then
+                    echo "$temp"
+                    return
+                fi
+            fi
+
+            # Try amdgpu hwmon
+            for hwmon in /sys/class/hwmon/hwmon*/; do
+                if [[ -f "$hwmon/name" ]]; then
+                    local name=$(cat "$hwmon/name")
+                    if [[ "$name" == "amdgpu" ]]; then
+                        if [[ -f "$hwmon/temp1_input" ]]; then
+                            local temp_millicelsius=$(cat "$hwmon/temp1_input")
+                            echo "scale=1; $temp_millicelsius / 1000" | ${pkgs.bc}/bin/bc
+                            return
+                        fi
+                    fi
+                fi
+            done
+
+            echo "N/A"
+        }
+
+        get_nvme_temp() {
+            # Try smartctl first
+            if command -v ${pkgs.smartmontools}/bin/smartctl >/dev/null 2>&1; then
+                local temp=$(${pkgs.smartmontools}/bin/smartctl -A /dev/nvme0 2>/dev/null | grep -i temperature | grep -oP '\d+(?=\s+Celsius)' | head -1)
+                if [[ -n "$temp" ]]; then
+                    echo "$temp"
+                    return
+                fi
+            fi
+
+            # Try hwmon for nvme
+            for hwmon in /sys/class/hwmon/hwmon*/; do
+                if [[ -f "$hwmon/name" ]]; then
+                    local name=$(cat "$hwmon/name")
+                    if [[ "$name" == "nvme" ]]; then
+                        if [[ -f "$hwmon/temp1_input" ]]; then
+                            local temp_millicelsius=$(cat "$hwmon/temp1_input")
+                            echo "scale=1; $temp_millicelsius / 1000" | ${pkgs.bc}/bin/bc
+                            return
+                        fi
+                    fi
+                fi
+            done
+
+            echo "N/A"
+        }
+
+        get_temp_color() {
+            local temp=$1
+            if [[ "$temp" == "N/A" ]]; then
+                echo "#${colors.base06}"  # Default color
+            elif (( $(echo "$temp < 50" | ${pkgs.bc}/bin/bc -l) )); then
+                echo "#${colors.base0C}"  # Good (green)
+            elif (( $(echo "$temp < 70" | ${pkgs.bc}/bin/bc -l) )); then
+                echo "#${colors.base0A}"  # Warning (yellow)
+            else
+                echo "#${colors.base08}"  # Critical (red)
+            fi
+        }
+
+        format_temp() {
+            local temp=$1
+            if [[ "$temp" == "N/A" ]]; then
+                echo "$temp"
+            else
+                echo "''${temp}°C"
+            fi
+        }
+
+        # Get temperatures
+        cpu_temp=$(get_cpu_temp)
+        gpu_temp=$(get_gpu_temp)
+        nvme_temp=$(get_nvme_temp)
+
+        # Format temperatures
+        cpu_display=$(format_temp "$cpu_temp")
+        gpu_display=$(format_temp "$gpu_temp")
+        nvme_display=$(format_temp "$nvme_temp")
+
+        # Get colors
+        cpu_color=$(get_temp_color "$cpu_temp")
+        gpu_color=$(get_temp_color "$gpu_temp")
+        nvme_color=$(get_temp_color "$nvme_temp")
+
+        # Create YAD dialog
+        ${pkgs.yad}/bin/yad \
+            --title="System Temperature Dashboard" \
+            --width=400 \
+            --height=300 \
+            --center \
+            --on-top \
+            --no-buttons \
+            --timeout=30 \
+            --timeout-indicator=bottom \
+            --text-align=center \
+            --fontname="JetBrainsMono Nerd Font 12" \
+            --fore="#${colors.base06}" \
+            --back="#${colors.base00}" \
+            --text="<big><b>🌡️ System Temperatures</b></big>
+
+    <span font='JetBrainsMono Nerd Font 16' foreground='$cpu_color'><b>🔥 CPU: $cpu_display</b></span>
+
+    <span font='JetBrainsMono Nerd Font 16' foreground='$gpu_color'><b>🎮 GPU: $gpu_display</b></span>
+
+    <span font='JetBrainsMono Nerd Font 16' foreground='$nvme_color'><b>💾 NVMe: $nvme_display</b></span>
+
+    <small><i>Auto-closes in 30 seconds</i></small>"
+  '';
+in
+{
+  options.scripts.tempDashboard = {
+    enable = mkEnableOption "Temperature Dashboard";
+  };
+
+  config = mkIf config.scripts.tempDashboard.enable {
+    environment.systemPackages = with pkgs;
+      [
+        tempDashboard
+        yad
+        bc
+        smartmontools
+      ]
+      ++ lib.optionals (config.hardware.graphics.extraPackages or [ ] != [ ]) [
+        rocmPackages.rocm-smi
+      ];
+  };
+}

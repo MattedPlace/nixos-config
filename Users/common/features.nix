@@ -1,0 +1,90 @@
+{ lib, ... }:
+let
+  inherit (lib) mkEnableOption;
+in
+{
+  options.features = {
+    terminals = {
+      enable = mkEnableOption "Enable terminal emulators";
+      alacritty = mkEnableOption "Enable Alacritty terminal";
+      foot = mkEnableOption "Enable Foot terminal";
+      wezterm = mkEnableOption "Enable Wezterm terminal";
+      kitty = mkEnableOption "Enable Kitty terminal";
+      ghostty = mkEnableOption "Enable Ghostty terminal";
+      warp = mkEnableOption "Enable Warp terminal";
+      wave = mkEnableOption "Enable Wave terminal";
+    };
+
+    editors = {
+      enable = mkEnableOption "Enable editors";
+      cursor = mkEnableOption "Enable Cursor editor";
+      neovim = mkEnableOption "Enable Neovim editor";
+      vscode = mkEnableOption "Enable VS Code editor";
+      windsurf = mkEnableOption "Enable Windsurf editor";
+      zed = mkEnableOption "Enable Zed editor";
+    };
+
+    browsers = {
+      enable = mkEnableOption "Enable browsers";
+      chrome = mkEnableOption "Enable Chrome browser";
+      firefox = mkEnableOption "Enable Firefox browser";
+      edge = mkEnableOption "Enable Edge browser";
+      brave = mkEnableOption "Enable Brave browser";
+      opera = mkEnableOption "Enable Opera browser";
+    };
+
+    desktop = {
+      enable = mkEnableOption "Enable desktop applications";
+      cosmic = mkEnableOption "Enable Cosmic DE";
+      gnome = mkEnableOption "Enable GNOME";
+      zathura = mkEnableOption "Enable Zathura PDF reader";
+      obsidian = mkEnableOption "Enable Obsidian notes";
+      flameshot = mkEnableOption "Enable Flameshot screenshots (X11/limited Wayland)";
+      waylandScreenshots = mkEnableOption "Enable native Wayland screenshots (grim + swappy)";
+      kooha = mkEnableOption "Enable Kooha screen recording";
+      remotedesktop = mkEnableOption "Enable Remote Desktop";
+
+      # Communication and media
+      obs = mkEnableOption "Enable OBS Studio";
+      evince = mkEnableOption "Enable Evince document viewer";
+      kdeconnect = mkEnableOption "Enable KDE Connect";
+      slack = mkEnableOption "Enable Slack";
+      aerion = mkEnableOption "Enable Aerion email client";
+      lanmouse = mkEnableOption "Enable LAN Mouse";
+
+      # Desktop shell (experimental)
+      quickshell = mkEnableOption "Enable QuickShell desktop shell (runs alongside Waybar for testing)";
+    };
+
+    cli = {
+      enable = mkEnableOption "Enable CLI tools";
+      bat = mkEnableOption "Enable bat (cat alternative)";
+      direnv = mkEnableOption "Enable direnv";
+      fzf = mkEnableOption "Enable fzf fuzzy finder";
+      lf = mkEnableOption "Enable lf file manager";
+      starship = mkEnableOption "Enable starship prompt";
+      yazi = mkEnableOption "Enable Yazi file manager";
+      zoxide = mkEnableOption "Enable zoxide directory jumper";
+      gh = mkEnableOption "Enable GitHub CLI";
+      markdown = mkEnableOption "Enable markdown tools";
+    };
+
+    multiplexers = {
+      enable = mkEnableOption "Enable terminal multiplexers";
+      tmux = mkEnableOption "Enable Tmux";
+      zellij = mkEnableOption "Enable Zellij";
+    };
+
+    gaming = {
+      enable = mkEnableOption "Enable gaming applications";
+      steam = mkEnableOption "Enable Steam";
+    };
+
+    development = {
+      enable = mkEnableOption "Enable development environment";
+      languages = mkEnableOption "Enable language support and tooling";
+      workflow = mkEnableOption "Enable development workflow tools";
+      productivity = mkEnableOption "Enable project management and productivity";
+    };
+  };
+}

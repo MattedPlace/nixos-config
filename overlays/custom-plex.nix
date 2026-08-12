@@ -8,13 +8,14 @@ let
         builtins.readFile (
           builtins.fetchurl {
             url = "https://plex.tv/api/downloads/1.json";
-            sha256 = "1f799wbsnkqiz9gjp15laha8qvywy2rpjq336nssw2dnvh1sl3dk";
+            #sha256 = "sha256-ieU0/7Vlrs2tsR1QhD2Cyk/pia4MfmAugx0Ec6Ook20=";
+            sha256 = "0sckscw5nf2dh29n6fdrx3084ga73bxswb9qqyx90yhnqyh1ij2p";
           }
         )
       )).computer.Linux.version;
     src = prev.fetchurl {
       url = "https://downloads.plex.tv/plex-media-server-new/${version}/debian/plexmediaserver_${version}_amd64.deb";
-      sha256 = "sha256-ieU0/7Vlrs2tsR1QhD2Cyk/pia4MfmAugx0Ec6Ook20=";
+      sha256 = "sha256-s8OpELTLfdincYQZawp76rsZx5AQXMR6+algH/Ev0zI=";
     };
     passthru = old.passthru // {
       inherit version;

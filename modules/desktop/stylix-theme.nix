@@ -1,0 +1,106 @@
+{ pkgs
+, lib
+, config
+, ...
+}:
+let
+  vars = import ../../hosts/common/shared-variables.nix;
+in
+{
+  config = {
+    stylix = {
+      enable = true;
+      enableReleaseChecks = false;
+      polarity = "dark";
+      autoEnable = true;
+      base16Scheme = vars.baseTheme.schemeFile;
+      image = vars.baseTheme.wallpaper;
+
+      fonts = {
+        monospace = {
+          # adwaita-fonts ships AdwaitaMono-{Regular,Bold,Italic,BoldItalic}.ttf.
+          # gnome-themes-extra (used previously) ships zero font files — that
+          # was a silent misconfiguration.
+          package = pkgs.adwaita-fonts;
+          name = vars.baseTheme.font.mono;
+        };
+        sansSerif = {
+          package = pkgs.noto-fonts;
+          name = vars.baseTheme.font.sans;
+        };
+        serif = {
+          package = pkgs.noto-fonts;
+          name = vars.baseTheme.font.serif;
+        };
+        sizes = vars.baseTheme.font.sizes;
+      };
+
+      opacity = vars.baseTheme.opacity;
+
+      cursor = {
+        name = vars.baseTheme.cursor.name;
+        package = pkgs.bibata-cursors;
+        size = vars.baseTheme.cursor.size;
+      };
+
+      # Icons are artwork, not base16 colours, so no icon set tracks the
+      # scheme automatically. Papirus is the closest fit available: it is
+      # colour-neutral apart from its folders, and nixpkgs exposes a `color`
+      # argument that runs papirus-folders over the build — "green" is the
+      # stop nearest the HUD's phosphor accent (base0B). It replaces
+      # the previous icon set, whose warm orange folders were the last
+      # obviously off-palette surface left on the desktop.
+      #
+      # Driving the icon theme THROUGH Stylix (rather than fighting it) is what
+      # stops Stylix clobbering the icon choice on every rebuild. Note the
+      # modern `stylix.icons` namespace; the old `stylix.iconTheme` is
+      # deprecated and emits a warning.
+      #
+      # Stylix installs this package itself — do NOT also add
+      # pkgs.papirus-icon-theme to home.packages, or the plain and
+      # green-foldered builds collide on the same share/icons/Papirus* paths.
+      icons = {
+        enable = true;
+        package = pkgs.papirus-icon-theme.override { color = "green"; };
+        dark = "Papirus-Dark";
+        light = "Papirus-Light";
+      };
+
+      targets = {
+        chromium.enable = false;
+
+        # kmscon: stylix's kmscon target still sets the removed-in-nixpkgs-50
+        # `services.kmscon.fonts` option, which now fails the build. We don't
+        # theme the Linux text console anyway (Wayland sessions are what
+        # matters here), so disable the target until upstream stylix updates.
+        kmscon.enable = false;
+
+        # regreet: stylix's regreet target still writes `programs.regreet.*`,
+        # renamed in nixpkgs to `services.displayManager.regreet`, so every
+        # eval prints 8 rename warnings (one per option it sets). The target
+        # auto-enables on all Linux hosts, but this fleet greets with
+        # dms-greeter / cosmic-greeter and never uses regreet. Disable until
+        # upstream stylix migrates to the new option path.
+        regreet.enable = false;
+
+        # COSMIC's GTK theme sync is disabled on this fleet, so cosmic-comp
+        # does NOT clobber ~/.config/gtk-{3,4}.0/gtk.css at runtime. Stylix
+        # can own that file safely and theme GTK3 / non-libadwaita GTK4 apps
+        # everywhere. libadwaita apps still ignore third-party themes by
+        # upstream policy regardless of gtk.css contents.
+        gtk.enable = true;
+
+        # GNOME target writes org.gnome.desktop.interface/* via gsettings and
+        # ships a generated GTK theme package. COSMIC stores its own theme in
+        # ~/.config/cosmic/com.system76.CosmicTheme.* and ignores these
+        # gsettings keys, so the two desktops stay isolated.
+        gnome.enable = config.host.class != "headless-rdp";
+
+        qt = {
+          enable = true;
+          platform = lib.mkForce "qtct";
+        };
+      };
+    };
+  };
+}

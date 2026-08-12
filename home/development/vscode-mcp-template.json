@@ -1,0 +1,35 @@
+{
+  // VS Code MCP Configuration Template - Mutable after first creation
+  // This file provides initial MCP server configuration that VS Code can then modify
+
+  "servers": {
+    "obsidian": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["@mauricio.wolff/mcp-obsidian@latest", "${OBSIDIAN_VAULT_PATH}"]
+    },
+    "playwright": {
+      "type": "stdio",
+      "command": "playwright-mcp",
+      "args": ["--browser", "chromium"]
+    },
+    "Context7": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp@latest"]
+    },
+    "nixos": {
+      "type": "stdio",
+      "command": "mcp-nixos",
+      "args": []
+    },
+    "github": {
+      "type": "stdio",
+      "command": "github-mcp-server",
+      "args": [],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      }
+    }
+  }
+}

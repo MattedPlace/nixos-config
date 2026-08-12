@@ -1,0 +1,79 @@
+{ config, pkgs, ... }: {
+  # Boot optimizations
+  boot.loader.systemd-boot = {
+    enable = true;
+    configurationLimit = 10; # Keep 10 generations so known-good kernels stay selectable in the boot menu
+    editor = false; # Disable bootloader editing for security
+  };
+  boot.loader.efi.canTouchEfiVariables = true;
+
+  # For Razer with i7-10875H
+  boot.kernelParams = [
+    "intel_pstate=active" # Use Intel P-state driver
+    "intel_idle.max_cstate=2" # Limit C-states for better responsiveness when needed
+    "i915.enable_fbc=1" # Enable framebuffer compression
+    "i915.enable_guc=2" # Enable graphics microcontroller
+    # NVMe boot-race mitigations for kernel 7.0.x (issue #464):
+    #   - pcie_aspm=off prevents L1 substates from delaying PCIe link training
+    #     during the concurrent reset of two NVMe controllers (Samsung +
+    #     Kingston). =default proved insufficient on 7.0.3 — Kingston's 8s
+    #     D3 entry latency lost the race and triggered "Device not ready".
+    #   - nvme_core.io_timeout=60 doubles the wait for CSTS.RDY so a slow
+    #     controller becomes benign rather than fatal.
+    # Removed: nvme.noacpi=1 — historically a Razer suspend workaround, but
+    # actively harmful on 7.0.x because it suppresses the ACPI _PS0/_PR3
+    # notifications the new pci_dev_wait() needs to know D3cold→D0 finished
+    # before the NVMe driver issues its reset sequence.
+    "pcie_aspm=off"
+    "nvme_core.io_timeout=60"
+    "button.lid_init_state=open" # Lid open state on boot
+    "mitigations=off" # Disable all CPU mitigations for performance (use with caution)
+  ];
+
+  # For improved boot time
+  boot.initrd.compressor = "zstd";
+  boot.initrd.compressorArgs = [ "-19" "-T0" ];
+
+  # Use systemd-based initrd. The legacy script-based initrd was timing out
+  # waiting for /dev/disk/by-uuid/<root> to appear on kernel 7.0.1 — udev
+  # ordering changes between 6.18 and 7.0 made the script-based wait fragile.
+  # systemd-initrd listens on udev events directly instead of polling, and is
+  # the recommended path for modern NVMe + NVIDIA setups.
+  boot.initrd.systemd.enable = true;
+
+  # Belt-and-braces: ensure NVMe-core is available in initrd. Linux 7.0
+  # split some functionality from the main `nvme` module into `nvme_core`;
+  # `nvme` (already from hardware-config) handles PCIe transport.
+  boot.initrd.availableKernelModules = [ "nvme_core" ];
+
+  # Kernel: trying linuxPackages_latest (7.0.1) on razer because 6.18.24 has a
+  # boot regression with nvidia-open-595.58.03 + RTX 3080 Laptop (Ampere) — gen
+  # 2443 was built with 6.18.24 + nvidia-open and failed to boot. 6.18.22 is
+  # known-good (gen 2438, currently running). 6.17/6.19 are EOL'd in nixpkgs.
+  # If 7.0.1 also fails to boot, fall back to pinning 6.18.22 via a separate
+  # nixpkgs flake input. See: https://github.com/nixos/nixpkgs/issues/493618
+  # Razer needs the latest kernel for hardware support (eGPU, Optimus, etc).
+  # The previous override on this line also patched the openrazer kernel
+  # module for the kernel-7.0.9 hid_report_raw_event() API change
+  # (openrazer @ff30624). That fix has now landed in nixpkgs' packaged
+  # openrazer, so reapplying our patch on top fails with "Reversed (or
+  # previously applied) patch detected". Override slimmed to just the
+  # kernel selection.
+  # See: https://github.com/openrazer/openrazer/issues/2808
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+
+  boot.plymouth.enable = true;
+  boot.kernel.sysctl."vm.nr_hugepages" = 1024;
+  # boot.kernel.sysctl = {
+  #   "vm.max_map_count" = 1048576; # Helps with memory-mapped files for large models
+  # };
+  # OBS Virtual Cam Support - v4l2loopback setup
+  boot.kernelModules = [ "v4l2loopback" ];
+  boot.extraModulePackages = with config.boot.kernelPackages; [ v4l2loopback ];
+  boot.extraModprobeConfig = ''
+    options v4l2loopback devices=3 video_nr=1,2,10 card_label="OBS Virtual Cam 1","OBS Virtual Cam 2","COSMIC Camera" exclusive_caps=1,1,1
+  '';
+
+  # Blacklist nova_core to prevent conflicts with proprietary NVIDIA drivers (nixpkgs #473350)
+  boot.blacklistedKernelModules = [ "nova_core" ];
+}

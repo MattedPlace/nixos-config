@@ -1,0 +1,31 @@
+{ config
+, lib
+, pkgs
+, ...
+}:
+let
+  inherit (lib) mkIf mkEnableOption;
+  cfg = config.cli.bat;
+in
+{
+  options.cli.bat = {
+    enable = mkEnableOption {
+      default = true;
+      description = "bat";
+    };
+  };
+  config = mkIf cfg.enable {
+    programs.bat = {
+      enable = true;
+      config = {
+        style = "numbers,changes";
+        pager = "less -FR";
+      };
+      extraPackages = with pkgs.bat-extras; [
+        batman
+        batpipe
+        # batgrep  # Disabled due to failing snapshot tests in bat-extras 2024.08.24
+      ];
+    };
+  };
+}

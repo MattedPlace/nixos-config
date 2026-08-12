@@ -1,0 +1,227 @@
+# home_feed — morning briefing. Hero band (lifted on `bg = "subtle"`): figlet date as
+# masthead, "good morning" greeting, live `Day · HH:MM`, and an almanac strip
+# (moon · zodiac · day-of-year). Body: the gogcli agenda band. Footer: a daily fortune
+# flourish. No network feeds — everything renders from local clock and store files.
+#
+# Source: https://splashboard.unhappychoice.com/guides/presets/#home_feed--morning-briefing
+# Managed by home-manager: edit this file in the repo, not in ~/.splashboard/.
+
+# ── Widgets ────────────────────────────────────────────────────────
+
+# Hero centerpiece — date in moderate text_ascii blocks (quadrant pixel size, ~3 rows tall),
+# colored with `panel_title` so it reads as the masthead.
+[[widget]]
+id = "hero_date"
+fetcher = "clock"
+format = "%a %e %b"
+render = { type = "text_ascii", style = "blocks", pixel_size = "quadrant", color = "accent", align = "center" }
+
+# Footer flourish — daily fortune. `length = "auto"` row sizes itself to whatever cookie was
+# drawn so 1-line fortunes hug the closing line and 4-line ones get the room they need.
+[[widget]]
+id = "fortune"
+fetcher = "random_fortune"
+render = { type = "list_plain", align = "center", color = "panel_title" }
+
+# Greeting seam — "good " (right) + time-of-day (left), home_minimal pattern.
+[[widget]]
+id = "greeting_prefix"
+fetcher = "basic_static"
+format = "good "
+render = { type = "text_plain", align = "right" }
+
+[[widget]]
+id = "greeting"
+fetcher = "clock_derived"
+render = { type = "text_plain", align = "left" }
+  [widget.options]
+  kind = "time_of_day"
+
+# Subtitle — full day name + current HH:MM. Different vocabulary from the figlet
+# ("Sun 26 Apr" → abbreviated; subtitle uses "Sunday · 14:23" for the live "right now"
+# read), so the band stops feeling like a date duplication.
+[[widget]]
+id = "now"
+fetcher = "clock"
+format = "%A · %H:%M"
+render = { type = "text_plain", align = "center" }
+
+# Almanac strip — moon · zodiac · day-of-year, centred. Three `clock_derived` values joined
+# by basic_static " · " separators so today's sky reads as one decorative line.
+[[widget]]
+id = "moon"
+fetcher = "clock_derived"
+render = { type = "text_plain", align = "right" }
+  [widget.options]
+  kind = "moon_phase"
+
+[[widget]]
+id = "sep1"
+fetcher = "basic_static"
+format = "  ·  "
+render = { type = "text_plain", align = "center" }
+
+[[widget]]
+id = "zodiac"
+fetcher = "clock_derived"
+render = { type = "text_plain", align = "center" }
+  [widget.options]
+  kind = "zodiac"
+
+[[widget]]
+id = "sep2"
+fetcher = "basic_static"
+format = "  ·  "
+render = { type = "text_plain", align = "center" }
+
+[[widget]]
+id = "day_of_year"
+fetcher = "clock_derived"
+render = { type = "text_plain", align = "left" }
+  [widget.options]
+  kind = "day_of_year"
+
+# Personal agenda — fed by the gog-dashboard systemd user timer (gogcli).
+# basic_read_store reads $HOME/.splashboard/store/<id>.txt; file_format="text"
+# turns one line into one TextBlock row. Files are absent until the gog OAuth
+# token is provisioned, in which case the panels render empty (quiet).
+[[widget]]
+id = "gog_events"
+fetcher = "basic_read_store"
+file_format = "text"
+render = { type = "list_plain", max_items = 6 }
+
+[[widget]]
+id = "gog_tasks"
+fetcher = "basic_read_store"
+file_format = "text"
+render = { type = "list_plain", max_items = 6 }
+
+[[widget]]
+id = "gog_email"
+fetcher = "basic_read_store"
+file_format = "text"
+render = { type = "list_plain", max_items = 6 }
+
+# ── Layout ─────────────────────────────────────────────────────────
+#
+# Hero band sits on `bg = "subtle"` so the date masthead / greeting / almanac strip read as
+# a header surface lifted off the body feeds. Footer band mirrors the same subtle bg with
+# the fortune flourish, closing the splash in the same visual register.
+
+[[row]]
+height = { length = 1 }
+bg = "subtle"
+
+# Hero date — text_ascii blocks @ quadrant pixel size. Needs 4 rows for the 5×6 pixel font
+# rendered as quadrants (≈3 cells of glyph + 1 cell of breathing room above/below).
+[[row]]
+height = { length = 4 }
+bg = "subtle"
+  [[row.child]]
+  widget = "hero_date"
+
+[[row]]
+height = { length = 1 }
+bg = "subtle"
+
+# Greeting seam.
+[[row]]
+height = { length = 1 }
+bg = "subtle"
+flex = "center"
+  [[row.child]]
+  widget = "greeting_prefix"
+  width = { length = 5 }
+  [[row.child]]
+  widget = "greeting"
+  width = { length = 12 }
+
+# Now — full day + live HH:MM. Complements the figlet without repeating the date.
+[[row]]
+height = { length = 1 }
+bg = "subtle"
+  [[row.child]]
+  widget = "now"
+
+# Almanac strip — moon · zodiac · day_of_year.
+[[row]]
+height = { length = 1 }
+bg = "subtle"
+flex = "center"
+  [[row.child]]
+  widget = "moon"
+  width = { length = 22 }
+  [[row.child]]
+  widget = "sep1"
+  width = { length = 5 }
+  [[row.child]]
+  widget = "zodiac"
+  width = { length = 12 }
+  [[row.child]]
+  widget = "sep2"
+  width = { length = 5 }
+  [[row.child]]
+  widget = "day_of_year"
+  width = { length = 12 }
+
+[[row]]
+height = { length = 1 }
+bg = "subtle"
+
+[[row]]
+height = { length = 1 }
+
+# Agenda row — Events | Tasks | Email from gogcli. 100-cell band (32×3 + gap2×2);
+# 6 items + 1 border = 7. The daily briefing, and now the whole body.
+[[row]]
+height = { length = 7 }
+flex = "center"
+gap = 2
+  [[row.child]]
+  widget = "gog_events"
+  width = { length = 32 }
+  border = "top"
+  title = "  TODAY  "
+  title_align = "center"
+  [[row.child]]
+  widget = "gog_tasks"
+  width = { length = 32 }
+  border = "top"
+  title = "  TASKS  "
+  title_align = "center"
+  [[row.child]]
+  widget = "gog_email"
+  width = { length = 32 }
+  border = "top"
+  title = "  UNREAD  "
+  title_align = "center"
+
+[[row]]
+height = { length = 1 }
+
+[[row]]
+height = { length = 1 }
+
+# ── Footer band ────────────────────────────────────────────────────
+#
+# Fortune flourish closes the splash on the default body bg — the hero alone wears the
+# subtle band, so the bottom feels like the splash settling rather than another header.
+
+[[row]]
+height = { length = 1 }
+
+[[row]]
+# `height = "auto"` — text_plain's `natural_height` returns the TextBlock line count, so
+# 1-line fortunes hug the closing line and multi-line cookies get the room they need.
+# `border = "top"` adds a closing seam under the body grid so the fortune reads as a
+# deliberate footer flourish rather than a stray line of text.
+height = "auto"
+flex = "center"
+  [[row.child]]
+  widget = "fortune"
+  width = { length = 80 }
+  border = "top"
+
+[[row]]
+height = { length = 1 }

@@ -1,9 +1,8 @@
-{
-  lib,
-  stdenvNoCC,
-  fetchFromGitHub,
-  glib,
-  gettext,
+{ lib
+, stdenvNoCC
+, fetchFromGitHub
+, glib
+, gettext
 }:
 # Forge — i3/sway-style tiling and window manager for GNOME Shell.
 # Upstream: https://github.com/forge-ext/forge (community fork of the original
@@ -35,10 +34,7 @@ stdenvNoCC.mkDerivation rec {
     hash = "sha256-IyjHjL1RqxZZZgMnRlmavnae3OqZvRT6aSwKouQRopc=";
   };
 
-  nativeBuildInputs = [
-    glib
-    gettext
-  ];
+  nativeBuildInputs = [ glib gettext ];
 
   dontConfigure = true;
   dontBuild = true;

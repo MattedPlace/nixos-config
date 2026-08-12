@@ -1,0 +1,5 @@
+{
+  imports = [
+    ./fstrim-optimization.nix
+  ];
+}
