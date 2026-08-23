@@ -10,7 +10,7 @@
     ./sound/default.nix
 
     # Desktop modules
-    ./plasma/default.nix
+    # ./plasma/default.nix
     #./com.nix
     ./neofetch/default.nix
     ./kdeconnect/default.nix

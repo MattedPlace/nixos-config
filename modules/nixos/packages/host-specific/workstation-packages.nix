@@ -4,15 +4,6 @@
 { pkgs, ... }: {
   # Workstation-specific packages (mix of headless and GUI)
   environment.systemPackages = with pkgs; [
-    # Development workstation tools
-    docker-compose
-    kubectl
-    terraform
-
-    # AI/ML development (for P620)
-    python3Packages.torch
-    python3Packages.transformers
-
     # Hardware-specific tools
     via
     wally-cli

@@ -1,6 +1,6 @@
 _: {
   imports = [
-    ./scripts.nix
+    # ./scripts.nix
     ./lf/default.nix
     ./bash.nix
     ./zsh.nix

@@ -76,7 +76,6 @@
     rmpc
     gptfdisk
     icu
-    spotdl
     deploy-rs
   ];
 }

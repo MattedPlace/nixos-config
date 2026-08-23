@@ -12,9 +12,6 @@
   # in the nixos-unstable channel. Pull the whole derivation from master (correct
   # inputs, no hash maintenance). Drop this + the nixpkgs-master input once unstable
   # ships 1.5.0 — check with: nix eval nixpkgs#dms-shell.version
-  (_final: prev: {
-    dms-shell = inputs.nixpkgs-master.legacyPackages.${prev.stdenv.hostPlatform.system}.dms-shell;
-  })
 
   # ponytail: temporary graft. ollama-cuda 0.32.1's CUDA build is broken in
   # current nixpkgs (llama.cpp ExternalProject can't find nvcc — active upstream

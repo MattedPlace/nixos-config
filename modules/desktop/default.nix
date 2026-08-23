@@ -4,8 +4,7 @@
     ./gnome-remote-desktop.nix
     ./cosmic-remote-desktop.nix
     ./niri.nix
-    ./labwc.nix
-    ./mangowm.nix
+    ./hyprland.nix
     ./dms-shell.nix
     ./ddcutil.nix
   ];

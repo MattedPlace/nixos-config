@@ -9,7 +9,6 @@ _: {
       execWheelOnly = true;
     };
     # This ensures sudo doesn't get the "no new privs" flag
-    unprivilegedUsernsClone = true;
 
     polkit = {
       enable = true;

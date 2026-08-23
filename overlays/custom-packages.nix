@@ -30,16 +30,18 @@ final: _prev: {
   # extensions.gnome.org ZIP for the exact version currently active on
   # p620, so the snapshot is byte-stable. Source-of-truth for the UUID +
   # version is the metadata.json inside each zip.
-  gnome-ext-claude-code-usage = final.callPackage ../pkgs/gnome-ext-claude-code-usage { };
-  gnome-ext-otp-keys = final.callPackage ../pkgs/gnome-ext-otp-keys { };
-  gnome-ext-rudra = final.callPackage ../pkgs/gnome-ext-rudra { };
-  gnome-ext-spotify-controller = final.callPackage ../pkgs/gnome-ext-spotify-controller { };
-  gnome-ext-accent-directories = final.callPackage ../pkgs/gnome-ext-accent-directories { };
-  gnome-ext-allow-locked-remote-desktop = final.callPackage ../pkgs/gnome-ext-allow-locked-remote-desktop { };
-  gnome-ext-docker-manager = final.callPackage ../pkgs/gnome-ext-docker-manager { };
-  gnome-ext-slider-percentages = final.callPackage ../pkgs/gnome-ext-slider-percentages { };
-  gnome-ext-dynamic-calendar-reborn = final.callPackage ../pkgs/gnome-ext-dynamic-calendar-reborn { };
-  gnome-ext-claude-usage-dvdstelt = final.callPackage ../pkgs/gnome-ext-claude-usage-dvdstelt { };
+  /*
+    gnome-ext-claude-code-usage = final.callPackage ../pkgs/gnome-ext-claude-code-usage { };
+    gnome-ext-otp-keys = final.callPackage ../pkgs/gnome-ext-otp-keys { };
+    gnome-ext-rudra = final.callPackage ../pkgs/gnome-ext-rudra { };
+    gnome-ext-spotify-controller = final.callPackage ../pkgs/gnome-ext-spotify-controller { };
+    gnome-ext-accent-directories = final.callPackage ../pkgs/gnome-ext-accent-directories { };
+    gnome-ext-allow-locked-remote-desktop = final.callPackage ../pkgs/gnome-ext-allow-locked-remote-desktop { };
+    gnome-ext-docker-manager = final.callPackage ../pkgs/gnome-ext-docker-manager { };
+    gnome-ext-slider-percentages = final.callPackage ../pkgs/gnome-ext-slider-percentages { };
+    gnome-ext-dynamic-calendar-reborn = final.callPackage ../pkgs/gnome-ext-dynamic-calendar-reborn { };
+    gnome-ext-claude-usage-dvdstelt = final.callPackage ../pkgs/gnome-ext-claude-usage-dvdstelt { };
+  */
   # gnome-ext-forge — pinned to master commit (see pkgs/gnome-ext-forge
   # for rationale). Source-of-truth for UUID + version is the metadata.json
   # baked into the upstream commit we pin.

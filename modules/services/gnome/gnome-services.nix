@@ -35,18 +35,10 @@
     adwaita-icon-theme
     gsettings-desktop-schemas
     gnome-extension-manager
-    gnome-calendar
-    gnome-contacts
-    gnome-weather
-    gnome-online-accounts
     gnome-tweaks
     gnome-control-center
-    gnome-boxes
     gnomeExtensions.user-themes
     gnomeExtensions.appindicator
     gimp
-    krita # Qt-based image editor / GIMP alternative
-    darktable # RAW photo workflow (Lightroom-like)
-    cameractrls-gtk4
   ];
 }

@@ -3,27 +3,27 @@
   linux-command-mcp = pkgs.callPackage ./linux-command-mcp { };
   linkedin-mcp = pkgs.callPackage ./linkedin-mcp { };
   atlassian-mcp = pkgs.callPackage ./atlassian-mcp { };
-  obsidian-mcp = pkgs.callPackage ./obsidian-mcp { nodejs = pkgs.nodejs_24; };
-  obsidian-mcp-rest = pkgs.callPackage ./obsidian-mcp-rest { nodejs = pkgs.nodejs_24; };
+  #obsidian-mcp = pkgs.callPackage ./obsidian-mcp { nodejs = pkgs.nodejs_24; };
+  #obsidian-mcp-rest = pkgs.callPackage ./obsidian-mcp-rest { nodejs = pkgs.nodejs_24; };
   browser-mcp = pkgs.callPackage ./browser-mcp { nodejs = pkgs.nodejs_24; };
-  whatsapp-mcp = pkgs.callPackage ./whatsapp-mcp { };
+  #whatsapp-mcp = pkgs.callPackage ./whatsapp-mcp { };
   plex-mcp-server = pkgs.callPackage ./plex-mcp-server { };
   arr-suite-mcp = pkgs.callPackage ./arr-suite-mcp { };
   audiobookbay-automated = pkgs.callPackage ./audiobookbay-automated { };
   m4b-tool = pkgs.callPackage ./m4b-tool { };
-  audiobook-mcp = pkgs.callPackage ./audiobook-mcp { };
-  ollama-mcp = pkgs.callPackage ./ollama-mcp { };
+  #audiobook-mcp = pkgs.callPackage ./audiobook-mcp { };
+  #ollama-mcp = pkgs.callPackage ./ollama-mcp { };
 
   # media-bot — Telegram bot front-end for the *arr stack on p510.
   # Hybrid menu commands + local-LLM (Ollama) natural-language fallback.
   # Spec: docs/plans/2026-05-30-media-bot-design.md.
-  media-bot = pkgs.callPackage ./media-bot { };
-  mpris-album-art = pkgs.callPackage ./mpris-album-art { };
-  weather-popup = pkgs.callPackage ./weather-popup { };
-  tmux-ccm = pkgs.callPackage ./tmux-ccm { };
+  #media-bot = pkgs.callPackage ./media-bot { };
+  #mpris-album-art = pkgs.callPackage ./mpris-album-art { };
+  #weather-popup = pkgs.callPackage ./weather-popup { };
+  #tmux-ccm = pkgs.callPackage ./tmux-ccm { };
   # gemini-cli removed in #560 (replaced by pkgs.customPkgs.antigravity-cli)
   # Claude Desktop - native Linux build from k3d3/claude-desktop-linux-flake (see flake.nix overlay)
-  claude-desktop = pkgs.claude-desktop-linux;
+  #claude-desktop = pkgs.claude-desktop-linux;
   neuwaita-icon-theme = pkgs.callPackage ./neuwaita-icon-theme { };
   kosli-cli = pkgs.callPackage ./kosli-cli { };
 
@@ -50,7 +50,7 @@
   glab-tui = pkgs.callPackage ./glab-tui { };
 
   # Claude Code native binary (alternative to npm-based package)
-  claude-code-native = pkgs.callPackage ./claude-code-native { };
+  #claude-code-native = pkgs.callPackage ./claude-code-native { };
 
   # Antigravity IDE (2.0.1+) — Google's rebranded Antigravity Desktop.
   # Standalone derivation in pkgs/antigravity-ide/ because upstream

@@ -1,16 +1,23 @@
 # Enhanced Terminal Configuration with Unified Theming and Feature Flags
-{ lib
-, pkgs
-, ...
+{
+  lib,
+  pkgs,
+  ...
 }:
 let
-  inherit (lib) mkIf mkEnableOption mkDefault optionals optionalString;
+  inherit (lib)
+    mkIf
+    mkEnableOption
+    mkDefault
+    optionals
+    optionalString
+    ;
 
   # Terminal feature flags
   cfg = {
     # Available terminals
     terminals = {
-      foot = true; # Lightweight Wayland terminal
+      foot = false; # Lightweight Wayland terminal
       kitty = true; # GPU-accelerated terminal
       alacritty = true; # Cross-platform terminal
       wezterm = false; # Rust-based terminal
@@ -157,36 +164,16 @@ in
           # ignore prefer-no-csd).
           wayland_titlebar_color = "background";
           placement_strategy = "center";
-          background_opacity = mkDefault (
-            if cfg.features.transparency
-            then 0.95
-            else 1.0
-          );
+          background_opacity = mkDefault (if cfg.features.transparency then 0.95 else 1.0);
 
           # Font
-          font_family = mkDefault (
-            if cfg.features.nerdFont
-            then fontConfig.name
-            else "monospace"
-          );
+          font_family = mkDefault (if cfg.features.nerdFont then fontConfig.name else "monospace");
           font_size = mkDefault fontConfig.size;
-          disable_ligatures = mkDefault (
-            if cfg.features.fontLigatures
-            then "never"
-            else "always"
-          );
+          disable_ligatures = mkDefault (if cfg.features.fontLigatures then "never" else "always");
 
           # Behavior
-          copy_on_select = mkDefault (
-            if cfg.features.copyOnSelect
-            then "yes"
-            else "no"
-          );
-          mouse_hide_wait = mkDefault (
-            if cfg.features.mouseSupport
-            then 20
-            else -1
-          );
+          copy_on_select = mkDefault (if cfg.features.copyOnSelect then "yes" else "no");
+          mouse_hide_wait = mkDefault (if cfg.features.mouseSupport then 20 else -1);
           scrollback_lines = mkDefault cfg.features.scrollback;
 
           # Terminal
@@ -194,20 +181,12 @@ in
           shell = "${pkgs.zsh}/bin/zsh";
 
           # URLs
-          detect_urls = mkDefault (
-            if cfg.features.urlDetection
-            then "yes"
-            else "no"
-          );
+          detect_urls = mkDefault (if cfg.features.urlDetection then "yes" else "no");
           url_style = "curly";
 
           # Cursor
           cursor_shape = "beam";
-          cursor_blink_interval = mkDefault (
-            if cfg.features.animations
-            then 1
-            else 0
-          );
+          cursor_blink_interval = mkDefault (if cfg.features.animations then 1 else 0);
           cursor_stop_blinking_after = 15;
 
           # Tabs
@@ -294,7 +273,6 @@ in
             inherit (fontConfig) size;
           };
 
-
           # Scrolling
           scrolling = {
             history = cfg.features.scrollback;
@@ -346,28 +324,31 @@ in
     xdg.mimeApps = {
       associations.added = {
         "x-scheme-handler/terminal" =
-          if cfg.terminals.kitty
-          then "kitty.desktop"
-          else if cfg.terminals.foot
-          then "foot.desktop"
-          else if cfg.terminals.alacritty
-          then "Alacritty.desktop"
-          else "foot.desktop";
+          if cfg.terminals.kitty then
+            "kitty.desktop"
+          else if cfg.terminals.foot then
+            "foot.desktop"
+          else if cfg.terminals.alacritty then
+            "Alacritty.desktop"
+          else
+            "foot.desktop";
       };
       defaultApplications = {
         "x-scheme-handler/terminal" =
-          if cfg.terminals.kitty
-          then "kitty.desktop"
-          else if cfg.terminals.foot
-          then "foot.desktop"
-          else if cfg.terminals.alacritty
-          then "Alacritty.desktop"
-          else "foot.desktop";
+          if cfg.terminals.kitty then
+            "kitty.desktop"
+          else if cfg.terminals.foot then
+            "foot.desktop"
+          else if cfg.terminals.alacritty then
+            "Alacritty.desktop"
+          else
+            "foot.desktop";
       };
     };
 
     # Terminal utilities
-    home.packages = with pkgs;
+    home.packages =
+      with pkgs;
       [
         # Terminal multiplexers
         tmux

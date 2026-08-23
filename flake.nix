@@ -63,9 +63,6 @@
     # wrapper over pkgs.quickshell (already cached in nixpkgs), so this avoids
     # duplicating the Qt closure and needs no extra cachix.
     # Pinned to a known-good rev: noctalia HEAD (b87c8acf) fails to compile — its
-    # mango workspace backend has a type error (mango_workspace_backend.cpp:162,
-    # `TagInfo` vs `uint32_t`). Unpin (back to a bare branch url) once upstream
-    # noctalia fixes the mango backend build.
     noctalia = {
       url = "github:noctalia-dev/noctalia/b9b4bc3408a906f392a8d277d172ef440debc5cc";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -86,15 +83,6 @@
     # disable niri-flake's binary cache, so no extra substituter/rebuild dance.
     niri-flake = {
       url = "github:sodiboo/niri-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    # mango — dwl-based Wayland compositor (wlroots + scenefx). Its flake
-    # provides the NixOS module (programs.mango, wired below) and the
-    # home-manager config option (wayland.windowManager.mango, added to
-    # home-manager.sharedModules). Third Noctalia session alongside niri/labwc.
-    mango = {
-      url = "github:mangowm/mango";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -338,9 +326,6 @@
                   # Noctalia shell (programs.noctalia). Enabled per-user only
                   # where the niri/labwc home profile turns it on.
                   inputs.noctalia.homeModules.default
-                  # mango compositor config (wayland.windowManager.mango),
-                  # enabled per-user in the same niri/labwc home profile.
-                  inputs.mango.hmModules.mango
                 ];
                 extraSpecialArgs = {
                   pkgs-unstable = import nixpkgs-unstable (mkPkgs nixpkgs-unstable system);

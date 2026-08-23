@@ -28,7 +28,7 @@ in
         development.enable = lib.mkDefault true;
         desktop.enable = lib.mkDefault true;
         virtualization = {
-          enable = lib.mkDefault true;
+          enable = lib.mkDefault false;
           docker = lib.mkDefault false;
         };
         powerManagement.enable = lib.mkDefault true;

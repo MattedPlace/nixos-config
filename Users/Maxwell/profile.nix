@@ -92,7 +92,7 @@ in
       waylandScreenshots = mkDefault false;
       kooha = false;
       remotedesktop = false;
-      obs = true;
+      obs = false;
       evince = true;
       kdeconnect = false;
       slack = false;

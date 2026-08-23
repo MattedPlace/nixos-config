@@ -100,7 +100,7 @@ in
     # Note: flipping this flag in Nix does not rewrite tailscale's persisted
     # prefs; run `sudo tailscale set --accept-routes=false` once after switch.
     useRoutingFeatures = "none";
-    openFirewall = true;
+    openFirewall = false;
   };
 
   # Time sync. razer roams onto networks (e.g. corporate/guest WiFi) that
@@ -147,7 +147,7 @@ in
   # NVIDIA GeForce NOW cloud gaming (official Flatpak)
   modules.services.geforcenow = {
     enable = false;
-    autoInstall = true;
+    autoInstall = false;
   };
 
   # Enable XDG portal for GNOME screen sharing
@@ -167,9 +167,9 @@ in
       github = false;
       go = false;
       java = false;
-      lua = true;
+      lua = false;
       nix = true;
-      shell = true;
+      shell = false;
       devshell = false; # Temporarily disabled due to patch issue
       python = false;
       nodejs = false;
@@ -178,8 +178,8 @@ in
     # Enable Claude Code hooks for desktop notifications
     claude-hooks = {
       enable = false;
-      enablePermissionNotifications = true;
-      enableReadyNotifications = true;
+      enablePermissionNotifications = false;
+      enableReadyNotifications = false;
     };
 
     gnome-remote-desktop = {
@@ -188,32 +188,32 @@ in
 
     virtualization = {
       enable = false;
-      docker = true;
+      docker = false;
       incus = false;
-      podman = true;
-      spice = true;
-      libvirt = true;
+      podman = false;
+      spice = false;
+      libvirt = false;
       # Waydroid Android emulation (NVIDIA GPU - requires GBM disable)
       waydroid = {
         enable = false;
         disableGbm = true; # Required for NVIDIA hybrid graphics
-        enableWaydroidHelper = true;
+        enableWaydroidHelper = false;
       };
     };
 
     cloud = {
       enable = false;
-      aws = true;
+      aws = false;
       azure = false; # Temporarily disabled due to msgraph-core build failure
-      google = true;
-      k8s = true;
-      terraform = true;
+      google = false;
+      k8s = false;
+      terraform = false;
     };
 
     security = {
       enable = false;
-      onepassword = true;
-      gnupg = true;
+      onepassword = false;
+      gnupg = false;
     };
 
     networking = {
@@ -223,15 +223,15 @@ in
     # Syncthing for ~/.claude and ~/.gemini sync across hosts
     syncthing = {
       enable = false;
-      syncClaude = true;
-      syncGemini = true;
+      syncClaude = false;
+      syncGemini = false;
       masterHost = "p620";
     };
 
     ai = {
       enable = false;
-      antigravity-cli = true;
-      claude-desktop = true; # Enable Claude Desktop GUI with MCP server support
+      antigravity-cli = false;
+      claude-desktop = false; # Enable Claude Desktop GUI with MCP server support
 
       # Enable MCP (Model Context Protocol) servers for AI integration
       mcp = {
@@ -272,14 +272,14 @@ in
         };
         # Enable additional MCP servers
         servers = {
-          browsermcp = true; # Browser automation with privacy
-          terraform = true; # Infrastructure as Code support
+          browsermcp = false; # Browser automation with privacy
+          terraform = false; # Infrastructure as Code support
         };
       };
     };
 
     programs = {
-      lazygit = false;
+      lazygit = true;
       thunderbird = false;
       obsidian = false;
       office = false;
@@ -301,7 +301,7 @@ in
     intune = {
       enable = false; # Disabled - no longer needed
       autoStart = false; # Manual launch - start from application menu as needed
-      enableDesktopIntegration = true;
+      enableDesktopIntegration = false;
     };
   };
 
@@ -333,8 +333,7 @@ in
 
   # Phase 1: niri + labwc + mango as selectable login sessions (alongside GNOME).
   desktop.niri.enable = true;
-  desktop.labwc.enable = false;
-  desktop.mangowm.enable = false;
+  desktop.hyprland.enable = false;
 
   # Adds "(DankMaterialShell)" login sessions for niri/labwc/mango next to the
   # stock (Noctalia) ones — pick per login in the greeter.
@@ -377,7 +376,7 @@ in
   # can be flipped back to true without re-installing anything.
   services.citrix-workspace = {
     enable = false;
-    acceptLicense = true;
+    acceptLicense = false;
   };
 
   # MCP screenshot server for Claude Desktop
@@ -385,7 +384,7 @@ in
     enable = false;
     user = vars.username;
     logLevel = "info";
-    autoConfigureClaudeDesktop = true;
+    autoConfigureClaudeDesktop = false;
   };
 
   # Auto-sync Chrome PWA icons into the XDG hicolor tree (issue #397).
@@ -408,8 +407,8 @@ in
   # Enable encrypted API keys
   secrets.apiKeys = {
     enable = false;
-    enableEnvironmentVariables = true;
-    enableUserEnvironment = true;
+    enableEnvironmentVariables = false;
+    enableUserEnvironment = false;
   };
 
   # Nix build optimizations
@@ -443,7 +442,7 @@ in
 
     # Desktop environments — COSMIC is the primary session; GNOME is also
     # available as a choice in the login greeter.
-    desktopManager.gnome.enable = true;
+    desktopManager.gnome.enable = false;
   };
 
   # Don't restart greetd on rebuild — a switch shouldn't tear down the login
