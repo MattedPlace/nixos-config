@@ -57,26 +57,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Noctalia — Quickshell-based Wayland desktop shell (bar, launcher,
-    # notifications, lock). Used on niri + labwc (not GNOME). homeModules.default
-    # provides programs.noctalia. Follows nixpkgs: the package is a light QML
-    # wrapper over pkgs.quickshell (already cached in nixpkgs), so this avoids
-    # duplicating the Qt closure and needs no extra cachix.
-    # Pinned to a known-good rev: noctalia HEAD (b87c8acf) fails to compile — its
-    noctalia = {
-      url = "github:noctalia-dev/noctalia/b9b4bc3408a906f392a8d277d172ef440debc5cc";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    # Noctalia greeter — greetd login screen matching the Noctalia shell. Ships
-    # nixosModules.default (programs.noctalia-greeter) which auto-wires
-    # services.greetd + the bundled wlroots compositor. Enabled per-host where
-    # we replace GDM with greetd.
-    noctalia-greeter = {
-      url = "github:noctalia-dev/noctalia-greeter";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     # niri — scrollable-tiling Wayland compositor. niri-flake provides the
     # NixOS module (programs.niri) + the home-manager config option
     # (programs.niri.settings). We pin the package to pkgs.niri (nixpkgs) and
@@ -144,6 +124,7 @@
     # Package collections
     nur.url = "github:nix-community/NUR";
     nixpkgs-f2k.url = "github:moni-dz/nixpkgs-f2k";
+    nixpkgs-xr.url = "github:nix-community/nixpkgs-xr";
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -199,18 +180,18 @@
   };
 
   outputs =
-    {
-      nixpkgs,
-      nixpkgs-unstable,
-      nur,
-      agenix,
-      spicetify-nix,
-      home-manager,
-      nix-index-database,
-      zjstatus,
-      antigravity-nix,
-      mcp-nixos,
-      ...
+    { nixpkgs
+    , nixpkgs-unstable
+    , nur
+    , nixpkgs-xr
+    , agenix
+    , spicetify-nix
+    , home-manager
+    , nix-index-database
+    , zjstatus
+    , antigravity-nix
+    , mcp-nixos
+    , ...
     }@inputs:
     let
       # ========================================
@@ -297,35 +278,43 @@
             ./hosts/${host}/configuration.nix
             nur.modules.nixos.default
             home-manager.nixosModules.home-manager
+            nixpkgs-xr.nixosModules.nixpkgs-xr
             inputs.nix-snapd.nixosModules.default
             inputs.agenix.nixosModules.default
             inputs.lanzaboote.nixosModules.lanzaboote
             inputs.niri-flake.nixosModules.niri
-            inputs.noctalia-greeter.nixosModules.default
             nix-index-database.nixosModules.nix-index
             ./home/shell/zellij/zjstatus.nix
           ]
           ++ stylixModule
           ++ [
-            {
+            ({ pkgs, ... }: {
               home-manager = {
                 useGlobalPkgs = true;
                 useUserPackages = true;
-                # Use backup command to move files to timestamped directory
-                # This prevents backup file collisions by using unique directories
-                backupCommand = ''
-                  backup_dir = "$HOME/.hm-backups/$(date +%Y-%m-%d-%H%M%S)"
-                    mkdir - p "$(dirname "$backup_dir/$1 ")"
-                    mv "$1" "$backup_dir/$1"
+                # Move a colliding file into a timestamped directory instead of
+                # failing activation.
+                #
+                # This must be an EXECUTABLE, not a shell snippet: HM runs it as
+                # argv ("$@" in home-manager.sh) with the file as $1, so a
+                # multi-line string is word-split and its first token exec'd.
+                # The option's own example is "${pkgs.trash-cli}/bin/trash".
+                #
+                # One directory per activation rather than a ".bak" suffix, so a
+                # second collision on the same path cannot clobber the first
+                # backup. `date -Is` avoids % entirely, which would otherwise be
+                # eaten by systemd unit specifier expansion.
+                backupCommand = pkgs.writeShellScript "hm-backup-file" ''
+                  set -euo pipefail
+                  backup_dir="''${HOME}/.hm-backups/$(date -Is)"
+                  mkdir -p "$(dirname "$backup_dir/$1")"
+                  mv "$1" "$backup_dir/$1"
                 '';
                 # Shared modules for all users
                 sharedModules = [
                   {
                     stylix.targets.firefox.enable = false;
                   }
-                  # Noctalia shell (programs.noctalia). Enabled per-user only
-                  # where the niri/labwc home profile turns it on.
-                  inputs.noctalia.homeModules.default
                 ];
                 extraSpecialArgs = {
                   pkgs-unstable = import nixpkgs-unstable (mkPkgs nixpkgs-unstable system);
@@ -344,13 +333,15 @@
                   inherit sharedVariables hardwareProfiles;
                 };
                 users = builtins.listToAttrs (
-                  map (user: {
-                    name = user;
-                    value = import (./Users + "/${user}/${host}_home.nix");
-                  }) allUsers
+                  map
+                    (user: {
+                      name = user;
+                      value = import (./Users + "/${user}/${host}_home.nix");
+                    })
+                    allUsers
                 );
               };
-            }
+            })
           ];
         };
     in

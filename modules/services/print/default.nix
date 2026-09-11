@@ -1,22 +1,12 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
+{ config
+, lib
+, pkgs
+, ...
 }:
 let
   inherit (lib) mkIf mkEnableOption;
   username = "Maxwell";
   cfg = config.services.print;
-
-  # Override SANE packages to use GCC 14 for compatibility (GCC 15 fails on old C code)
-  sane-frontends-gcc14 = pkgs.sane-frontends.override {
-    stdenv = pkgs.gcc14Stdenv;
-  };
-  xsane-gcc14 = pkgs.xsane.override {
-    sane-frontends = sane-frontends-gcc14;
-    stdenv = pkgs.gcc14Stdenv;
-  };
 in
 {
   options.services.print = {
@@ -28,38 +18,13 @@ in
   config = mkIf cfg.enable {
     services = {
       printing.enable = true;
-      avahi = {
-        enable = true;
-        nssmdns4 = true;
-        nssmdns6 = true;
-        openFirewall = true;
-        ipv4 = true;
-        ipv6 = true;
-        publish = {
-          enable = true;
-          addresses = true;
-          workstation = true;
-        };
-      };
-      ipp-usb.enable = true;
     };
     hardware.sane = {
       enable = true;
-      disabledDefaultBackends = [ "escl" ];
     };
-    programs.system-config-printer.enable = true;
     users.users.${username}.extraGroups = [
       "scanner"
       "lp"
-    ];
-    environment.systemPackages = [
-      xsane-gcc14 # Using GCC 14 override for compatibility
-      pkgs.sane-airscan
-      pkgs.simple-scan
-      pkgs.system-config-printer
-      pkgs.ghostscript
-      pkgs.cups
-      pkgs.gawk
     ];
   };
 }

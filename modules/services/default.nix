@@ -1,12 +1,12 @@
 _: {
   imports = [
-    ./mtr/mtr.nix
+    #./mtr/mtr.nix
     ./print/default.nix
     ./flatpak/flatpak.nix
     ./xserver/xdg-portal.nix
     ./xserver/xdg.nix
-    ./openssh/openssh.nix
-    ./gnome/gnome-services.nix
+    #./openssh/openssh.nix
+    #./gnome/gnome-services.nix
     ./systemd/default.nix
     ./system/default.nix
     ./cron/cron.nix

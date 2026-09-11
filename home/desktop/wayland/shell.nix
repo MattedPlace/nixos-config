@@ -1,4 +1,8 @@
-{ config, lib, pkgs, ... }:
+{ config
+, lib
+, pkgs
+, ...
+}:
 # Noctalia + DankMaterialShell: the shell packages, both shells' Alien HUD
 # palettes and the DMS settings.json merge. Compositor-independent — the
 # per-session config lives in ./niri.nix, ./labwc.nix, ./mango.nix and
@@ -61,90 +65,9 @@
     '')
   ];
 
-  programs.noctalia = {
-    enable = true;
-    systemd.enable = false;
-    settings = {
-      shell.font = "JetBrainsMono Nerd Font";
-      # Enable the calendar service. The Google account + OAuth tokens are added
-      # once via the GUI (Settings → Services → Calendar → Google) and stored in
-      # the runtime state.toml — not here.
-      calendar = {
-        enabled = true;
-        refresh_minutes = 15;
-      };
-      # Use the custom Alien HUD palette generated below (palettes/AlienHud.json)
-      # so the Noctalia shell matches Stylix/GNOME/tmux instead of Catppuccin.
-      theme = {
-        mode = "dark";
-        source = "custom";
-        # mkForce: noctalia's HM module (>= 2026-07-04) now defaults
-        # custom_palette to "stylix" at normal priority; force our custom
-        # Alien HUD palette (palettes/AlienHud.json below) to win the conflict.
-        custom_palette = lib.mkForce "AlienHud";
-      };
-    };
-  };
-
   # Alien HUD palette for the Noctalia shell, derived from the Stylix base16
   # scheme so the bar/launcher/control-center match the rest of the system.
   # Selected via theme.source="custom" + custom_palette="AlienHud" above.
-  xdg.configFile."noctalia/palettes/AlienHud.json".source =
-    let
-      inherit (config.lib.stylix) colors;
-      c = n: "#${colors.${n}}";
-      palette = {
-        mPrimary = c "base0B"; # green accent (same as window borders)
-        mOnPrimary = c "base00";
-        mSecondary = c "base0D"; # blue
-        mOnSecondary = c "base00";
-        mTertiary = c "base0E"; # purple
-        mOnTertiary = c "base00";
-        mError = c "base08"; # red
-        mOnError = c "base00";
-        mSurface = c "base00"; # background
-        mOnSurface = c "base05"; # foreground
-        mSurfaceVariant = c "base01";
-        mOnSurfaceVariant = c "base04";
-        mOutline = c "base03";
-        mShadow = c "base00";
-        mHover = c "base02";
-        mOnHover = c "base05";
-        terminal = {
-          background = c "base00";
-          foreground = c "base05";
-          cursor = c "base05";
-          cursorText = c "base00";
-          selectionBg = c "base02";
-          selectionFg = c "base05";
-          normal = {
-            black = c "base01";
-            red = c "base08";
-            green = c "base0B";
-            yellow = c "base0A";
-            blue = c "base0D";
-            magenta = c "base0E";
-            cyan = c "base0C";
-            white = c "base05";
-          };
-          bright = {
-            black = c "base03";
-            red = c "base08";
-            green = c "base0B";
-            yellow = c "base0A";
-            blue = c "base0D";
-            magenta = c "base0E";
-            cyan = c "base0C";
-            white = c "base07";
-          };
-        };
-      };
-    in
-    (pkgs.formats.json { }).generate "AlienHud.json" {
-      dark = palette;
-      light = palette;
-    };
-
   # ── DankMaterialShell theme ────────────────────────────────────────────────
   # DMS reads its palette from its own theme.json (NOT from Stylix), so the DMS
   # session would otherwise keep its own palette while niri and the terminals

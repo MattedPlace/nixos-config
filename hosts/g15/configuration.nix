@@ -1,11 +1,10 @@
-{
-  pkgs,
-  config,
-  lib,
-  hostUsers,
-  hostTypes,
-  inputs,
-  ...
+{ pkgs
+, config
+, lib
+, hostUsers
+, hostTypes
+, inputs
+, ...
 }:
 let
   vars = import ./variables.nix { };
@@ -453,6 +452,7 @@ in
   # Hardware and service specific configurations
   services = {
     playerctld.enable = false;
+    print.enable = true;
     fwupd.enable = false;
     # Quiet sshd preauth-reset spam from Odin's :22 liveness probes (p510).
     openssh.settings.LogLevel = "ERROR";
@@ -498,10 +498,12 @@ in
     ];
     shell = pkgs.zsh;
     # Only use secret-managed password if the secret exists
-    hashedPasswordFile = lib.mkIf (
-      config.modules.security.secrets.enable
-      && builtins.hasAttr "user-password-${username}" config.age.secrets
-    ) config.age.secrets."user-password-${username}".path;
+    hashedPasswordFile = lib.mkIf
+      (
+        config.modules.security.secrets.enable
+        && builtins.hasAttr "user-password-${username}" config.age.secrets
+      )
+      config.age.secrets."user-password-${username}".path;
   });
 
   # System packages - consolidated from individual nixos modules
@@ -527,6 +529,9 @@ in
 
       # Login manager (from greetd.nix)
       tuigreet
+
+      #anki
+      anki
     ]
     # Every DE registered via services.xserver.desktopManager.*.enable —
     # needed so their share/wayland-sessions/*.desktop files land in

@@ -1,7 +1,7 @@
 { pkgs, ... }: {
   services = {
     dbus.packages = with pkgs; [
-      gcr
+      gcr_3
       gnome-settings-daemon
     ];
 
