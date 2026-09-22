@@ -9,13 +9,13 @@ let
           builtins.fetchurl {
             url = "https://plex.tv/api/downloads/1.json";
             #sha256 = "sha256-ieU0/7Vlrs2tsR1QhD2Cyk/pia4MfmAugx0Ec6Ook20=";
-            sha256 = "0lwj5bjkbmj6h39x2xagksa36iyqaff08gxrfdipsh4vx6040zgb";
+            sha256 = "1084jhyrixaghblzplmf7kl9yqbfvmjb1m249hvmbhpsrms0j2fg";
           }
         )
       )).computer.Linux.version;
     src = prev.fetchurl {
       url = "https://downloads.plex.tv/plex-media-server-new/${version}/debian/plexmediaserver_${version}_amd64.deb";
-      sha256 = "sha256-qgnyZt3PQI4Qz3ulYbbkVObhCbqUFjlraWW9THnzcUk=";
+      sha256 = "sha256-b2ocgzbXeeHyAVGmk0NJiEutb2pmsYorGJuW5Vw7Pts=";
     };
     passthru = old.passthru // {
       inherit version;

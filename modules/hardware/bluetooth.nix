@@ -5,6 +5,8 @@ _: {
     settings = {
       General = {
         Enable = "Source,Sink,Media,Socket";
+        AutoEnable = false;
+        ReconnectAttempts = 0;
       };
     };
   };

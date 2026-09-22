@@ -1,8 +1,7 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
+{ config
+, lib
+, pkgs
+, ...
 }:
 # DankMaterialShell (DMS) login sessions.
 #
@@ -33,12 +32,12 @@ let
   # services.displayManager.sessionPackages requires passthru.providedSessions to
   # match the .desktop basename.
   mkSession =
-    {
-      name,
-      label,
-      comment,
-      exec,
-      desktopNames ? name,
+    { name
+    , label
+    , comment
+    , exec
+    , desktopNames ? name
+    ,
     }:
     (pkgs.writeTextFile {
       name = "${name}-wayland-session";
@@ -87,7 +86,6 @@ in
       systemd.enable = false;
       # Keep Stylix for the trial; set true to let DMS drive matugen
       # Material You theming from the wallpaper instead.
-      enableDynamicTheming = false;
     };
 
     # DMS sessions + the Noctalia shadow of niri.desktop. sessionPackages registers

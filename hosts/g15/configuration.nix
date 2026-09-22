@@ -281,7 +281,7 @@ in
       lazygit = true;
       thunderbird = false;
       obsidian = false;
-      office = false;
+      office = true;
       webcam = false; # OBS Virtual Camera support
       print = true;
       yt-x.enable = true;

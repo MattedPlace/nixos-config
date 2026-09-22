@@ -14,6 +14,6 @@ _: {
     #./claude-code-managed.nix # Read-only Claude Code baseline at /etc/claude-code (issue #398)
     #./claude-router-cli.nix # /use-ollama, /use-claude, /use-default — local Ollama vs cloud Claude per repo
     # ./streamcontroller.nix
-    # ./thunar.nix
+    #./thunar.nix
   ];
 }

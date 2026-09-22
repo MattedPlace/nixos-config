@@ -35,19 +35,6 @@
       ];
     };
 
-    # Battery optimization
-    upower = {
-      enable = true;
-      criticalPowerAction = "Hibernate";
-    };
-
-    # Support for closing lid
-    logind = {
-      settings.Login = {
-        HandleLidSwitch = lib.mkDefault "suspend";
-        HandleLidSwitchExternalPower = "ignore";
-      };
-    };
   };
 
   # Backlight control

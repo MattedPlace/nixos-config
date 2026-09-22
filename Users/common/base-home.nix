@@ -54,6 +54,7 @@
       zip
       gnutar
       gzip
+      nautilus
     ];
   };
 

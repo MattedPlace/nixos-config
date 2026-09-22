@@ -1,21 +1,28 @@
-{
-  pkgs,
-  lib,
-  ...
+{ pkgs
+, lib
+, ...
 }:
 {
   # Enable System76 power daemon for intelligent power management
-  hardware.system76.power-daemon.enable = true;
+  hardware.system76.power-daemon.enable = false;
 
   # Thermal and power management services
   services = {
     # CPU temperature monitoring and management
     thermald.enable = true;
 
+    # Support for closing lid
+    logind = {
+      settings.Login = {
+        HandleLidSwitch = lib.mkDefault "suspend";
+        HandleLidSwitchExternalPower = "ignore";
+      };
+    };
     # Battery status monitoring
     upower = {
       enable = true;
       # Enable percentage-based notifications
+      criticalPowerAction = "Hibernate";
       percentageLow = 15;
       percentageCritical = 5;
       percentageAction = 3;
@@ -23,7 +30,7 @@
 
     # Power profiles management
     power-profiles-daemon = {
-      enable = false;
+      enable = true;
       # Set default profile (options: power-saver, balanced, performance)
       # The following line is commented out as the default is 'balanced'
       # extraConfig.defaults.default-profile = "balanced";

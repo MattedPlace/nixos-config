@@ -96,13 +96,6 @@
     # exposed via overlays/default.nix as pkgs.claude-desktop-linux). The old
     # aaddrick/claude-desktop-debian Windows-repackage input was removed.
 
-    # GogMail — keyboard-driven Google Workspace TUI (Gmail/Calendar/Tasks/
-    # Drive/Contacts/Chat) built on the gog CLI. Consumed via overlays as
-    # pkgs.gogmail; launched from the tmux ai-tools palette + M-c. Uses its
-    # own locked nixpkgs (no follows) so the tested Python closure builds
-    # as-released. Bump with `nix flake update gogmail`.
-    gogmail.url = "github:olafkfreund/gogmail";
-
     # Claude Code skill catalogue (borghei). flake = false because it's a
     # plain markdown/assets catalogue, not a Nix flake. We symlink one
     # subdirectory (engineering/claude-code-mastery) into ~/.claude/skills/
@@ -147,21 +140,6 @@
     # Consumed only by overlays/custom-packages.nix when wiring splashboard.
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    # gscratch — i3/Sway-style scratchpad for GNOME Shell (any window, toggle
-    # via global shortcut). Consumed by Users/olafkfreund/razer_home.nix.
-    gscratch = {
-      url = "github:olafkfreund/gscratch";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    # gnome-quick-web-apps — GTK4/libadwaita web-app manager. Turn any
-    # website into a first-class GNOME desktop app. Consumed by razer +
-    # p620 home-manager configs.
-    gnome-quick-web-apps = {
-      url = "github:olafkfreund/gnome-quick-web-apps";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

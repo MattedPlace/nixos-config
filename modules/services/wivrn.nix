@@ -1,7 +1,6 @@
-{
-  config,
-  pkgs,
-  ...
+{ config
+, pkgs
+, ...
 }:
 {
   environment.systemPackages = with pkgs; [
@@ -29,6 +28,7 @@
         wivrn.override ({
           cudaSupport = true;
           ovrCompatSearchPaths = "${xrizer}/lib/xrizer:${opencomposite}/lib/opencomposite:${pkgs.opencomposite-orion.priorities}/lib/opencomposite-p:${pkgs.opencomposite-orion.alyx}/lib/opencomposite-a";
+          #ovrCompatSearchPaths = "${xrizer}/lib/xrizer:${opencomposite}/lib/opencomposite:${pkgs.xrizer-custom}/lib/xrizer:${pkgs.opencomposite-orion.priorities}/lib/opencomposite-p:${pkgs.opencomposite-orion.alyx}/lib/opencomposite-a";
         })
       );
 
