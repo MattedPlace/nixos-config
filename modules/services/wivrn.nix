@@ -1,6 +1,7 @@
-{ config
-, pkgs
-, ...
+{
+  config,
+  pkgs,
+  ...
 }:
 {
   environment.systemPackages = with pkgs; [
@@ -9,7 +10,7 @@
     sidequest # Quest tool
     opencomposite-orion.alyx # compositor for VR
     opencomposite-orion.priorities # compositor for VR
-    #xrizer-custom
+    custom-xrizer
   ];
 
   services.wivrn =
@@ -27,8 +28,8 @@
       package = (
         wivrn.override ({
           cudaSupport = true;
-          ovrCompatSearchPaths = "${xrizer}/lib/xrizer:${opencomposite}/lib/opencomposite:${pkgs.opencomposite-orion.priorities}/lib/opencomposite-p:${pkgs.opencomposite-orion.alyx}/lib/opencomposite-a";
-          #ovrCompatSearchPaths = "${xrizer}/lib/xrizer:${opencomposite}/lib/opencomposite:${pkgs.xrizer-custom}/lib/xrizer:${pkgs.opencomposite-orion.priorities}/lib/opencomposite-p:${pkgs.opencomposite-orion.alyx}/lib/opencomposite-a";
+          #ovrCompatSearchPaths = "${xrizer}/lib/xrizer:${opencomposite}/lib/opencomposite:${pkgs.opencomposite-orion.priorities}/lib/opencomposite-p:${pkgs.opencomposite-orion.alyx}/lib/opencomposite-a";
+          ovrCompatSearchPaths = "${xrizer}/lib/xrizer:${opencomposite}/lib/opencomposite:${pkgs.custom-xrizer}/lib/xrizer:${pkgs.opencomposite-orion.priorities}/lib/opencomposite-p:${pkgs.opencomposite-orion.alyx}/lib/opencomposite-a";
         })
       );
 

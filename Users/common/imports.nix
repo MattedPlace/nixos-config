@@ -1,7 +1,6 @@
 { spicetify-nix, ... }: {
   # Common imports for all user configurations
   imports = [
-    spicetify-nix.homeManagerModules.default
 
     # Internal modules
     ./base-home.nix

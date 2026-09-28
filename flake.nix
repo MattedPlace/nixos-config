@@ -39,13 +39,9 @@
     # nixpkgs — 0.32.1's llama.cpp CUDA ExternalProject can't find nvcc, an active
     # upstream bug). Grafted as pkgs.ollama-cuda for p510 via overlays/default.nix.
     # Remove this input + the graft once nixpkgs 0.32.x CUDA builds again.
-    nixpkgs-ollama.url = "github:nixos/nixpkgs/6cdc7fc76e8bf7fde9fa43a849fcaaa70e230dee";
 
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     flake-utils.url = "github:numtide/flake-utils";
-
-    # MCP servers
-    mcp-nixos.url = "github:utensils/mcp-nixos";
 
     # Environment and theming
     home-manager = {
@@ -72,25 +68,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Browser and media
-    spicetify-nix.url = "github:Gerg-L/spicetify-nix";
-
     # System utilities
     agenix.url = "github:ryantm/agenix";
     nix-snapd.url = "github:io12/nix-snapd";
-    microvm.url = "github:astro/microvm.nix";
 
-    # Secure Boot — v1.0.0 (latest tag) still sets the removed
-    # boot.bootspec.enable option, which throws against current nixpkgs
-    # (bootspec is now always-on). Pinned to master past that fix.
-    lanzaboote = {
-      url = "github:nix-community/lanzaboote/v1.1.0";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    # Additional tools
-    lan-mouse.url = "github:feschber/lan-mouse";
-    zjstatus.url = "github:dj95/zjstatus";
     # NOTE: Claude Desktop is no longer a flake input — as of #986 we package
     # Anthropic's OFFICIAL Linux beta .deb ourselves (pkgs/claude-desktop-beta,
     # exposed via overlays/default.nix as pkgs.claude-desktop-linux). The old
@@ -123,12 +104,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Google Antigravity package
-    antigravity-nix = {
-      url = "github:jacopone/antigravity-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     # COSMIC Desktop applets
     cosmic-applet-spotify = {
       url = "github:nomoth/cosmic-applet-spotify";
@@ -143,33 +118,18 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # herdr — TUI "agent multiplexer" (tmux/zellij for AI coding agents).
-    # Single Rust binary, local Unix-socket API, no daemon/root/network.
-    # Its flake builds a vendored libghostty-vt via zig (deps pre-fetched
-    # offline in-repo), exposed as packages.default. Consumed via overlay
-    # as pkgs.herdr on the interactive-host developer profile (p620 + razer).
-    # Bump with `nix flake update herdr`.
-    herdr = {
-      url = "github:ogulcancelik/herdr";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.rust-overlay.follows = "rust-overlay";
-    };
-
   };
 
   outputs =
-    { nixpkgs
-    , nixpkgs-unstable
-    , nur
-    , nixpkgs-xr
-    , agenix
-    , spicetify-nix
-    , home-manager
-    , nix-index-database
-    , zjstatus
-    , antigravity-nix
-    , mcp-nixos
-    , ...
+    {
+      nixpkgs,
+      nixpkgs-unstable,
+      nur,
+      nixpkgs-xr,
+      agenix,
+      home-manager,
+      nix-index-database,
+      ...
     }@inputs:
     let
       # ========================================
@@ -248,8 +208,6 @@
             hostUsers = allUsers; # All users for this host
             # Shared variables and hardware profiles for explicit tracking
             inherit sharedVariables hardwareProfiles;
-            # MCP servers from flakes
-            mcp-nixos-pkg = mcp-nixos.packages.${system}.default;
           };
           modules = [
             { nixpkgs.overlays = overlays; }
@@ -259,10 +217,8 @@
             nixpkgs-xr.nixosModules.nixpkgs-xr
             inputs.nix-snapd.nixosModules.default
             inputs.agenix.nixosModules.default
-            inputs.lanzaboote.nixosModules.lanzaboote
             inputs.niri-flake.nixosModules.niri
             nix-index-database.nixosModules.nix-index
-            ./home/shell/zellij/zjstatus.nix
           ]
           ++ stylixModule
           ++ [
@@ -299,10 +255,7 @@
                   inherit
                     inputs
                     nixpkgs
-                    zjstatus
-                    spicetify-nix
                     agenix
-                    antigravity-nix
                     host
                     ;
                   username = primaryUser;
@@ -311,12 +264,10 @@
                   inherit sharedVariables hardwareProfiles;
                 };
                 users = builtins.listToAttrs (
-                  map
-                    (user: {
-                      name = user;
-                      value = import (./Users + "/${user}/${host}_home.nix");
-                    })
-                    allUsers
+                  map (user: {
+                    name = user;
+                    value = import (./Users + "/${user}/${host}_home.nix");
+                  }) allUsers
                 );
               };
             })
@@ -336,10 +287,6 @@
         razer = nixpkgs.lib.nixosSystem (makeNixosSystem "razer"); # Intel/NVIDIA laptop (mobile dev)
         g15 = nixpkgs.lib.nixosSystem (makeNixosSystem "g15"); # Intel/NVIDIA laptop (mobile dev)
 
-        # MicroVM configurations (temporarily disabled for flake restructuring)
-        # dev-vm = microvms.dev-vm;
-        # test-vm = microvms.test-vm;
-        # playground-vm = microvms.playground-vm;
       };
 
       # ========================================
@@ -352,41 +299,11 @@
             config = {
               allowUnfree = true;
               permittedInsecurePackages = [
-                "mdatp"
               ];
             };
           };
         in
         {
-          # Custom applications
-          aerion = pkgs.callPackage ./pkgs/aerion { };
-          claude-code = import ./home/development/claude-code {
-            inherit (pkgs)
-              lib
-              buildNpmPackage
-              fetchurl
-              nodejs
-              makeWrapper
-              writeShellScriptBin
-              ;
-          };
-          claude-code-native = pkgs.callPackage ./pkgs/claude-code-native { };
-          glim = pkgs.callPackage ./overlays/glim { };
-          intune-portal = pkgs.callPackage ./pkgs/intune-portal { };
-          kosli-cli = pkgs.callPackage ./pkgs/kosli-cli { };
-          opencode = pkgs.callPackage ./home/development/opencode { };
-          aurynk = pkgs.callPackage ./pkgs/aurynk { };
-          # add-skill = pkgs.callPackage ./pkgs/add-skill { };
-
-          # Security tools
-          mdatp = pkgs.callPackage ./pkgs/microsoft-defender-for-endpoint {
-            inherit (pkgs) buildFHSEnv;
-          };
-
-          # Enterprise tools
-          # NOTE: citrix-workspace is provided via overlay (overlays/citrix-workspace.nix)
-          # It requires manual tarball download - see pkgs/citrix-workspace/fetch-citrix.sh
-
           # Icon themes
           neuwaita-icon-theme = pkgs.stdenvNoCC.mkDerivation {
             pname = "neuwaita-icon-theme";
@@ -419,62 +336,8 @@
             };
           };
 
-          # Documentation site (MkDocs Material, built reproducibly)
-          docs = pkgs.callPackage ./docs_gen/site.nix { };
-
-          # Live ISO images
-          live-iso-razer = liveImages.liveImages.live-iso-razer.config.system.build.isoImage;
-
           # Development and deployment tools available as packages
           # (Apps are available separately via apps.x86_64-linux)
-        };
-
-      # ========================================
-      # DEVELOPMENT ENVIRONMENTS
-      # ========================================
-      devShells.x86_64-linux =
-        let
-          pkgs = nixpkgs.legacyPackages.x86_64-linux;
-        in
-        {
-          default = import ./tools/dev.nix { inherit pkgs inputs; };
-          testing = import ./tools/testing.nix { inherit pkgs; };
-          docs = import ./tools/docs.nix { inherit pkgs; };
-        };
-
-      # ========================================
-      # VALIDATION AND AUTOMATION
-      # ========================================
-
-      # Quality assurance and validation checks
-      checks.x86_64-linux = import ./checks/default.nix {
-        pkgs = nixpkgs.legacyPackages.x86_64-linux;
-        inherit (nixpkgs) lib;
-      };
-
-      # Application entries for common workflows
-      apps.x86_64-linux =
-        let
-          pkgs = nixpkgs.legacyPackages.x86_64-linux;
-          appPkgs = import ./tools/default.nix { inherit pkgs; };
-        in
-        {
-          deploy = {
-            type = "app";
-            program = "${appPkgs.deploy}/bin/nixos-deploy";
-          };
-          test = {
-            type = "app";
-            program = "${appPkgs.test}/bin/nixos-test";
-          };
-          build-live = {
-            type = "app";
-            program = "${appPkgs.build-live}/bin/nixos-build-live";
-          };
-          dev-utils = {
-            type = "app";
-            program = "${appPkgs.dev-utils} /bin/nixos-dev-utils";
-          };
         };
 
       # Code formatter for consistent formatting

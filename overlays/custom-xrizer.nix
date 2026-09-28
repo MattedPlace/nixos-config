@@ -1,12 +1,15 @@
 _final: prev: {
-  xrizer-custom = prev.xrizer.overrideAttrs (rec {
-    version = "1";
-    pname = "xrizer-custom";
-    src = _final.fetchFromGitHub {
+  custom-xrizer = prev.xrizer.overrideAttrs (rec {
+    version = "hla";
+    src = prev.fetchFromGitHub {
       owner = "Mr-Zero88";
       repo = "xrizer";
-      rev = "1a7615eedaf4f889b5fc8ad078488197170e4de1";
-      hash = "sha256-Rb1pssAq6Zx6VmQVQtGcThkA6zCwi5X7G7aHmdsDrJo=";
+      rev = "512a7ae6e05eba3e8d5e6f1a20ee9632a528bd0f";
+      hash = "sha256-3bp1JYNPUbNwBkjZG2Ex1jtj3L8Vt78wFKhHAPpTD58=";
+    };
+    cargoDeps = prev.rustPlatform.fetchCargoVendor {
+      inherit src;
+      hash = "sha256-F6ZTOCPih04tT0hlaso43/TNP5bahQkF8HOdjn7/bBc=";
     };
     patches = [ ];
     doCheck = false;
