@@ -1,6 +1,7 @@
-{ pkgs
-, lib
-, ...
+{
+  pkgs,
+  lib,
+  ...
 }:
 {
   # Enable System76 power daemon for intelligent power management
@@ -15,17 +16,17 @@
     logind = {
       settings.Login = {
         HandleLidSwitch = lib.mkDefault "suspend";
-        HandleLidSwitchExternalPower = "ignore";
+        HandleLidSwitchExternalPower = "suspend";
       };
     };
     # Battery status monitoring
     upower = {
       enable = true;
       # Enable percentage-based notifications
-      criticalPowerAction = "Hibernate";
+      criticalPowerAction = "PowerOff";
       percentageLow = 15;
-      percentageCritical = 5;
-      percentageAction = 3;
+      percentageCritical = 10;
+      percentageAction = 5;
     };
 
     # Power profiles management
@@ -66,14 +67,6 @@
     cpuFreqGovernor = lib.mkForce "ondemand"; # Changed from "powersave" to prevent input device issues
     powertop.enable = lib.mkForce false; # Disabled - was causing USB device suspensions
   };
-
-  # Disable USB autosuspend to prevent keyboard/mouse from turning off
-  boot.kernelParams = [
-    "mem_sleep_default=deep" # Prefer deep sleep modes
-    "usbcore.autosuspend=-1" # Disable USB autosuspend globally
-    # Note: nvme.noacpi=1 was removed in issue #464 — see boot.nix for
-    # rationale. NVMe-related kernel params are now consolidated in boot.nix.
-  ];
 
   # Fix systemd sleep targets
   systemd = {

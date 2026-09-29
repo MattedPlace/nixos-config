@@ -72,21 +72,6 @@
     agenix.url = "github:ryantm/agenix";
     nix-snapd.url = "github:io12/nix-snapd";
 
-    # NOTE: Claude Desktop is no longer a flake input — as of #986 we package
-    # Anthropic's OFFICIAL Linux beta .deb ourselves (pkgs/claude-desktop-beta,
-    # exposed via overlays/default.nix as pkgs.claude-desktop-linux). The old
-    # aaddrick/claude-desktop-debian Windows-repackage input was removed.
-
-    # Claude Code skill catalogue (borghei). flake = false because it's a
-    # plain markdown/assets catalogue, not a Nix flake. We symlink one
-    # subdirectory (engineering/claude-code-mastery) into ~/.claude/skills/
-    # via home/development/claude-code-skills. Bump with `nix flake update
-    # claude-skills-borghei` to pull in upstream skill updates.
-    claude-skills-borghei = {
-      url = "github:borghei/Claude-Skills";
-      flake = false;
-    };
-
     # Terminal YouTube browser
     yt-x = {
       url = "github:Benexl/yt-x";
@@ -101,12 +86,6 @@
     nixpkgs-xr.url = "github:nix-community/nixpkgs-xr";
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    # COSMIC Desktop applets
-    cosmic-applet-spotify = {
-      url = "github:nomoth/cosmic-applet-spotify";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

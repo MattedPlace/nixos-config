@@ -1,7 +1,8 @@
-{ config
-, lib
-, inputs
-, ...
+{
+  config,
+  lib,
+  inputs,
+  ...
 }:
 let
   inherit (lib) mkIf mkEnableOption;
@@ -24,8 +25,6 @@ in
     # Vendor link to the borghei/Claude-Skills repo. Bump with:
     #   nix flake update claude-skills-borghei
     # then test-build and deploy.
-    home.file.".claude/skills/claude-code-mastery".source =
-      "${inputs.claude-skills-borghei}/engineering/claude-code-mastery";
 
     # Local gog skill — /gog playbook for Gmail/Tasks/Calendar/Chat/Meet/etc.
     # via the gogcli (`gog`) CLI. Sourced from this repo, not a flake input.
