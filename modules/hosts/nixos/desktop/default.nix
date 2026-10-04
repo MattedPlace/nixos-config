@@ -34,7 +34,7 @@ in
       scan
       #   flatpak
       #   virtualisation
-      games
+      #games
     ];
   };
 

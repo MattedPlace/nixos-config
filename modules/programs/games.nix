@@ -31,13 +31,13 @@
         #pkgs.lutris # Game Launcher
         # pkgs.prismlauncher # MC Launcher
         # pkgs.retroarchFull # Emulator
-        pkgs.android-tools # ADB for VR
-        pkgs.steam # Game Launcher
-        pkgs.sidequest # Oculus tool
-        pkgs.opencomposite-orion.alyx # compositor for VR
-        pkgs.opencomposite-orion.priorities # compositor for VR
-        pkgs.xrizer-custom # compositor for VR
-        pkgs.protonplus
+        #pkgs.android-tools # ADB for VR
+        #pkgs.steam # Game Launcher
+        #pkgs.sidequest # Oculus tool
+        #pkgs.opencomposite-orion.alyx # compositor for VR
+        #pkgs.opencomposite-orion.priorities # compositor for VR
+        #pkgs.xrizer-custom # compositor for VR
+        #pkgs.protonplus
         # pcsx2 # Emulator
       ];
 

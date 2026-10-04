@@ -431,6 +431,7 @@
 
             // Suggested binds for running programs: terminal, app launcher, screen locker.
             Mod+Return hotkey-overlay-title="Open a Terminal: kitty" { spawn "kitty"; }
+            Mod+B hotkey-overlay-title="Open a Terminal: kitty" { spawn "brave"; }
             // Mod+Space hotkey-overlay-title="Run an Application: fuzzel" { spawn "fuzzel"; }
             Mod+Space hotkey-overlay-title="Run" { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
             Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn "swaylock"; }

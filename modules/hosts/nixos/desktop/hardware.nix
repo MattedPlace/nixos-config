@@ -31,7 +31,12 @@
           "rcu_nocbs=0-11"
         ]; # Set processor.max_cstate to 5 to prevent random crashes
 
-        kernelPackages = pkgs.linuxPackages_latest;
+        kernelPackages = pkgs.linuxPackages_6_18;
+
+        extraModulePackages = [
+          config.boot.kernelPackages.rtl88x2bu
+          #config.boot.kernelPackages.broadcom_sta
+        ];
 
         supportedFilesystems = [ "ntfs" ];
 
