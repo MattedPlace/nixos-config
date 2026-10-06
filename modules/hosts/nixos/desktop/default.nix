@@ -29,14 +29,14 @@ in
       desktop
 
       nixvim
-      #gnome
+      gnome
       print
       scan
       #   flatpak
       #   virtualisation
-      niri
-      dms-shell
-      dms-greeter
+      #niri
+      #dms-shell
+      #dms-greeter
       #games
     ];
   };
@@ -44,15 +44,26 @@ in
   flake.modules.nixos.desktop = {
     inherit host;
     home-manager.users.${host.user.name} = {
-      imports = with config.flake.modules.homeManager; [
-        niri
-        mime
+      imports = [
+        #config.flake.modules.homeManager.niri
+        config.flake.modules.homeManager.mime
 
         #        claude
-        kitty
+        config.flake.modules.homeManager.kitty
         #       obs
 
         #noctalia
+        /*
+          {
+            wayland.windowManager.niri.settings.output = [
+              {
+                _args = [ "HDMI-A-1" ];
+                mode = "1920x1080@120";
+                scale = 1.0;
+              }
+            ];
+          }
+        */
       ];
     };
   };

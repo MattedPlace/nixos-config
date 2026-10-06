@@ -40,7 +40,7 @@
         pkgs.awww
         pkgs.slurp
         pkgs.grim
-        (import ../../../packages/dropdown-terminal-toggle { inherit pkgs; })
+        (import ../../../pkgs/dropdown-terminal-toggle { inherit pkgs; })
       ];
 
       # niri doesn't bundle XWayland like most wlroots compositors do --
@@ -89,35 +89,37 @@
         settings = {
           hotkey-overlay.skip-at-startup = [ ];
 
-          spawn-at-startup = [
-            [
-              "systemctl"
-              "--user"
-              "import-environment"
-            ]
-            [
-              "uwsm"
-              "app"
-              "--"
-              "zen-beta"
-            ]
-            [
-              "uwsm"
-              "app"
-              "--"
-              "1password"
-              "--silent"
-            ]
-            [
-              "uwsm"
-              "app"
-              "--"
-              "wl-paste"
-              "--watch"
-              "cliphist"
-              "store"
-            ]
-          ];
+          /*
+            spawn-at-startup = [
+              [
+                "systemctl"
+                "--user"
+                "import-environment"
+              ]
+              [
+                "uwsm"
+                "app"
+                "--"
+                "zen-beta"
+              ]
+              [
+                "uwsm"
+                "app"
+                "--"
+                "1password"
+                "--silent"
+              ]
+              [
+                "uwsm"
+                "app"
+                "--"
+                "wl-paste"
+                "--watch"
+                "cliphist"
+                "store"
+              ]
+            ];
+          */
 
           prefer-no-csd = [ ];
 
@@ -194,10 +196,6 @@
           ];
 
           window-rule = [
-            {
-              match._props.app-id = "1Password";
-              open-maximized = false;
-            }
             {
               match._props.title = "dropdown-terminal";
               open-floating = true;

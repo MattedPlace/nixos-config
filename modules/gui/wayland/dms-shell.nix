@@ -5,7 +5,7 @@
     programs.dms-shell = {
       enable = true;
       plugins = {
-        dankBatteryAlerts.enable = true;
+        #dankBatteryAlerts.enable = true;
         dankClight.enable = true;
         webSearch.enable = true;
         dankLauncherKeys.enable = true;

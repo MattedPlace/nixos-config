@@ -4,7 +4,7 @@
     {
       services = {
         samba = {
-          enable = true;
+          enable = false;
           settings = {
             # Set Password: $ smbpasswd -a <user>
             share = {
