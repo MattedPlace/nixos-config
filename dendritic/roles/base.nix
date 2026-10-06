@@ -28,6 +28,7 @@
       impermanence
       nh
       ripgrep
+      ranger
       snowcrate-status
       systemd-manager
     ];
@@ -51,6 +52,7 @@
       zoxide
 
       env
+      brave
     ];
   };
 }
