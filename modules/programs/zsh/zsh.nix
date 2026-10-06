@@ -30,17 +30,8 @@
             #eval "$(direnv hook zsh)"
           '';
         };
-      };
-    };
 
-  flake.modules.darwin.base =
-    { config, pkgs, ... }:
-    {
-      users.users.${config.host.user.name} = {
-        shell = pkgs.zsh;
       };
-
-      programs.zsh.enable = true;
     };
 
   flake.modules.homeManager.zsh =
@@ -88,6 +79,40 @@
           + lib.optionalString (host.name == "MacbookAirM1") ''
             export PATH=$PATH:`cat $HOME/Library/Application\ Support/Garmin/ConnectIQ/current-sdk.cfg`/bin
           '';
+          zsh-abbr = {
+            enable = true;
+            abbreviations = {
+              # git
+              gst = "git status";
+              gco = "git checkout";
+              gaa = "git add --all";
+              gcm = "git commit -m";
+              gca = "git commit -v --amend";
+              gpu = "git push";
+              gpl = "git pull";
+              gdf = "git diff";
+              gbr = "git branch";
+              glg = "git log --oneline --graph --decorate -20";
+              r = "ranger";
+              # nix
+              nfu = "nix flake update";
+              nbd = "nix build";
+              nfc = "nix flake check";
+              ndv = "nix develop";
+              nsh = "nix-shell";
+              drs = "sudo nixos-rebuild switch --flake .#$(hostname)";
+            };
+            globalAbbreviations = {
+              # expand anywhere on the line, e.g.  ls G foo
+              G = "| grep -i";
+              L = "| less";
+              J = "| jq";
+              H = "| head";
+              T = "| tail";
+              NE = "2>/dev/null";
+              NUL = "&>/dev/null";
+            };
+          };
         };
       };
     };

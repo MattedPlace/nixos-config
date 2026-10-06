@@ -29,11 +29,14 @@ in
       desktop
 
       nixvim
-      gnome
+      #gnome
       print
       scan
       #   flatpak
       #   virtualisation
+      niri
+      dms-shell
+      dms-greeter
       #games
     ];
   };
@@ -42,13 +45,14 @@ in
     inherit host;
     home-manager.users.${host.user.name} = {
       imports = with config.flake.modules.homeManager; [
+        niri
         mime
 
         #        claude
         kitty
         #       obs
 
-        #      noctalia
+        #noctalia
       ];
     };
   };

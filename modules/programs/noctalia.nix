@@ -9,6 +9,8 @@
       osConfig,
       pkgs,
       host,
+      lib,
+      config,
       ...
     }:
     {
@@ -22,7 +24,14 @@
       ];
 
       programs.noctalia-shell = {
-        enable = true;
+        enable =
+          if
+            (osConfig.programs ? niri && osConfig.programs.niri.enable)
+            || (osConfig.programs ? hyprland && osConfig.programs.hyprland.enable)
+          then
+            true
+          else
+            false;
         settings = {
           general.clockFormat = "h:mm AP";
           bar = {
