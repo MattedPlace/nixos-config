@@ -1,326 +1,54 @@
-# Matthias' Nix Configuration Flake
+# snowcrate
 
-A modular, multi-platform Nix flake managing NixOS, Nix-Darwin, and standalone Home Manager configurations using [flake-parts](https://flake.parts) and the [dendritic pattern](https://github.com/mightyiam/dendritic).\
-Check out the [vanilla branch](https://github.com/MatthiasBenaets/nix-config/tree/vanilla) for a more "vanilla" Nix Flake setup.
+My NixOS configuration, covering three machines: crate-desktop, crate-laptop, and crate-server (the last one still a work in progress, not deployed). Single user throughout (Maxwell).
 
----
+## Layout
 
-## Overview
+This is a flake-parts flake using the dendritic pattern: every `.nix` file under `dendritic/` is picked up automatically by `import-tree` and contributes to a `flake.modules.<class>.<name>` option, where class is `nixos` or `homeManager`. There's no central list of modules to keep in sync by hand; adding a file is enough to make it available.
 
-This flake manages system configuration across three platforms:
+Within `dendritic/`, the structure is:
 
-- **NixOS** - full system configuration for Linux hosts
-- **nix-darwin** - system configuration for macOS hosts
-- **Home Manager (standalone)** - user environment for non-NixOS Linux hosts
-- **Dev Shells** - reproducible development environments via `nix develop`
-- **Packages** - standalone applications (e.g. neovim via nixvim) runnable with `nix run`
+- `aspects/` - one concern per file (a program, a service, a piece of hardware config), grouped loosely into subdirectories by topic. Each aspect defines a NixOS module, a home-manager module, or both, under the same name.
+- `roles/` - bundles of aspects. `role-base` is the shared foundation almost everything imports; `role-desktop`, `role-laptop`, and `role-server` build on it with whatever's specific to that kind of machine.
+- `hosts/` - one file per machine, each declaring a `flake.nixosConfigurations.<name>` output directly. This is where a role gets attached to an actual host along with its hardware and disk config.
 
-### Architecture
+Outside `dendritic/`:
 
-The flake uses [flake-parts](https://flake.parts) with [import-tree](https://github.com/vic/import-tree) to automatically load all modules from the `modules/` directory. Configuration is split into small, composable modules following the dendritic pattern. Modules are organized by feature, not by target OS, and hosts compose exactly what they need.
+- `machines/` - hardware scan output, disk layout (disko), and agenix secret wiring, one directory per host.
+- `packages/` - standalone tools this repo builds, mostly small shell scripts wrapped with `writeShellScriptBin` (deploy tooling, dotfile-state backup, etc).
+- `overlays/` - the handful of package overrides that don't fit anywhere else.
 
----
+To add a new piece of config: drop a file under the right `aspects/` subdirectory, name the module something sensible, and import it from whichever role(s) should have it. To add a host: a new file under `machines/`, a new file under `dendritic/hosts/`, and a role to build it from.
 
-## Hosts
+## Secrets
 
-### NixOS
+Actual secrets never live in this repo. They're encrypted with agenix and kept in a separate private repo, `nix-secrets`, referenced as a flake input. `machines/agenix.nix` wires up the per-host secrets (SSH host and user keys, a couple of service env files); the per-host `machines/<host>/agenix.nix` files are one-line wrappers around it.
 
-| Host      | WM / DE  | Shell    | Terminal | Notes   |
-| --------- | -------- | -------- | -------- | ------- |
-| `beelink` | Hyprland | Noctalia | Kitty    | Desktop |
-| `work`    | Hyprland | Noctalia | Kitty    | Laptop  |
-| `vm`      | None     | None     | Nonve    | None    |
+Because `nix-secrets` is a flake input, evaluating this flake at all - even just `nix flake check` - requires fetching it, which means SSH access to that repo. Locally that's whatever key your machine already has trusted there. In CI it's a dedicated read-only deploy key, stored as the `NIX_SECRETS_DEPLOY_KEY` repository secret.
 
-### Nix-Darwin
+## Deploying
 
-| Host    | WM        | Shell | System         | Notes          |
-| ------- | --------- | ----- | -------------- | -------------- |
-| `intel` | None      | Zsh   | x86_64-darwin  | MacBook Intel  |
-| `m1`    | AeroSpace | Zsh   | aarch64-darwin | MacBook Air M1 |
-| `work`  | AeroSpace | Zsh   | aarch64-darwin | MacBook Air M3 |
+`deploy <host>` (a packaged tool, not a bare script) clones `nix-secrets` if needed, decrypts what nixos-anywhere needs for a fresh install, and runs the install against the host's real IP. It also accepts `--target <ssh-target>` to point at something other than the real machine.
 
-### Standalone Home Manager
-
-| Host     | System       | Notes                               |
-| -------- | ------------ | ----------------------------------- |
-| `pacman` | x86_64-linux | Any Linux distro with Nix installed |
-
-### All hosts
-
-| Shell      | Editors         | Terminal |
-| ---------- | --------------- | -------- |
-| Zsh + p10k | Neovim (nixvim) | Kitty    |
-
----
-
-## Installation
-
-### NixOS
-
-```bash
-# Clone the repo
-git clone https://github.com/matthiasbenaets/nix-config ~/.setup
-cd ~/.setup
-
-# Switch to a host configuration
-sudo nixos-rebuild switch --flake <path/to/flake>#<host>
-
-# Example
-sudo nixos-rebuild switch --flake .#beelink
-```
-
-### Nix-Darwin
-
-First install Nix if not present:
-
-```bash
-sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install)
-```
-
-Enable flakes:
-
-```bash
-mkdir -p ~/.config/nix
-echo "experimental-features = nix-command flakes" >> ~/.config/nix/nix.conf
-```
-
-First build (darwin-rebuild not yet in PATH):
-
-```bash
-nix-env -iA nixpkgs.git
-git clone https://github.com/matthiasbenaets/nix-config ~/.setup
-cd ~/.setup
-nix build .#darwinConfigurations.<host>.system
-./result/sw/bin/darwin-rebuild switch --flake ~/.setup#<host>
-```
-
-Subsequent rebuilds:
-
-```bash
-darwin-rebuild switch --flake ~/.setup#<host>
-```
-
-### Standalone Home Manager
-
-First install Nix and Home Manager (and Flatpak):
-
-```bash
-sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install) --daemon
-nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
-nix-channel --update
-nix-shell '<home-manager>' -A install
-
-# Ubuntu for flatpak
-echo "kernel.unprivileged_userns_clone=1" | sudo tee /etc/sysctl.d/99-userns.conf \
-&& echo "kernel.apparmor_restrict_unprivileged_userns=0" | sudo tee /etc/sysctl.d/99-flatpak.conf \
-&& sudo sysctl --system
-```
-
-Get and rebuild:
-
-```bash
-nix-env -iA nixpkgs.git
-git clone https://github.com/matthiasbenaets/nix-config ~/.setup
-cd ~/.setup
-home-manager switch --extra-experimental-features 'nix-command flakes' --flake ~/.setup#<host>
-```
-
-NixGL is no longer required when running home-manager on a generic Linux host.\
-However on first rebuild, you might need to run the command below to link the GPU using a service.
-
-```bash
-sudo /nix/store/<sha>-non-nixos-gpu/bin/non-nixos-gpu-setup
-```
-
----
-
-## Adding a New Host
-
-Thanks to the dendritic structure and `import-tree`, adding a new host is a straightforward process that doesn't require modifying the main `flake.nix`.
-
-Here's how to add a new NixOS host (the process is similar for `nix-darwin` and `home-manager`):
-
-1.  **Create a Host Directory**:
-    Create a new directory for your host under `modules/hosts/nixos/`. Let's call it `my-new-host`:
-
-    ```bash
-    mkdir modules/hosts/nixos/my-new-host
-    ```
-
-2.  **Create a `default.nix`**:
-    Inside the new directory, create a `default.nix` file. This is where you'll define your host's configuration. You can use an existing host as a template.
-
-3.  **Define the Host Configuration**:
-    In `modules/hosts/nixos/my-new-host/default.nix`, define the `nixosConfiguration` for your host. It should look something like this:
-
-    ```nix
-    {
-      config,
-      inputs,
-      ...
-    }:
-
-    let
-      host = {
-        name = "my-new-host";
-        user.name = "your-username";
-        state.version = "23.11"; // Or your desired version
-        system = "x86_64-linux";
-      };
-    in
-    {
-      flake.nixosConfigurations.my-new-host = inputs.nixpkgs.lib.nixosSystem {
-        modules = with config.flake.modules.nixos; [
-          # Import the modules you need
-          base
-          my-new-host # a module for host specific configuration
-
-          # Example modules:
-          audio
-          nixvim
-          gnome
-        ];
-      };
-
-      # Host-specific module
-      flake.modules.nixos.my-new-host = {
-        inherit host;
-        home-manager.users.${host.user.name} = {
-          imports = with config.flake.modules.homeManager; [
-            # Home-manager modules
-            kitty
-          ];
-        };
-      };
-    }
-    ```
-
-4.  **Build Your Host**:
-    Once you've created the `default.nix`, you can build your new host configuration:
-
-    ```bash
-    sudo nixos-rebuild switch --flake .#my-new-host
-    ```
-
-This structure allows you to keep your host-specific configurations isolated while re-using the modules defined in the rest of the flake.
-
----
-
-## Packages
-
-Standalone packages can be run directly without installing them system-wide.
-
-| Package  | Description                  |
-| -------- | ---------------------------- |
-| `neovim` | Neovim configured via nixvim |
-
-```bash
-# Run directly
-nix run .#neovim
-
-# Run from anywhere using the flake URL
-nix run github:matthiasbenaets/nix-config#neovim
-
-# Add temporarily to PATH
-nix shell .#neovim
-```
-
----
-
-## Dev Shells
-
-Pre-configured development environments with all relevant tools available.
-
-| Shell     | Tools                                        |
-| --------- | -------------------------------------------- |
-| `default` | `vim`, `git`                                 |
-| `neovim`  | Configured neovim + `git`                    |
-| `python`  | Python tooling                               |
-| `nodejs`  | `nodejs`, `npm` with local prefix configured |
-
-```bash
-# Enter a shell
-nix develop .#<shell>
-
-# Examples
-nix develop .#nodejs
-nix develop .#python
-nix develop            # enters default shell
-```
-
-> **Note:** Dev shells use `nix develop`. `nix run` and `nix shell` are for packages, not dev shells.
-
----
-
-## Maintenance
-
-### Garbage Collection
-
-Nix stores all packages in the `/nix/store`, and over time this can grow quite large. You can remove unused packages (garbage) to free up space.
-
-To remove all packages that are not referenced by any user profile or configuration:
-
-```bash
-nix-store --gc
-```
-
-To see what would be deleted without actually deleting it:
-
-```bash
-nix-store --gc --print-dead
-```
-
-You can also free up more space by optimising the nix store:
-
-```bash
-nix-store --optimise
-```
-
-It's also possible to clean for the current user or system wide:
-
-```bash
-nix-collect-garbage -d
-sudo nix-collect-garbage -d
-```
-
----
-
-## Development Reference
-
-### Evaluating Configurations
-
-Use these commands to check if a configuration evaluates without errors:
-
-```bash
-nix eval <path/to/flake>#nixosConfigurations.<host>.config.system.build.toplevel --show-trace
-nix eval <path/to/flake>#darwinConfigurations.<host>.config.system.build.toplevel --show-trace
-nix eval <path/to/flake>#homeConfigurations.<host>.activationPackage --show-trace
-nix eval <path/to/flake>#<package> --show-trace
+`deploy-test-vm` exists so that doesn't have to mean testing against real hardware. It boots a throwaway QEMU VM matching a given host's disk layout closely enough that the real, unmodified disk-config.nix applies as-is, builds a custom installer ISO with your SSH key baked in so `deploy` can reach it non-interactively, and wipes its disk on every `start` so a test never gets to lean on state left over from a previous run.
 
 ```
-
-### Updating Inputs
-
-```bash
-# Update all inputs
-nix flake update
-
-# Update a specific input
-nix flake update nixpkgs
-
+just test-deploy crate-laptop
+deploy crate-laptop --target ssh://nixos@localhost:<port>   # port is printed by the previous command
 ```
 
-### Updating Channels
+`deploy-test-vm verify-persistence` goes a step further: after a real deploy to the test VM, it writes a marker under a path that's declared persistent and another under one that isn't, power-cycles the VM (reusing its disk, not wiping it), and checks that the declared path survived while the other one got wiped by the rollback-on-boot service. It's checking that the persistence mechanism itself actually works, not just that it's configured for everything you care about - `just check-dotfiles` handles that second question separately.
 
-```bash
-sudo nix-channel --list
-sudo nix-channel --remove <name>
-sudo nix-channel --add <channel url> <name>
-sudo nix-channel --update
-```
+## Staying in sync
 
-### Checking Flake Outputs
+`switch`, `test`, `update`, and their remote-build variants all pull the latest `master` before doing anything else, so a flake-lock-update PR that got merged since you last touched the repo is picked up automatically instead of silently sitting stale. There's also a systemd timer (`git-sync-check`, on crate-desktop and crate-laptop) that checks periodically and sends a desktop notification if the local checkout has fallen behind, independent of whether you're about to run a rebuild.
 
-```bash
-nix flake show
-```
+`snowcrate-status` prints which git revision and which NixOS generation a machine is actually running, for when you want to check rather than assume.
+
+## CI
+
+Two workflows. `check` builds crate-desktop's and crate-laptop's full system closures on every push to master and every PR, plus a `statix`/`deadnix` pass over the Nix files - crate-server is excluded since it isn't deployment-ready yet. `update-flake-lock` bumps flake inputs weekly and opens a PR; it doesn't auto-merge, so master never moves without a deliberate merge, and by the time you do merge it, `check` has already told you whether it builds.
+
+## Rebuilding from scratch
+
+What's needed: this repo, the `nix-secrets` repo, and the SSH keys that let you into both. From there, `deploy <host>` against real hardware runs disko and nixos-install from nothing. Host SSH keys and the user's SSH keys are recovered via agenix from `nix-secrets`; everything else is either declared here or covered by `dotfile-state-restore` for the handful of things (DMS settings, a couple of app configs) that are persisted but not declared in Nix.
