@@ -28,7 +28,7 @@
 
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
 
-    hyprland.url = "github:hyprwm/Hyprland?submodules=1";
+    hyprland.url = "github:hyprwm/Hyprland";
 
     noctalia.url = "github:noctalia-dev/noctalia/legacy-v4";
     noctalia.inputs.nixpkgs.follows = "nixpkgs";
@@ -51,9 +51,8 @@
     impermanence.url = "github:nix-community/impermanence";
   };
 
-  outputs =
-    inputs:
-    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+  outputs = inputs:
+    inputs.flake-parts.lib.mkFlake {inherit inputs;} {
       systems = [
         "x86_64-linux"
         "aarch64-linux"
@@ -61,23 +60,23 @@
         "aarch64-darwin"
       ];
 
-      imports = [ (inputs.import-tree ./modules) ];
+      imports = [(inputs.import-tree ./modules)];
 
-      perSystem =
-        {
-          config,
-          pkgs,
-          system,
-          ...
-        }:
-        {
-          _module.args.pkgs = import inputs.nixpkgs {
-            inherit system;
-            config = {
-              allowUnfree = true;
-              nvidia.acceptLicense = true;
-            };
-            overlays = import ./overlays { inherit inputs; } ++ [
+      perSystem = {
+        config,
+        pkgs,
+        system,
+        ...
+      }: {
+        _module.args.pkgs = import inputs.nixpkgs {
+          inherit system;
+          config = {
+            allowUnfree = true;
+            nvidia.acceptLicense = true;
+          };
+          overlays =
+            import ./overlays {inherit inputs;}
+            ++ [
               inputs.nur.overlays.default
               inputs.nixpkgs-xr.overlays.default
               (final: prev: {
@@ -91,16 +90,16 @@
                 };
               })
             ];
-          };
-
-          devShells = import ./shells {
-            inherit
-              config
-              inputs
-              pkgs
-              system
-              ;
-          };
         };
+
+        devShells = import ./shells {
+          inherit
+            config
+            inputs
+            pkgs
+            system
+            ;
+        };
+      };
     };
 }
