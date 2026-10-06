@@ -1,10 +1,9 @@
-{inputs, ...}: {
-  flake.modules.nixos.nvf = {...}: {
-    environment.persistence."/persist".users.Maxwell.directories = [".local/state/nvf/shada"];
+{ inputs, ... }: {
+  flake.modules.nixos.nvf = { ... }: {
   };
 
-  flake.modules.homeManager.nvf = {...}: {
-    imports = [inputs.nvf.homeManagerModules.default];
+  flake.modules.homeManager.nvf = { ... }: {
+    imports = [ inputs.nvf.homeManagerModules.default ];
 
     programs.nvf = {
       enable = true;
@@ -76,7 +75,7 @@
             enable = true;
             lsp = {
               enable = true;
-              servers = ["nixd"];
+              servers = [ "nixd" ];
             };
           };
           assembly.enable = false;
@@ -104,7 +103,7 @@
           highlight-undo.enable = false;
           indent-blankline = {
             enable = true;
-            setupOpts = {};
+            setupOpts = { };
           };
           nvim-cursorline = {
             enable = true;
@@ -116,24 +115,24 @@
 
         autopairs.nvim-autopairs = {
           enable = true;
-          setupOpts = {};
+          setupOpts = { };
         };
 
         autocomplete.nvim-cmp = {
           enable = true;
-          setupOpts = {};
+          setupOpts = { };
         };
 
         snippets.luasnip.enable = true;
 
         filetree.nvimTree = {
           enable = true;
-          setupOpts = {};
+          setupOpts = { };
         };
 
         tabline.nvimBufferline = {
           enable = true;
-          setupOpts = {};
+          setupOpts = { };
         };
 
         treesitter.context.enable = true;
@@ -176,14 +175,14 @@
         terminal.toggleterm = {
           enable = true;
           lazygit.enable = true;
-          setupOpts = {};
+          setupOpts = { };
         };
 
         ui = {
           borders.enable = true;
           noice = {
             enable = true;
-            setupOpts = {};
+            setupOpts = { };
           };
           colorizer.enable = true;
           illuminate.enable = true;
@@ -194,7 +193,10 @@
               nix = "110";
               ruby = "120";
               java = "130";
-              go = ["90" "130"];
+              go = [
+                "90"
+                "130"
+              ];
             };
           };
           fastaction.enable = true;

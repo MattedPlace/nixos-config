@@ -1,5 +1,5 @@
-{...}: {
-  flake.modules.homeManager.xdg = {config, ...}: {
+{ ... }: {
+  flake.modules.homeManager.xdg = { config, ... }: {
     xdg = {
       enable = true;
       cacheHome = config.home.homeDirectory + "/.local/cache";
@@ -16,13 +16,6 @@
         desktop = "$HOME";
       };
 
-      desktopEntries."1password" = {
-        name = "1Password";
-        exec = "1password --ozone-platform=wayland";
-        terminal = false;
-        type = "Application";
-        categories = ["Utility"];
-      };
     };
   };
 }

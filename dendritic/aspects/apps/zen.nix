@@ -1,17 +1,16 @@
-{inputs, ...}: {
-  flake.modules.nixos.zen = {...}: {
-    environment.persistence."/persist".users.Maxwell.directories = [".zen"];
+{ inputs, ... }: {
+  flake.modules.nixos.zen = { ... }: {
   };
 
-  flake.modules.homeManager.zen = {...}: {
-    imports = [inputs.zen-browser.homeModules.default];
+  flake.modules.homeManager.zen = { ... }: {
+    imports = [ inputs.zen-browser.homeModules.default ];
 
     programs.zen-browser = {
       enable = true;
       profiles.Maxwell = {
         isDefault = true;
         path = "deuteqrr.Default Profile";
-        settings = {};
+        settings = { };
       };
     };
   };

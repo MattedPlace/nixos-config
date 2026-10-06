@@ -1,9 +1,5 @@
 { ... }: {
   flake.modules.nixos.fish = { ... }: {
-    environment.persistence."/persist".users.Maxwell.directories = [
-      ".local/share/fish"
-      ".config/fish"
-    ];
   };
 
   flake.modules.homeManager.fish = { ... }: {

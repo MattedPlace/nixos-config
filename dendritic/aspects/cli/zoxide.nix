@@ -1,12 +1,14 @@
-{...}: {
-  flake.modules.nixos.zoxide = {...}: {
-    environment.persistence."/persist".users.Maxwell.directories = [".local/share/zoxide"];
+{ ... }: {
+  flake.modules.nixos.zoxide = { ... }: {
   };
 
-  flake.modules.homeManager.zoxide = {...}: {
+  flake.modules.homeManager.zoxide = { ... }: {
     programs.zoxide = {
       enable = true;
-      options = ["--cmd" "cd"];
+      options = [
+        "--cmd"
+        "cd"
+      ];
     };
   };
 }

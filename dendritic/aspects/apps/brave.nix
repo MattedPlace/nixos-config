@@ -1,6 +1,5 @@
 { ... }: {
   flake.modules.nixos.brave = { ... }: {
-    environment.persistence."/persist".users.Maxwell.directories = [ ".brave" ];
   };
 
   flake.modules.homeManager.brave = { pkgs, ... }: {

@@ -13,9 +13,5 @@
       };
     };
 
-    environment.persistence."/persist".users.Maxwell.directories = [
-      ".config/DankMaterialShell"
-      ".local/state/DankMaterialShell"
-    ];
   };
 }

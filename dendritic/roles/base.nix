@@ -15,21 +15,14 @@
       nvf
       zoxide
 
-      sudo
-      pam
-
       boot
-      fstrim
       locale
       nix-settings
-      polkit-wheel-rebuild
       time
 
-      impermanence
       nh
       ripgrep
       ranger
-      snowcrate-status
       systemd-manager
     ];
   };

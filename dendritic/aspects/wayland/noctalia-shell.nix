@@ -1,13 +1,9 @@
-{inputs, ...}: {
-  flake.modules.nixos.noctalia-shell = {...}: {
-    environment.persistence."/persist".users.Maxwell.directories = [
-      ".config/noctalia"
-      ".local/state/noctalia"
-    ];
+{ inputs, ... }: {
+  flake.modules.nixos.noctalia-shell = { ... }: {
   };
 
-  flake.modules.homeManager.noctalia-shell = {...}: {
-    imports = [inputs.noctalia-shell.homeModules.default];
+  flake.modules.homeManager.noctalia-shell = { ... }: {
+    imports = [ inputs.noctalia-shell.homeModules.default ];
 
     programs.noctalia = {
       enable = true;

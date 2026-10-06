@@ -1,1 +1,0 @@
-import ../agenix.nix "laptop"

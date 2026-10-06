@@ -8,8 +8,6 @@
     system = "x86_64-linux";
     specialArgs = { inherit inputs; };
     modules = [
-      inputs.determinate.nixosModules.default
-      inputs.disko.nixosModules.disko
       inputs.home-manager.nixosModules.home-manager
       self.modules.nixos.role-desktop
       self.modules.nixos.desktop
@@ -40,7 +38,6 @@
 
           users.Maxwell.imports = [
             self.modules.homeManager.role-desktop
-            self.modules.homeManager.app-spawn-listener
             {
               wayland.windowManager.niri.settings.output = [
                 {

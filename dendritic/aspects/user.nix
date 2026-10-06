@@ -7,7 +7,6 @@
       home = "/home/Maxwell";
       group = "users";
       shell = pkgs.fish;
-      uid = 1001;
       hashedPassword = "$6$9tzoSh9pK86/o/9U$ogDndtEZtWiyjS0gkJDI6j2d1sEBiBAkaX8U66Om8YTPKnhPag/bdRAjiyAC8.WtholwXkasnKTcgGLEJPfD21";
     };
   };
