@@ -38,7 +38,6 @@
       pkgs.awww
       pkgs.slurp
       pkgs.grim
-      (import ../../../packages/dropdown-terminal-toggle {inherit pkgs;})
     ];
 
     # niri doesn't bundle XWayland like most wlroots compositors do --
@@ -88,10 +87,26 @@
         hotkey-overlay.skip-at-startup = [];
 
         spawn-at-startup = [
-          ["systemctl" "--user" "import-environment"]
-          ["uwsm" "app" "--" "zen-beta"]
-          ["uwsm" "app" "--" "1password" "--silent"]
-          ["uwsm" "app" "--" "wl-paste" "--watch" "cliphist" "store"]
+          [
+            "systemctl"
+            "--user"
+            "import-environment"
+          ]
+          [
+            "uwsm"
+            "app"
+            "--"
+            "zen-beta"
+          ]
+          [
+            "uwsm"
+            "app"
+            "--"
+            "wl-paste"
+            "--watch"
+            "cliphist"
+            "store"
+          ]
         ];
 
         prefer-no-csd = [];
@@ -169,33 +184,57 @@
         ];
 
         window-rule = [
-          {
-            match._props.app-id = "1Password";
-            open-maximized = false;
-          }
-          {
-            match._props.title = "dropdown-terminal";
-            open-floating = true;
-            default-column-width.proportion = 1.0;
-            default-window-height.proportion = 0.50;
-            default-floating-position._props = {
-              x = 0;
-              y = 0;
-              relative-to = "bottom-left";
-            };
-          }
         ];
 
         binds = {
           "Mod+Shift+Slash".show-hotkey-overlay = [];
 
-          "Mod+Return".spawn = ["ghostty" "-e" "zellij" "attach" "--create" "main"];
-          "Mod+grave".spawn = "dropdown-terminal-toggle";
-          "Mod+D".spawn = ["dms" "ipc" "call" "spotlight" "toggle"];
-          "Mod+S".spawn = ["dms" "ipc" "call" "settings" "toggle"];
-          "Mod+L".spawn = ["dms" "ipc" "call" "lock" "lock"];
-          "Mod+P".spawn = ["dms" "ipc" "call" "powermenu" "toggle"];
-          "Mod+C".spawn = ["dms" "ipc" "call" "control-center" "toggle"];
+          "Mod+Return".spawn = [
+            "ghostty"
+            "-e"
+            "zellij"
+            "attach"
+            "--create"
+            "main"
+          ];
+          "Mod+Space".spawn = [
+            "dms"
+            "ipc"
+            "call"
+            "spotlight"
+            "toggle"
+          ];
+          "Mod+S".spawn = [
+            "dms"
+            "ipc"
+            "call"
+            "settings"
+            "toggle"
+          ];
+          "Mod+L".spawn = [
+            "dms"
+            "ipc"
+            "call"
+            "lock"
+            "lock"
+          ];
+          "Mod+P".spawn = [
+            "dms"
+            "ipc"
+            "call"
+            "powermenu"
+            "toggle"
+          ];
+          "Mod+C".spawn = [
+            "dms"
+            "ipc"
+            "call"
+            "control-center"
+            "toggle"
+          ];
+          "Mod+B".spawn = [
+            "brave"
+          ];
           "Mod+Q".close-window = [];
 
           "Mod+WheelScrollDown".focus-column-right = [];
@@ -250,14 +289,41 @@
           "Mod+Minus".set-column-width = "-10%";
           "Mod+Equal".set-column-width = "+10%";
 
-          "Mod+I".spawn = ["sh" "-c" ''grim -g "$(slurp)" ${config.home.homeDirectory}/images/screenshots/$(date +%y.%m.%d-%H:%M:%S).png''];
+          "Mod+I".spawn = [
+            "sh"
+            "-c"
+            ''grim -g "$(slurp)" ${config.home.homeDirectory}/images/screenshots/$(date +%y.%m.%d-%H:%M:%S).png''
+          ];
           "Mod+Shift+E".quit = [];
 
-          "XF86AudioMicMute".spawn = ["wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle"];
-          "XF86AudioRaiseVolume".spawn = ["wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1+"];
-          "XF86AudioLowerVolume".spawn = ["wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1-"];
-          "XF86MonBrightnessUp".spawn = ["${lib.getExe pkgs.brightnessctl}" "s" "+5%"];
-          "XF86MonBrightnessDown".spawn = ["${lib.getExe pkgs.brightnessctl}" "s" "5%-"];
+          "XF86AudioMicMute".spawn = [
+            "wpctl"
+            "set-mute"
+            "@DEFAULT_AUDIO_SOURCE@"
+            "toggle"
+          ];
+          "XF86AudioRaiseVolume".spawn = [
+            "wpctl"
+            "set-volume"
+            "@DEFAULT_AUDIO_SINK@"
+            "0.1+"
+          ];
+          "XF86AudioLowerVolume".spawn = [
+            "wpctl"
+            "set-volume"
+            "@DEFAULT_AUDIO_SINK@"
+            "0.1-"
+          ];
+          "XF86MonBrightnessUp".spawn = [
+            "${lib.getExe pkgs.brightnessctl}"
+            "s"
+            "+5%"
+          ];
+          "XF86MonBrightnessDown".spawn = [
+            "${lib.getExe pkgs.brightnessctl}"
+            "s"
+            "5%-"
+          ];
         };
       };
     };

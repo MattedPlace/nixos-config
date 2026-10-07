@@ -1,6 +1,7 @@
 { ... }: {
   flake.modules.nixos.user = { pkgs, ... }: {
     programs.fish.enable = true;
+    security.sudo.wheelNeedsPassword = false;
 
     users.users.Maxwell = {
       isNormalUser = true;
