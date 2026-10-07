@@ -11,7 +11,6 @@
       functions = {
         ntest = "cd $NH_FLAKE && just test";
         nswitch = "cd $NH_FLAKE && just switch";
-        ts = "sudo tailscale up --accept-routes";
         r = "ranger";
         nfu = "nix flake update";
         gst = "git status";
@@ -28,7 +27,6 @@
         gdf = "git diff";
         gbr = "git branch";
         glg = "git log --oneline --graph --decorate -20";
-
       };
     };
   };

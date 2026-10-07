@@ -25,6 +25,10 @@
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nixpkgs-xr = {
+      url = "github:nix-community/nixpkgs-xr";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     dms-plugin-registry = {
       url = "github:AvengeMedia/dms-plugin-registry";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -39,9 +43,12 @@
     };
   };
 
-  outputs =
-    inputs@{ flake-parts, import-tree, ... }:
-    flake-parts.lib.mkFlake { inherit inputs; } {
+  outputs = inputs @ {
+    flake-parts,
+    import-tree,
+    ...
+  }:
+    flake-parts.lib.mkFlake {inherit inputs;} {
       imports = [
         # Declares flake.modules.<class>.<aspect>, merged from ./dendritic.
         inputs.flake-parts.flakeModules.modules
