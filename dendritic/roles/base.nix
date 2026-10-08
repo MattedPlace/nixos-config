@@ -1,19 +1,18 @@
-{ self, ... }: {
+{self, ...}: {
   flake.modules.nixos.role-base = {
     nixpkgs.config.allowUnfree = true;
     # electron-40.10.5: pulled in by an Electron-based app (Vesktop and/or
     # Obsidian/ytmdesktop); remove once nixpkgs moves past this EOL version.
-    nixpkgs.config.permittedInsecurePackages = [ "electron-40.10.5" ];
+    nixpkgs.config.permittedInsecurePackages = ["electron-40.10.5"];
 
     imports = with self.modules.nixos; [
       user
 
       git
-      zellij
 
       fish
       #nvf
-      nixvim
+      #nixvim
       zoxide
 
       print
@@ -25,6 +24,7 @@
       ripgrep
       ranger
       systemd-manager
+      atuin
 
       avahi
       steam
@@ -44,8 +44,8 @@
       just
       nix-index
       #nvf
+      lazyvim
       starship
-      zellij
       zoxide
 
       env

@@ -12,6 +12,7 @@
         wayvr # Desktop VR
         android-tools # ADB for VR
         custom-xrizer
+        gnirehtet
       ];
 
       services.wivrn =

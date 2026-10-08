@@ -48,14 +48,18 @@
     zig = {
       url = "github:mitchellh/zig-overlay";
     };
+    lazyvim = {
+      url = "github:pfassina/lazyvim-nix";
+    };
   };
 
-  outputs = inputs @ {
-    flake-parts,
-    import-tree,
-    ...
-  }:
-    flake-parts.lib.mkFlake {inherit inputs;} {
+  outputs =
+    inputs@{
+      flake-parts,
+      import-tree,
+      ...
+    }:
+    flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [
         # Declares flake.modules.<class>.<aspect>, merged from ./dendritic.
         inputs.flake-parts.flakeModules.modules

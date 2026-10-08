@@ -1,12 +1,13 @@
-{ ... }: {
-  flake.modules.nixos.fish = { ... }: {
+{...}: {
+  flake.modules.nixos.fish = {...}: {
   };
 
-  flake.modules.homeManager.fish = { ... }: {
+  flake.modules.homeManager.fish = {...}: {
     programs.fish = {
       enable = true;
       interactiveShellInit = ''
         set fish_greeting # Disable greeting
+        atuin init fish | source
       '';
       functions = {
         ntest = "cd $NH_FLAKE && just test";
@@ -27,6 +28,13 @@
         gdf = "git diff";
         gbr = "git branch";
         glg = "git log --oneline --graph --decorate -20";
+        lv = "nvim";
+        lazyvim = "nvim";
+        nix-fmt = "prettier";
+        py-fmt = "black";
+        py-isort = "isort";
+        js-fmt = "prettier --write";
+        lua-fmt = "stylua";
       };
     };
   };

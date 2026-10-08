@@ -32,12 +32,13 @@
       done
     '';
 
-    home.packages = [
-      pkgs.xwayland-satellite-unstable
-      pkgs.gtk4
-      pkgs.awww
-      pkgs.slurp
-      pkgs.grim
+    home.packages = with pkgs; [
+      xwayland-satellite-unstable
+      gtk4
+      awww
+      slurp
+      grim
+      playerctl
     ];
 
     # niri doesn't bundle XWayland like most wlroots compositors do --
@@ -85,29 +86,6 @@
 
       settings = {
         hotkey-overlay.skip-at-startup = [];
-
-        spawn-at-startup = [
-          [
-            "systemctl"
-            "--user"
-            "import-environment"
-          ]
-          [
-            "uwsm"
-            "app"
-            "--"
-            "zen-beta"
-          ]
-          [
-            "uwsm"
-            "app"
-            "--"
-            "wl-paste"
-            "--watch"
-            "cliphist"
-            "store"
-          ]
-        ];
 
         prefer-no-csd = [];
 
@@ -186,16 +164,16 @@
         window-rule = [
         ];
 
-        binds = {
+        binds = let
+          wpctl = args: {
+            _props.allow-when-locked = true;
+            spawn = ["wpctl"] ++ args;
+          };
+        in {
           "Mod+Shift+Slash".show-hotkey-overlay = [];
 
           "Mod+Return".spawn = [
             "ghostty"
-            "-e"
-            "zellij"
-            "attach"
-            "--create"
-            "main"
           ];
           "Mod+Space".spawn = [
             "dms"
@@ -295,34 +273,48 @@
             ''grim -g "$(slurp)" ${config.home.homeDirectory}/images/screenshots/$(date +%y.%m.%d-%H:%M:%S).png''
           ];
           "Mod+Shift+E".quit = [];
-
-          "XF86AudioMicMute".spawn = [
-            "wpctl"
+          # Volume keys mappings for PipeWire & WirePlumber.
+          XF86AudioRaiseVolume = wpctl [
+            "set-volume"
+            "@DEFAULT_AUDIO_SINK@"
+            "0.05+"
+            "--limit"
+            "1"
+          ];
+          XF86AudioLowerVolume = wpctl [
+            "set-volume"
+            "@DEFAULT_AUDIO_SINK@"
+            "0.05-"
+            "--limit"
+            "1"
+          ];
+          XF86AudioMute = wpctl [
+            "set-mute"
+            "@DEFAULT_AUDIO_SINK@"
+            "toggle"
+          ];
+          XF86AudioMicMute = wpctl [
             "set-mute"
             "@DEFAULT_AUDIO_SOURCE@"
             "toggle"
           ];
-          "XF86AudioRaiseVolume".spawn = [
-            "wpctl"
-            "set-volume"
-            "@DEFAULT_AUDIO_SINK@"
-            "0.1+"
+          XF86AudioPlay.spawn = [
+            "playerctl"
+            "play-pause"
           ];
-          "XF86AudioLowerVolume".spawn = [
-            "wpctl"
-            "set-volume"
-            "@DEFAULT_AUDIO_SINK@"
-            "0.1-"
+          XF86AudioStop.spawn = [
+            "playerctl"
+            "stop"
           ];
-          "XF86MonBrightnessUp".spawn = [
-            "${lib.getExe pkgs.brightnessctl}"
-            "s"
-            "+5%"
+
+          XF86AudioNext.spawn = [
+            "playerctl"
+            "next"
           ];
-          "XF86MonBrightnessDown".spawn = [
-            "${lib.getExe pkgs.brightnessctl}"
-            "s"
-            "5%-"
+
+          XF86AudioPrev.spawn = [
+            "playerctl"
+            "previous"
           ];
         };
       };

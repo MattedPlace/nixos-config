@@ -2,7 +2,7 @@
   flake.modules.nixos.brave = { ... }: {
   };
 
-  flake.modules.homeManager.brave = { pkgs, ... }: {
+  flake.modules.homeManager.brave = { ... }: {
     programs.brave = {
       enable = true;
       commandLineArgs = [
