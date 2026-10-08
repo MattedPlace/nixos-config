@@ -12,7 +12,8 @@
       zellij
 
       fish
-      nvf
+      #nvf
+      nixvim
       zoxide
 
       print
@@ -26,6 +27,7 @@
       systemd-manager
 
       avahi
+      steam
     ];
   };
 
@@ -41,7 +43,7 @@
       fzf
       just
       nix-index
-      nvf
+      #nvf
       starship
       zellij
       zoxide

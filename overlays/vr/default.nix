@@ -1,5 +1,5 @@
-{...}: _final: prev: {
-  custom-xrizer = prev.xrizer.overrideAttrs rec {
+{ ... }: _final: prev: {
+  custom-xrizer = prev.xrizer.overrideAttrs (rec {
     version = "hla";
     src = prev.fetchFromGitHub {
       owner = "Mr-Zero88";
@@ -11,7 +11,13 @@
       inherit src;
       hash = "sha256-F6ZTOCPih04tT0hlaso43/TNP5bahQkF8HOdjn7/bBc=";
     };
-    patches = [];
-    doCheck = false;
-  };
+    patches = [ ];
+    # The original postPatch looks for features = ["static"], which no longer exists.
+    postPatch = ''
+      substituteInPlace src/graphics_backends/gl.rs \
+        --replace-fail 'libGLX.so.0' '${prev.lib.getLib prev.libGL}/lib/libGLX.so.0'
+    '';
+    # Or, if the gl.rs line also no longer matches:
+    # postPatch = "";   doCheck = false;
+  });
 }
