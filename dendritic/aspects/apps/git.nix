@@ -9,8 +9,7 @@
     programs.git = {
       enable = true;
       settings = {
-        user.name = "Matthew Henderson";
-        user.email = "Maxwell@crate.dev";
+        user.name = "Maxwell Mattila";
         init.defaultBranch = "master";
         pull.rebase = true;
         push.autoSetupRemote = true;
