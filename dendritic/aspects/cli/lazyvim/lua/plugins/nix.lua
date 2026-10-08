@@ -13,6 +13,10 @@ return {
         nixd = {
           settings = {
             nixd = {
+              formatting = {
+                command = { "alejandra" },
+                timeout_ms = 5000,
+              },
               options = (function()
                 local host = vim.fn.hostname()
                 local flake = '(builtins.getFlake ("git+file://" + toString /home/Maxwell/nixos-config))'
@@ -83,7 +87,7 @@ return {
     optional = true,
     opts = {
       formatters_by_ft = {
-        nix = { "prettier" },
+        nix = { "nixfmt" },
       },
     },
   },

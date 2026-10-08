@@ -1,7 +1,7 @@
 # modules/lazyvim.nix
-{inputs, ...}: {
+{ inputs, ... }: {
   # Contribute a reusable home-manager aspect
-  flake.modules.homeManager.lazyvim = {pkgs, ...}: {
+  flake.modules.homeManager.lazyvim = { pkgs, ... }: {
     # Make the home-manager module available
     imports = [
       inputs.lazyvim.homeManagerModules.default
@@ -27,6 +27,8 @@
 
         # Formatters
         prettier
+        alejandra
+        nixfmt
         python313Packages.black
         python313Packages.isort
 

@@ -16,32 +16,8 @@ return {
     "neovim/nvim-lspconfig",
     opts = {
       servers = {
-        gopls = {
-          settings = {
-            gopls = {
-              gofumpt = true,
-              staticcheck = true,
-              usePlaceholders = true,
-              analyses = {
-                unusedparams = true,
-                shadow = true,
-              },
-            },
-          },
-        },
 
-        rust_analyzer = {
-          settings = {
-            ["rust-analyzer"] = {
-              cargo = { allFeatures = true },
-              checkOnSave = { command = "clippy" },
-              procMacro = { enable = true },
-            },
-          },
-        },
 
-        -- typescript-language-server; upstream renamed tsserver -> ts_ls.
-        ts_ls = {},
 
         -- python-lsp-server. Formatting is handled by black/isort from Nix via
         -- conform, so pylsp's own bundled formatters stay off to avoid two
@@ -67,22 +43,12 @@ return {
     "nvim-treesitter/nvim-treesitter",
     opts = {
       ensure_installed = {
-        "go",
-        "gomod",
-        "gosum",
-        "rust",
-        "toml",
-        "typescript",
-        "tsx",
-        "javascript",
         "python",
-        "yaml",
         "json",
         "jsonc",
         "markdown",
         "markdown_inline",
         "bash",
-        "dockerfile",
       },
     },
   },
