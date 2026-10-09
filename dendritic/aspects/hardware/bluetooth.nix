@@ -9,8 +9,9 @@
         enable = true;
         settings = {
           General = {
-            Enabl = "Source,Sink,Media,Socket";
-            AutoEnable = true;
+            Enable = "Source,Sink,Media,Socket";
+            AutoEnable = false;
+            ReconnectAttempts = 0;
             ControllerMode = "dual";
           };
         };

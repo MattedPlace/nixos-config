@@ -11,10 +11,11 @@
       audio
 
       cliphist
-      fonts
+      #fonts
       gvfs
       portals
       wlclipboard
+      theme
     ];
   };
 
@@ -29,6 +30,8 @@
 
       mpv
       ytmusic
+
+      theme
 
     ];
   };

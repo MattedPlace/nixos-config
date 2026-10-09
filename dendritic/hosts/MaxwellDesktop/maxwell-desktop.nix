@@ -24,11 +24,6 @@
           "disk"
         ];
 
-        networking = {
-          hostName = "MaxwellDesktop";
-          networkmanager.enable = true;
-        };
-
         system.stateVersion = "24.05";
 
         home-manager = {

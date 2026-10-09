@@ -25,10 +25,10 @@
       ripgrep
       ranger
       systemd-manager
-      atuin
 
       avahi
       steam
+
     ];
   };
 
@@ -44,6 +44,7 @@
       fzf
       just
       nix-index
+      atuin
       #nvf
       lazyvim
       starship
