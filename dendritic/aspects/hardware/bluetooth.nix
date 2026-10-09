@@ -2,7 +2,7 @@
 #  Bluetooth
 #
 {
-  flake.modules.nixos.desktop =
+  flake.modules.nixos.bluetooth =
     { config, ... }:
     {
       hardware.bluetooth = {
