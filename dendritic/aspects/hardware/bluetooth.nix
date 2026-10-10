@@ -10,9 +10,11 @@
         settings = {
           General = {
             Enable = "Source,Sink,Media,Socket";
-            AutoEnable = false;
-            ReconnectAttempts = 0;
             ControllerMode = "dual";
+          };
+          Policy = {
+            AutoEnable = true;
+            ReconnectAttempts = 0;
           };
         };
       };
