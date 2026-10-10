@@ -219,6 +219,9 @@
               "Mod+B".spawn = [
                 "brave"
               ];
+              "Mod+E".spawn = [
+                "nautilus"
+              ];
               "Mod+Q".close-window = [ ];
 
               "Mod+WheelScrollDown".focus-column-right = [ ];
