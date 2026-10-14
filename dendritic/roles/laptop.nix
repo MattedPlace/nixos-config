@@ -4,6 +4,7 @@
       role-base
       role-graphical
       power
+      libinput
     ];
   };
 

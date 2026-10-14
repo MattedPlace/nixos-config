@@ -11,7 +11,7 @@
       audio
 
       cliphist
-      #fonts
+      fonts
       gvfs
       portals
       wlclipboard
@@ -25,7 +25,6 @@
       xdg
 
       ghostty
-      nautilus
       zen
 
       mpv

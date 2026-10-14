@@ -21,7 +21,7 @@
       ];
     };
     environment.systemPackages = with pkgs; [
-      gnome-control-center
+      #gnome-control-center
       gnome-online-accounts
     ];
 
@@ -29,12 +29,14 @@
 
     security.pam.services.gnomekey.enableGnomeKeyring = true;
 
-    home-manager.users.Maxwell = {
-      xdg.desktopEntries.gnome-control-center = {
-        name = "Gnome Control Center";
-        exec = "env XDG_CURRENT_DESKTOP=GNOME ${pkgs.gnome-control-center}/bin/gnome-control-center";
+    /*
+      home-manager.users.Maxwell = {
+        xdg.desktopEntries.gnome-control-center = {
+          name = "Gnome Control Center";
+          exec = "env XDG_CURRENT_DESKTOP=GNOME ${pkgs.gnome-control-center}/bin/gnome-control-center";
+        };
       };
-    };
+    */
   };
 
   flake.modules.homeManager.user = { ... }: {

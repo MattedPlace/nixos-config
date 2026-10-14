@@ -29,6 +29,7 @@
       avahi
       steam
       packages
+      samba
 
     ];
   };
@@ -53,6 +54,8 @@
 
       env
       brave
+
+      packages
     ];
   };
 }

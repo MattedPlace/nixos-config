@@ -14,6 +14,7 @@
       self.modules.nixos.g15
       self.modules.nixos.vr
       self.modules.nixos.plex
+      self.modules.nixos.flatpak
 
       {
         # "disk" grants raw access to /dev/disk/by-partlabel/* block
