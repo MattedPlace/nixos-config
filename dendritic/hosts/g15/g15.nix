@@ -47,26 +47,6 @@ in
           "disk"
         ];
 
-        system.stateVersion = "24.05";
-
-        home-manager = {
-          useGlobalPkgs = true;
-          useUserPackages = true;
-          extraSpecialArgs = { inherit inputs; };
-
-          users.Maxwell.imports = [
-            self.modules.homeManager.role-laptop
-            {
-              wayland.windowManager.niri.settings.output = [
-                {
-                  _args = [ "eDP-1" ];
-                  mode = "1920x1080@60";
-                  scale = 1.0;
-                }
-              ];
-            }
-          ];
-        };
       }
     ];
   };
@@ -74,6 +54,16 @@ in
     inherit host;
     home-manager.users.${host.user.name} = {
       imports = with config.flake.modules.homeManager; [
+        role-laptop
+        {
+          wayland.windowManager.niri.settings.output = [
+            {
+              _args = [ "eDP-1" ];
+              mode = "1920x1080@60";
+              scale = 1.0;
+            }
+          ];
+        }
       ];
     };
   };
