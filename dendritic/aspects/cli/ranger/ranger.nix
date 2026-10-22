@@ -1,6 +1,6 @@
-{self, ...}: {
-  flake.modules.homeManager.ranger = {pkgs, ...}: {
-    home.packages = [pkgs.ranger];
+{ self, ... }: {
+  flake.modules.homeManager.ranger = { pkgs, ... }: {
+    home.packages = [ pkgs.ranger ];
     home.file.".config/ranger" = {
       source = ./configs;
       recursive = true;
@@ -13,11 +13,5 @@
         hash = "sha256-6JEhyU08QEkGdRW2L00ynRaoaaR5PaiVUccEUbtTQuU=";
       };
     };
-  };
-
-  flake.modules.nixos.ranger = {
-    home-manager.sharedModules = [
-      self.modules.homeManager.ranger
-    ];
   };
 }

@@ -1,8 +1,12 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-26.05";
+    nixpkgs-master.url = "github:NixOS/nixpkgs/master";
     flake-parts.url = "github:hercules-ci/flake-parts";
     import-tree.url = "github:vic/import-tree";
+    nur.url = "github:nix-community/NUR";
+    nur.inputs.nixpkgs.follows = "nixpkgs";
 
     home-manager = {
       url = "github:nix-community/home-manager";
@@ -76,5 +80,34 @@
         inputs.flake-parts.flakeModules.modules
         (import-tree ./dendritic)
       ];
+      perSystem =
+        {
+          config,
+          pkgs,
+          system,
+          ...
+        }:
+        {
+          _module.args.pkgs = import inputs.nixpkgs {
+            inherit system;
+            config = {
+              allowUnfree = true;
+              nvidia.acceptLicense = true;
+            };
+            overlays = [
+              inputs.nur.overlays.default
+              (final: prev: {
+                stable = import inputs.nixpkgs-stable {
+                  system = prev.stdenv.hostPlatform.system;
+                  config.allowUnfree = true;
+                };
+                master = import inputs.nixpkgs-master {
+                  system = prev.stdenv.hostPlatform.system;
+                  config.allowUnfree = true;
+                };
+              })
+            ];
+          };
+        };
     };
 }

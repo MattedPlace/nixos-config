@@ -43,7 +43,6 @@
     home = {
       username = "Maxwell";
       homeDirectory = "/home/Maxwell";
-      stateVersion = "24.05";
       file."images/screenshots/.keep".text = "";
     };
   };
