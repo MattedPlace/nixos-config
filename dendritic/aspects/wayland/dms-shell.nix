@@ -9,6 +9,7 @@
         dankClight.enable = true;
         webSearch.enable = true;
         dankLauncherKeys.enable = true;
+        dankKDEConnect.enable = true;
         nixMonitor.enable = true;
       };
     };
