@@ -13,6 +13,9 @@
         nixMonitor.enable = true;
       };
     };
+    programs = {
+      kdeconnect.enable = true;
+    };
 
   };
 }

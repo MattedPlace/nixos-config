@@ -2,27 +2,27 @@
 #  Media Services: Plex, Torrenting and Automation
 #
 {
-  flake.modules.nixos.plex = {pkgs, ...}: {
-    nixpkgs.overlays = [(import ../../../overlays/plex)];
+  flake.modules.nixos.plex = { pkgs, ... }: {
+    nixpkgs.overlays = [ (import ../../../overlays/plex) ];
     services = {
       /*
-      radarr = {
-      enable = true;
-      group = "plex";
-      openFirewall = true;
-      };
-      sonarr = {
-      enable = true;
-      user = "root";
-      group = "users";
-      openFirewall = true;
-      };
-      bazarr = {
-      enable = true;
-      user = "root";
-      group = "users";
-      openFirewall = true;
-      };
+        radarr = {
+        enable = true;
+        group = "plex";
+        openFirewall = true;
+        };
+        sonarr = {
+        enable = true;
+        user = "root";
+        group = "users";
+        openFirewall = true;
+        };
+        bazarr = {
+        enable = true;
+        user = "root";
+        group = "users";
+        openFirewall = true;
+        };
       */
       prowlarr = {
         enable = true;
@@ -108,8 +108,8 @@
       };
 
       # Ensure service starts after network
-      wants = ["network-online.target"];
-      after = ["network-online.target"];
+      wants = [ "network-online.target" ];
+      after = [ "network-online.target" ];
     };
   };
 }
