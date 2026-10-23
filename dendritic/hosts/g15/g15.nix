@@ -10,21 +10,10 @@ let
     user.name = "Maxwell";
     state.version = "22.05";
     system = "x86_64-linux";
-    monitors = [
-      {
-        name = "eDP-1";
-        w = "1920";
-        h = "1080";
-        refresh = "60";
-        x = "0";
-        y = "0";
-      }
-    ];
   };
 in
 {
   flake.nixosConfigurations.g15 = inputs.nixpkgs.lib.nixosSystem {
-    system = "x86_64-linux";
     specialArgs = { inherit inputs; };
     modules = [
       inputs.home-manager.nixosModules.home-manager

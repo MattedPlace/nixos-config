@@ -45,7 +45,6 @@
         packages = [
           "com.github.tchx84.Flatseal"
           #"io.github.tgeorgiadis.QuiverLauncher"
-          "dev.khcrysalis.PlumeImpactor" # ← Impactor
         ];
       };
     };
