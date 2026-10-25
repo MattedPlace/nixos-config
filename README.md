@@ -1,6 +1,6 @@
 # snowcrate
 
-My NixOS configuration, covering three machines: crate-desktop, crate-laptop, and crate-server (the last one still a work in progress, not deployed). Single user throughout (Maxwell).
+My NixOS configuration, covering three machines: crate-desktop, crate-laptop, and crate-server (the last one still a work in progress, not deployed). Single user throughout (${config.host.user.name}).
 
 ## Layout
 

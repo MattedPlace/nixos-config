@@ -1,8 +1,8 @@
-{ ... }: {
-  flake.modules.nixos.fish = { ... }: {
+{ config, ... }: {
+  flake.modules.nixos.fish = { config, ... }: {
   };
 
-  flake.modules.homeManager.fish = { ... }: {
+  flake.modules.homeManager.fish = { config, ... }: {
     programs.fish = {
       enable = true;
       interactiveShellInit = ''

@@ -1,6 +1,6 @@
 {
   flake.modules.nixos.desktop =
-    { config, pkgs, ... }:
+    { pkgs, config, ... }:
     {
       boot = {
         kernelParams = [

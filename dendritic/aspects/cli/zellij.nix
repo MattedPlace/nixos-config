@@ -1,5 +1,5 @@
-{ ... }: {
-  flake.modules.nixos.zellij = { ... }: {
+{ config, ... }: {
+  flake.modules.nixos.zellij = { config, ... }: {
     nixpkgs.overlays = [ (import ../../../overlays/zellij-plugins { }) ];
 
   };

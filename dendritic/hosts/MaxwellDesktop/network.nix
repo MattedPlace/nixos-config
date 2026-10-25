@@ -9,7 +9,7 @@
     {
       networking = {
         useDHCP = lib.mkDefault true;
-        hostName = "MaxwellDesktop";
+        hostName = "${config.host.user.name}Desktop";
         enableIPv6 = false;
         networkmanager = {
           enable = true;

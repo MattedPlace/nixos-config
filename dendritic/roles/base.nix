@@ -1,4 +1,4 @@
-{ self, ... }: {
+{ self, config, ... }: {
   flake.modules.nixos.role-base = {
     # electron-40.10.5: pulled in by an Electron-based app (Vesktop and/or
     # Obsidian/ytmdesktop); remove once nixpkgs moves past this EOL version.
@@ -33,7 +33,6 @@
 
   flake.modules.homeManager.role-base = {
     imports = with self.modules.homeManager; [
-      user
 
       git
 
@@ -52,8 +51,6 @@
 
       env
       brave
-
-      packages
     ];
   };
 }

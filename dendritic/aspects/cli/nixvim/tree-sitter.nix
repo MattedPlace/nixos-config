@@ -1,6 +1,6 @@
 {
   flake.modules.editors.nixvim =
-    { pkgs, ... }:
+    { pkgs, config, ... }:
     let
       livesvelte = pkgs.stdenv.mkDerivation {
         name = "livesvelte";

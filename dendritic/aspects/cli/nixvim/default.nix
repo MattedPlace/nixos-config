@@ -53,7 +53,7 @@ in {
     ];
     programs.nixvim = nixvimConfig pkgs;
     environment.systemPackages = packages pkgs;
-    home-manager.users.Maxwell = {
+    home-manager.users.${config.host.user.name} = {
       imports = [npmEnvironment];
     };
   };

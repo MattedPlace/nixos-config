@@ -1,4 +1,4 @@
-{ self, ... }: {
+{ self, config, ... }: {
   flake.modules.nixos.role-graphical = {
     imports = with self.modules.nixos; [
       niri

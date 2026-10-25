@@ -1,5 +1,5 @@
-{ ... }: {
-  flake.modules.nixos.power = { ... }: {
+{ config, ... }: {
+  flake.modules.nixos.power = { config, ... }: {
     services = {
       power-profiles-daemon.enable = false;
       thermald.enable = false;

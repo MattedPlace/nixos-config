@@ -1,12 +1,12 @@
-{ ... }: {
-  flake.modules.nixos.user = { pkgs, ... }: {
+{ config, ... }: {
+  flake.modules.nixos.user = { pkgs, config, ... }: {
     programs.fish.enable = true;
     security.sudo.wheelNeedsPassword = false;
     security.polkit.enable = true;
 
-    users.users.Maxwell = {
+    users.users.${config.host.user.name} = {
       isNormalUser = true;
-      home = "/home/Maxwell";
+      home = "/home/${config.host.user.name}";
       group = "users";
       shell = pkgs.fish;
       hashedPassword = "$6$9tzoSh9pK86/o/9U$ogDndtEZtWiyjS0gkJDI6j2d1sEBiBAkaX8U66Om8YTPKnhPag/bdRAjiyAC8.WtholwXkasnKTcgGLEJPfD21";
@@ -30,20 +30,12 @@
     security.pam.services.gnomekey.enableGnomeKeyring = true;
 
     /*
-      home-manager.users.Maxwell = {
+      home-manager.users.${config.host.user.name} = {
         xdg.desktopEntries.gnome-control-center = {
           name = "Gnome Control Center";
           exec = "env XDG_CURRENT_DESKTOP=GNOME ${pkgs.gnome-control-center}/bin/gnome-control-center";
         };
       };
     */
-  };
-
-  flake.modules.homeManager.user = { ... }: {
-    home = {
-      username = "Maxwell";
-      homeDirectory = "/home/Maxwell";
-      file."images/screenshots/.keep".text = "";
-    };
   };
 }

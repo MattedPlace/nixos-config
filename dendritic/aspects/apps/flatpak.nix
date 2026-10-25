@@ -5,7 +5,7 @@
 
 {
   flake.modules.nixos.flatpak =
-    { pkgs, ... }:
+    { pkgs, config, ... }:
     {
       imports = [ inputs.nix-flatpak.nixosModules.nix-flatpak ];
       environment = {

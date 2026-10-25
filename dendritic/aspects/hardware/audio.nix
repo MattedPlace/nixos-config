@@ -1,5 +1,5 @@
-{ ... }: {
-  flake.modules.nixos.audio = { pkgs, ... }: {
+{ config, ... }: {
+  flake.modules.nixos.audio = { pkgs, config, ... }: {
     services.pipewire = {
       enable = true;
       alsa.enable = true;
@@ -19,6 +19,6 @@
       pkgs.pavucontrol
     ];
 
-    users.users.Maxwell.extraGroups = [ "audio" ];
+    users.users.${config.host.user.name}.extraGroups = [ "audio" ];
   };
 }

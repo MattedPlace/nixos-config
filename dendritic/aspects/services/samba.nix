@@ -1,6 +1,6 @@
 {
   flake.modules.nixos.samba =
-    { ... }:
+    { config, ... }:
     {
       services = {
         samba = {
@@ -8,7 +8,7 @@
           settings = {
             # Set Password: $ smbpasswd -a <user>
             share = {
-              "path" = "/home/Maxwell";
+              "path" = "/home/${config.host.user.name}";
               "guest ok" = "yes";
               "read only" = "no";
             };

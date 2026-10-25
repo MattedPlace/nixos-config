@@ -1,7 +1,7 @@
-{ ... }: {
-  flake.modules.nixos.steam = { ... }: {
+{ config, ... }: {
+  flake.modules.nixos.steam = { config, ... }: {
     programs.steam.enable = true;
-    users.users.Maxwell.extraGroups = [ "steamcmd" ];
+    users.users.${config.host.user.name}.extraGroups = [ "steamcmd" ];
 
   };
 }

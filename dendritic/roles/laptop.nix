@@ -1,4 +1,4 @@
-{ self, ... }: {
+{ self, config, ... }: {
   flake.modules.nixos.role-laptop = {
     imports = with self.modules.nixos; [
       role-base

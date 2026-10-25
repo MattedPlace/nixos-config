@@ -1,6 +1,6 @@
 {
   flake.modules.editors.nixvim =
-    { pkgs, ... }:
+    { pkgs, config, ... }:
     {
       extraPackages = with pkgs; [
         black

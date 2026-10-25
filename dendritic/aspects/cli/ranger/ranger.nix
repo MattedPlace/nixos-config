@@ -1,5 +1,5 @@
-{ self, ... }: {
-  flake.modules.homeManager.ranger = { pkgs, ... }: {
+{ self, config, ... }: {
+  flake.modules.homeManager.ranger = { pkgs, config, ... }: {
     home.packages = [ pkgs.ranger ];
     home.file.".config/ranger" = {
       source = ./configs;

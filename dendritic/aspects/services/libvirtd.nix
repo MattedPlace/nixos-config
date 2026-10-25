@@ -1,6 +1,6 @@
-{...}: {
-  flake.modules.nixos.libvirtd = {...}: {
+{ config, ... }: {
+  flake.modules.nixos.libvirtd = { ... }: {
     virtualisation.libvirtd.enable = true;
-    users.users.Maxwell.extraGroups = ["libvirtd"];
+    users.users.${config.host.user.name}.extraGroups = [ "libvirtd" ];
   };
 }

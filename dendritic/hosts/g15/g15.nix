@@ -23,20 +23,6 @@ in
       self.modules.nixos.vr
       self.modules.nixos.plex
       self.modules.nixos.flatpak
-
-      {
-        # "disk" grants raw access to /dev/disk/by-partlabel/* block
-        # devices, needed so QEMU (run as Maxwell, not root) can pass
-        # crate-server-vm's cache/array partitions straight through --
-        # see packages/deploy-test-vm.
-        users.users.Maxwell.extraGroups = [
-          "wheel"
-          "docker"
-          "input"
-          "disk"
-        ];
-
-      }
     ];
   };
   flake.modules.nixos.g15 = {

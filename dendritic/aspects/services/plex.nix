@@ -2,7 +2,7 @@
 #  Media Services: Plex, Torrenting and Automation
 #
 {
-  flake.modules.nixos.plex = { pkgs, ... }: {
+  flake.modules.nixos.plex = { pkgs, config, ... }: {
     nixpkgs.overlays = [ (import ../../../overlays/plex) ];
     services = {
       /*

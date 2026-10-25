@@ -1,8 +1,8 @@
-{ inputs, ... }: {
-  flake.modules.nixos.noctalia-shell = { ... }: {
+{ inputs, config, ... }: {
+  flake.modules.nixos.noctalia-shell = { config, ... }: {
   };
 
-  flake.modules.homeManager.noctalia-shell = { ... }: {
+  flake.modules.homeManager.noctalia-shell = { config, ... }: {
     imports = [ inputs.noctalia-shell.homeModules.default ];
 
     programs.noctalia = {

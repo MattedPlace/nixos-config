@@ -1,8 +1,8 @@
-{ inputs, ... }: {
-  flake.modules.nixos.nvf = { ... }: {
+{ inputs, config, ... }: {
+  flake.modules.nixos.nvf = { config, ... }: {
   };
 
-  flake.modules.homeManager.nvf = { ... }: {
+  flake.modules.homeManager.nvf = { config, ... }: {
     imports = [ inputs.nvf.homeManagerModules.default ];
 
     programs.nvf = {

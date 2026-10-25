@@ -1,6 +1,6 @@
 {
   flake.modules.editors.nixvim =
-    { lib, pkgs, ... }:
+    { lib, pkgs, config, ... }:
     {
       enableMan = false;
       viAlias = true;

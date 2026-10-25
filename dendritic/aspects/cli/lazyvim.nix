@@ -1,7 +1,7 @@
 # modules/lazyvim.nix
-{ inputs, ... }: {
+{ inputs, config, ... }: {
   # Contribute a reusable home-manager aspect
-  flake.modules.homeManager.lazyvim = { pkgs, ... }: {
+  flake.modules.homeManager.lazyvim = { pkgs, config, ... }: {
     # Make the home-manager module available
     imports = [
       inputs.lazyvim.homeManagerModules.default

@@ -1,4 +1,4 @@
-{ ... }: {
+{ config, ... }: {
   flake.modules.homeManager.env =
     {
       config,

@@ -15,7 +15,7 @@ let
     user.name = mkOption {
       type = types.str;
       example = "username";
-      default = "matthias";
+      default = "Maxwell";
       description = "Host username";
     };
 

@@ -4,7 +4,7 @@
 
 {
   flake.modules.homeManager.theme =
-    { lib, ... }:
+    { lib, config, ... }:
     let
       inherit (lib) mkDefault;
     in

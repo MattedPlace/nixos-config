@@ -1,5 +1,5 @@
-{ inputs, ... }: {
-  flake.modules.nixos.dms-shell = { ... }: {
+{ inputs, config, ... }: {
+  flake.modules.nixos.dms-shell = { config, ... }: {
     imports = [ inputs.dms-plugin-registry.nixosModules.default ];
 
     programs.dms-shell = {

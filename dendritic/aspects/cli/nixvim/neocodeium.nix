@@ -1,6 +1,6 @@
 {
   flake.modules.editors.nixvim =
-    { pkgs, lib, ... }:
+    { pkgs, lib, config, ... }:
     {
       extraPlugins = [
         (pkgs.vimUtils.buildVimPlugin rec {

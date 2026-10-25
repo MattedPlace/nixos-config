@@ -1,6 +1,6 @@
 {
   flake.modules.editors.nixvim =
-    { pkgs, ... }:
+    { pkgs, config, ... }:
     {
       colorschemes.tokyonight = {
         enable = true;

@@ -31,10 +31,10 @@ in
       self.modules.nixos.desktop
       {
         # "disk" grants raw access to /dev/disk/by-partlabel/* block
-        # devices, needed so QEMU (run as Maxwell, not root) can pass
+        # devices, needed so QEMU (run as ${config.host.user.name}, not root) can pass
         # crate-server-vm's cache/array partitions straight through --
         # see packages/deploy-test-vm.
-        users.users.Maxwell.extraGroups = [
+        users.users.${config.host.user.name}.extraGroups = [
           "wheel"
           "docker"
           "input"

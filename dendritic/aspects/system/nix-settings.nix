@@ -1,5 +1,5 @@
-{ ... }: {
-  flake.modules.nixos.nix-settings = { pkgs, ... }: {
+{ config, ... }: {
+  flake.modules.nixos.nix-settings = { pkgs, config, ... }: {
     environment.systemPackages = [ pkgs.nix-prefetch-scripts ];
 
     nix = {
@@ -18,12 +18,12 @@
         cores = 0;
         keep-outputs = true;
         builders-use-substitutes = true;
-        # Maxwell already has unrestricted root via wheel/sudo on every host;
+        # ${config.host.user.name} already has unrestricted root via wheel/sudo on every host;
         # this just lets --build-host copy-back skip a signature check
         # that was never a real trust boundary for this single-user setup.
         trusted-users = [
           "root"
-          "Maxwell"
+          "${config.host.user.name}"
         ];
         substituters = [
           # crate-desktop pushes every build here (see

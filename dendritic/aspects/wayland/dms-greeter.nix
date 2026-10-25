@@ -1,5 +1,5 @@
-{...}: {
-  flake.modules.nixos.dms-greeter = {...}: {
+{
+  flake.modules.nixos.dms-greeter = { config, ... }: {
     # Defaults to the uwsm-managed session over the plain "niri" entry.
     services.displayManager.defaultSession = "niri-uwsm";
 
@@ -21,7 +21,7 @@
           }
         '';
       };
-      configHome = "/home/Maxwell";
+      configHome = "/home/${config.host.user.name}";
       logs = {
         save = true;
         path = "/tmp/dms-greeter.log";
@@ -29,7 +29,7 @@
     };
 
     environment.etc."dms-greeter/config.toml".text = ''
-      default_user = "Maxwell"
+      default_user = "${config.host.user.name}"
     '';
   };
 }

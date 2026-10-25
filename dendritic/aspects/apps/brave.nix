@@ -1,8 +1,8 @@
-{ ... }: {
-  flake.modules.nixos.brave = { ... }: {
+{ config, ... }: {
+  flake.modules.nixos.brave = { config, ... }: {
   };
 
-  flake.modules.homeManager.brave = { ... }: {
+  flake.modules.homeManager.brave = { config, ... }: {
     programs.brave = {
       enable = true;
       commandLineArgs = [

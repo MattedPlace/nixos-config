@@ -47,12 +47,12 @@ layout {
         mode_prompt        "#[bg={color_base0D},fg={color_base02},bold] PROMPT#[bg={color_base03},fg={color_base0D}]█"
         mode_tmux          "#[bg={color_base09},fg={color_base02},bold] TMUX#[bg={color_base03},fg={color_base09}]█"
 
-        // forMaxwelling for inactive tabs
+        // formatting for inactive tabs
         tab_normal              "#[bg={color_base01},fg={color_base02}] #[bg={color_base01},fg={color_base05},bold]{index} #[bg={color_base00},fg={color_base05},bold] {name}{floating_indicator}#[bg={color_base00},fg={color_base05},bold] "
         tab_normal_fullscreen   "#[bg={color_base03},fg={color_base0D}] #[bg={color_base0D},fg={color_base02},bold]{index} #[bg={color_base02},fg={color_base05},bold] {name}{fullscreen_indicator}#[bg={color_base09},fg={color_base02},bold] "
         tab_normal_sync         "#[bg={color_base03},fg={color_base0D}] #[bg={color_base0D},fg={color_base02},bold]{index} #[bg={color_base02},fg={color_base05},bold] {name}{sync_indicator}#[bg={color_base09},fg={color_base02},bold] "
 
-        // forMaxwelling for the current active tab
+        // formatting for the current active tab
         tab_active              "#[bg={color_base0D},fg={color_base02}] #[bg={color_base0D},fg={color_base02},bold]{index} #[bg={color_base02},fg={color_base05},bold] {name}{floating_indicator}#[bg={color_base02},fg={color_base05},bold] "
         tab_active_fullscreen   "#[bg={color_base0D},fg={color_base09}] #[bg={color_base09},fg={color_base02},bold]{index} #[bg={color_base02},fg={color_base05},bold] {name}{fullscreen_indicator}#[bg={color_base0D},fg={color_base02},bold] "
         tab_active_sync         "#[bg={color_base0D},fg={color_base09}] #[bg={color_base09},fg={color_base02},bold]{index} #[bg={color_base02},fg={color_base05},bold] {name}{sync_indicator}#[bg={color_base0D},fg={color_base02},bold] "

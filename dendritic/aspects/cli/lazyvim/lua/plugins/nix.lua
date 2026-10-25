@@ -19,7 +19,7 @@ return {
               },
               options = (function()
                 local host = vim.fn.hostname()
-                local flake = '(builtins.getFlake ("git+file://" + toString /home/Maxwell/nixos-config))'
+                local flake = '(builtins.getFlake ("git+file://" + toString /home/${config.host.user.name}/nixos-config))'
                 return {
                   enable = true,
                   target = { "all" },
