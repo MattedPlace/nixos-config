@@ -25,6 +25,17 @@
       url = "github:NotAShelf/nvf";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    dms = {
+      url = "github:duxlabs-dev/dux-shell/stable";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    dux-greeter = {
+      url = "github:duxlabs-dev/dux-greeter";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        dank-qml-common.follows = "dms/dank-qml-common";
+      };
+    };
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -92,6 +103,9 @@
             inherit system;
             config = {
               allowUnfree = true;
+              permittedInsecurePackages = [
+                "sidequest-1.4.1"
+              ];
               nvidia.acceptLicense = true;
             };
             overlays = [

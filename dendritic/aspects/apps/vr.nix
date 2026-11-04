@@ -7,11 +7,11 @@
     }:
     {
       nixpkgs.overlays = [ (import ../../../overlays/vr { }) ];
-
       environment.systemPackages = with pkgs; [
-        wayvr # Desktop VR
+        #        wayvr # Desktop VR
         android-tools # ADB for VR
         custom-xrizer
+        sidequest
         gnirehtet
       ];
 

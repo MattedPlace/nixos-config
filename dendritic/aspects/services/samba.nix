@@ -5,6 +5,7 @@
       services = {
         samba = {
           enable = true;
+          nmbd.enable = false;
           settings = {
             # Set Password: $ smbpasswd -a <user>
             share = {
@@ -20,5 +21,6 @@
           openFirewall = true;
         };
       };
+      systemd.services.samba-nmbd.enable = false;
     };
 }

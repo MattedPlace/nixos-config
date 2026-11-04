@@ -1,5 +1,6 @@
 { config, ... }: {
   flake.modules.nixos.power = { config, ... }: {
+    boot.kernelParams = [ "usbcore.autosuspend=-1" ];
     services = {
       power-profiles-daemon.enable = false;
       thermald.enable = false;

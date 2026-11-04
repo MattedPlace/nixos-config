@@ -9,6 +9,7 @@
         systemPackages = with pkgs; [
           signal-desktop
           nautilus
+          tuxtype
         ];
       };
     };

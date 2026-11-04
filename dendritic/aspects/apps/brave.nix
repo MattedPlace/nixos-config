@@ -16,7 +16,6 @@
         "--enable-accelerated-video-decode"
         "--enable-accelerated-video-encode"
         "--use-gl=egl"
-        "--force-dark-mode"
         "--gtk-version=4"
       ];
       extensions = [

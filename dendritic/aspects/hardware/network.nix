@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.desktop =
+  flake.modules.nixos.role-base =
     {
       config,
       lib,
@@ -9,7 +9,7 @@
     {
       networking = {
         useDHCP = lib.mkDefault true;
-        hostName = "${config.host.user.name}Desktop";
+        hostName = config.host.name;
         enableIPv6 = false;
         networkmanager = {
           enable = true;

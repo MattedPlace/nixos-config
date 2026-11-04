@@ -6,7 +6,7 @@
 }:
 let
   host = {
-    name = "desktop";
+    name = "MaxwellDesktop";
     user.name = "Maxwell";
     state.version = "25.11";
     system = "x86_64-linux";

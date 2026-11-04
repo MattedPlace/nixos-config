@@ -3,7 +3,7 @@
     # Defaults to the uwsm-managed session over the plain "niri" entry.
     services.displayManager.defaultSession = "niri-uwsm";
 
-    services.displayManager.dms-greeter = {
+    services.displayManager.dux-greeter = {
       enable = true;
       compositor = {
         name = "niri";
