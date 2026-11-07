@@ -54,10 +54,10 @@
               spacing = 0;
               innerPadding = -5;
               bottomGap = 0;
-              transparency = 0;
+              transparency = 1;
               fontScale = 1.35;
               squareCorners = true;
-              noBackground = true;
+              noBackground = false;
               maximizeWidgetIcons = true;
               maximizeWidgetText = false;
               borderEnabled = false;
@@ -85,7 +85,7 @@
                 { id = "clipboard"; }
                 { id = "cpuUsage"; }
                 { id = "memUsage"; }
-                { id = "batteryPlus"; }
+                { id = "battery"; }
                 { id = "controlCenterButton"; }
 
               ];
