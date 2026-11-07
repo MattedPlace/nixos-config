@@ -95,9 +95,7 @@
             keyboard.xkb.layout = "us";
             keyboard.numlock = { };
             touchpad = {
-              tap = [ ];
               natural-scroll = [ ];
-              dwt = [ ];
             };
             focus-follows-mouse = [ ];
           };
