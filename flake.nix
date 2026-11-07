@@ -66,6 +66,10 @@
     lazyvim = {
       url = "github:pfassina/lazyvim-nix";
     };
+    yt-x = {
+      url = "github:Benexl/yt-x";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     stylix = {
       url = "github:nix-community/stylix";
       inputs.nixpkgs.follows = "nixpkgs";

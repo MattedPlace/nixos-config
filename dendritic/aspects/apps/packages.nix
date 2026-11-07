@@ -2,6 +2,7 @@
   flake.modules.nixos.packages =
     {
       pkgs,
+      inputs,
       ...
     }:
     {
@@ -10,6 +11,7 @@
           signal-desktop
           nautilus
           tuxtype
+          inputs.yt-x.packages.${pkgs.stdenv.hostPlatform.system}.default
         ];
       };
     };
