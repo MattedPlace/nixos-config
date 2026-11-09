@@ -215,7 +215,7 @@
                 "toggle"
               ];
               "Mod+B".spawn = [
-                "brave"
+                "brave-origin"
               ];
               "Mod+E".spawn = [
                 "nautilus"

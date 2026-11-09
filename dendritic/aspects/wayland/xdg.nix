@@ -3,9 +3,6 @@
     xdg = {
       enable = true;
       cacheHome = config.home.homeDirectory + "/.local/cache";
-
-      mimeApps.enable = false;
-
       userDirs = {
         enable = true;
         createDirectories = false;

@@ -35,6 +35,7 @@
     imports = with self.modules.homeManager; [
 
       git
+      mime
 
       btop
       carapace
