@@ -8,7 +8,7 @@ let
         builtins.readFile (
           builtins.fetchurl {
             url = "https://plex.tv/api/downloads/1.json";
-            sha256 = "04d302wy9qkmiaa4ki9qpb5l5gc36ij8hvnyf76ykq9rm187j722";
+sha256="079n3vkbyl0iqlpxcqjwqbnb3hx56jd0w2iiybac830vqh3az3y4";
           }
         )
       )).computer.Linux.version;

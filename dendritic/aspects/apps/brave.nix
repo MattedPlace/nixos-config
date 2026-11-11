@@ -6,7 +6,7 @@
       enable = true;
       package = pkgs.master.brave-origin;
       extensions = [
-        { id = "eimadpbcbfnmbkopoojfekhnkhdbieeh"; } # Dark Reader
+        # { id = "eimadpbcbfnmbkopoojfekhnkhdbieeh"; } # Dark Reader
       ];
     };
   };

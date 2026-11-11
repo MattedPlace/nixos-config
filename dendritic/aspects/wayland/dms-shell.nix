@@ -41,6 +41,14 @@
         enable = true;
 
         settings = {
+        acMonitorTimeout = 0;
+        acLockTimeout = 600;
+        acSuspendTimeout = 1200;
+        acPostLockMonitorTimeout = 300;
+        batteryMonitorTimeout = 0;
+        batteryLockTimeout = 600;
+        batterySuspendTimeout = 1200;
+        batteryPostLockMonitorTimeout = 300;
           useFahrenheit = true;
           theme = "dark";
           controlCenterWidgets = [
@@ -82,7 +90,19 @@
               width = 50;
             }
             {
-              id = "darkMode";
+              id = "builtin_cups";
+              width = 50;
+            }
+            {
+              id = "nightMode";
+              width = 50;
+            }
+            {
+              id = "power";
+              width = 50;
+            }
+            {
+              id = "settings";
               width = 50;
             }
           ];
