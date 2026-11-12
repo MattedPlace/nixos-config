@@ -57,14 +57,5 @@
 
       powerManagement.cpuFreqGovernor = lib.mkDefault "ondemand";
       hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
-      hardware = {
-        graphics = {
-          enable = true;
-          extraPackages = with pkgs; [
-            libva-vdpau-driver
-            libvdpau-va-gl
-          ];
-        };
-      };
     };
 }

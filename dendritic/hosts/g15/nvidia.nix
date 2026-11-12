@@ -21,9 +21,14 @@
         graphics = {
           enable = true;
           enable32Bit = true;
+          extraPackages = with pkgs; [
+            libva-vdpau-driver
+            libvdpau-va-gl
+          ];
         };
         nvidia = {
           modesetting.enable = true;
+          videoAcceleration = true;
           open = true;
           nvidiaSettings = true;
           package = config.boot.kernelPackages.nvidiaPackages.production;
