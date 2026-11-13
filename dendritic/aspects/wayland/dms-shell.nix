@@ -98,11 +98,11 @@
               width = 50;
             }
             {
-              id = "power";
+              id = "settings";
               width = 50;
             }
             {
-              id = "settings";
+              id = "power";
               width = 50;
             }
           ];
