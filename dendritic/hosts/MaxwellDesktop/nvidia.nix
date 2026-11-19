@@ -16,6 +16,8 @@
         };
         nvidia = {
           modesetting.enable = true;
+          powerManagement.enable = true;
+          powerManagement.finegrained = false; # only useful on Turing+ with PRIME
           package = config.boot.kernelPackages.nvidiaPackages.legacy_580;
           open = false;
           nvidiaSettings = true;
