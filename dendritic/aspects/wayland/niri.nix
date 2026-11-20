@@ -93,7 +93,7 @@
 
           input = {
             keyboard.xkb.layout = "us";
-            keyboard.numlock = { };
+            keyboard.numlock = true;
             touchpad = {
               natural-scroll = [ ];
             };
