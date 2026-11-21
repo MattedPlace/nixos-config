@@ -29,19 +29,6 @@ in
       inputs.home-manager.nixosModules.home-manager
       self.modules.nixos.role-desktop
       self.modules.nixos.desktop
-      {
-        # "disk" grants raw access to /dev/disk/by-partlabel/* block
-        # devices, needed so QEMU (run as ${config.host.user.name}, not root) can pass
-        # crate-server-vm's cache/array partitions straight through --
-        # see packages/deploy-test-vm.
-        users.users.${config.host.user.name}.extraGroups = [
-          "wheel"
-          "docker"
-          "input"
-          "disk"
-        ];
-      }
-
     ];
   };
   flake.modules.nixos.desktop = {
