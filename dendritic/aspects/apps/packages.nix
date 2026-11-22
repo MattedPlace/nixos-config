@@ -8,6 +8,7 @@
     {
       environment = {
         systemPackages = with pkgs; [
+        google-chrome
           signal-desktop
           nautilus
           tuxtype

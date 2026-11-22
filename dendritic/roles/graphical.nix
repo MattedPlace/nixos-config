@@ -23,7 +23,6 @@
     imports = with self.modules.homeManager; [
       niri
       xdg
-      dms-shell
 
       ghostty
       zen
