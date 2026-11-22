@@ -24,12 +24,15 @@
       };
 
     };
-  flake.modules.homeManager.role-laptop =
+  flake.modules.homeManager.dms-shell =
     {
       config,
-      # lib,
+      lib,
+    host,
       ...
     }:
+    let isLaptop = host.name == "g15";
+    in
     {
       imports = [
         inputs.dms.homeModules.dank-material-shell
@@ -140,183 +143,34 @@
                 { id = "weather"; }
               ];
               openOnOverview = true;
+rightWidgets = [
+  { id = "systemTray"; }
+  { id = "clipboard"; }
+  { id = "cpuUsage"; }
+  { id = "memUsage"; }
+] ++ (lib.optionals isLaptop [
+  {
+    id = "battery";
+    batteryStyle = "solid";
+  }
+]) ++ [
+  {
+    id = "controlCenterButton";
+    showAudioIcon = true;
+    showAudioPercent = true;
+    showBatteryIcon = false;
+    showBluetoothIcon = true;
+    showBrightnessIcon = false;
+    showBrightnessPercent = false;
+    showNetworkIcon = true;
+    showMicIcon = false;
+    showMicPercent = false;
+    showScreenSharingIcon = false;
+    showDoNotDisturbIcon = false;
+    showIdleInhibitorIcon = false;
+  }
+];
 
-              rightWidgets = [
-
-                { id = "systemTray"; }
-                { id = "clipboard"; }
-                { id = "cpuUsage"; }
-                { id = "memUsage"; }
-                {
-                  id = "battery";
-                  batteryStyle = "solid";
-                }
-                {
-                  id = "controlCenterButton";
-                  showAudioIcon = false;
-                  showAudioPercent = false;
-                  showBatteryIcon = false;
-                  showBluetoothIcon = true;
-                  showBrightnessIcon = false;
-                  showBrightnessPercent = false;
-                  showNetworkIcon = true;
-                  showMicIcon = false;
-                  showMicPercent = false;
-                  showScreenSharingIcon = false;
-                  showDoNotDisturbIcon = false;
-                  showIdleInhibitorIcon = false;
-                }
-
-              ];
-            }
-          ];
-          dynamicTheming = false;
-
-        };
-
-        session = {
-          isLightMode = false;
-        };
-      };
-
-
-    };
-  flake.modules.homeManager.role-desktop =
-    {
-      config,
-      # lib,
-      ...
-    }:
-    {
-      imports = [
-        inputs.dms.homeModules.dank-material-shell
-      ];
-
-      stylix.targets.dank-material-shell.enable = true;
-
-      programs.dank-material-shell = {
-        enable = true;
-
-        settings = {
-        acMonitorTimeout = 0;
-        acLockTimeout = 600;
-        acSuspendTimeout = 1200;
-        acPostLockMonitorTimeout = 300;
-          useFahrenheit = true;
-          theme = "dark";
-          controlCenterWidgets = [
-            {
-              id = "brightnessSlider";
-              width = 50;
-            }
-            {
-              id = "volumeSlider";
-              width = 50;
-            }
-            {
-              id = "wifi";
-              width = 50;
-            }
-            {
-              id = "bluetooth";
-              width = 50;
-            }
-            {
-              id = "audioOutput";
-              width = 50;
-            }
-            {
-              id = "builtin_vpn";
-              width = 50;
-            }
-            {
-              id = "audioInput";
-              width = 50;
-            }
-            {
-
-              id = "plugin_dankKDEConnect";
-              width = 50;
-            }
-            {
-              id = "idleInhibitor";
-              width = 50;
-            }
-            {
-              id = "builtin_cups";
-              width = 50;
-            }
-            {
-              id = "nightMode";
-              width = 50;
-            }
-            {
-              id = "settings";
-              width = 50;
-            }
-            {
-              id = "power";
-              width = 50;
-            }
-          ];
-          barConfigs = [
-            {
-              id = "default";
-              name = "Main Bar";
-              enabled = true;
-
-              position = 0;
-              screenPreferences = [ "all" ];
-              spacing = 0;
-              innerPadding = -5;
-              bottomGap = 0;
-              transparency = 1;
-              fontScale = 1.35;
-              squareCorners = true;
-              noBackground = false;
-              maximizeWidgetIcons = true;
-              maximizeWidgetText = false;
-              borderEnabled = false;
-              widgetOutlineEnabled = false;
-              autoHide = false;
-              scrollEnabled = false;
-
-              leftWidgets = [
-                { id = "launcherButton"; }
-                { id = "workspaceSwitcher"; }
-                { id = "focusedWindow"; }
-              ];
-
-              centerWidgets = [
-                { id = "music"; }
-                { id = "clock"; }
-                { id = "weather"; }
-              ];
-              openOnOverview = true;
-
-              rightWidgets = [
-
-                { id = "systemTray"; }
-                { id = "clipboard"; }
-                { id = "cpuUsage"; }
-                { id = "memUsage"; }
-                {
-                  id = "controlCenterButton";
-                  showAudioIcon = false;
-                  showAudioPercent = false;
-                  showBatteryIcon = false;
-                  showBluetoothIcon = true;
-                  showBrightnessIcon = false;
-                  showBrightnessPercent = false;
-                  showNetworkIcon = true;
-                  showMicIcon = false;
-                  showMicPercent = false;
-                  showScreenSharingIcon = false;
-                  showDoNotDisturbIcon = false;
-                  showIdleInhibitorIcon = false;
-                }
-
-              ];
             }
           ];
           dynamicTheming = false;
